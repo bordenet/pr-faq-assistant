@@ -3,7 +3,13 @@
 [![CI](https://github.com/bordenet/pr-faq-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/bordenet/pr-faq-assistant/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/bordenet/pr-faq-assistant/graph/badge.svg)](https://codecov.io/gh/bordenet/pr-faq-assistant)
 [![GitHub Pages](https://img.shields.io/badge/demo-live-brightgreen)](https://bordenet.github.io/pr-faq-assistant/)
+[![Node.js 18+](https://img.shields.io/badge/node-18+-brightgreen.svg)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Linting: ESLint](https://img.shields.io/badge/linting-ESLint-4B32C3)](https://eslint.org/)
+[![Testing: Vitest](https://img.shields.io/badge/testing-Vitest-6E9F18)](https://vitest.dev/)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/bordenet/pr-faq-assistant/graphs/commit-activity)
+[![GitHub issues](https://img.shields.io/github/issues/bordenet/pr-faq-assistant.svg)](https://github.com/bordenet/pr-faq-assistant/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/bordenet/pr-faq-assistant.svg)](https://github.com/bordenet/pr-faq-assistant/pulls)
 
 An opinionated, AI-assisted workflow helper for generating high-quality PR-FAQ documents that score well against journalistic standards.
 
