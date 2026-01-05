@@ -1,7 +1,11 @@
 # PR-FAQ Assistant 📰
 
 [![CI](https://github.com/bordenet/pr-faq-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/bordenet/pr-faq-assistant/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/bordenet/pr-faq-assistant/graph/badge.svg)](https://codecov.io/gh/bordenet/pr-faq-assistant)
+[![GitHub Pages](https://img.shields.io/badge/demo-live-brightgreen)](https://bordenet.github.io/pr-faq-assistant/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
 **AI-assisted PR-FAQ document generator optimized for [pr-faq-validator](https://github.com/bordenet/pr-faq-validator) compatibility (70+ score target).**
 
