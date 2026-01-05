@@ -195,22 +195,38 @@ function renderEmptyState() {
 function renderProjectList(projects) {
     return `
         <div class="grid gap-4">
-            ${projects.map(p => `
+            ${projects.map(p => {
+        const isComplete = p.phase > WORKFLOW_CONFIG.phaseCount;
+        return `
                 <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover-lift cursor-pointer" onclick="openProject('${p.id}')">
                     <div class="flex justify-between items-start">
                         <div class="flex-1">
                             <h3 class="font-medium text-gray-900 dark:text-white">${escapeHtml(p.title)}</h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Phase ${p.phase || 1} of ${WORKFLOW_CONFIG.phaseCount}</p>
+                            ${isComplete ? `
+                                <span class="inline-flex items-center mt-1 px-2 py-0.5 bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 rounded-full text-xs font-medium">
+                                    ✓ Complete
+                                </span>
+                            ` : `
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Phase ${p.phase || 1} of ${WORKFLOW_CONFIG.phaseCount}</p>
+                            `}
                             <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Updated ${formatDate(p.updatedAt)}</p>
                         </div>
-                        <button onclick="event.stopPropagation(); deleteProject('${p.id}')" class="text-red-500 hover:text-red-700 p-1" title="Delete">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
+                        <div class="flex items-center gap-2">
+                            ${isComplete ? `
+                                <button onclick="event.stopPropagation(); exportProject('${p.id}')" class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700" title="Export">
+                                    Export
+                                </button>
+                            ` : ''}
+                            <button onclick="event.stopPropagation(); deleteProject('${p.id}')" class="text-red-500 hover:text-red-700 p-1" title="Delete">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            `).join('')}
+            `;
+    }).join('')}
         </div>
     `;
 }
@@ -246,6 +262,28 @@ async function deleteProject(id) {
         showToast('Project deleted', 'success');
         renderHome();
     }
+}
+
+/**
+ * Export a project as Markdown
+ */
+async function exportProject(id) {
+    const project = await storage.getProject(id);
+    if (!project) {
+        showToast('Project not found', 'error');
+        return;
+    }
+
+    const workflow = new Workflow(project);
+    const md = workflow.exportAsMarkdown();
+    const blob = new Blob([md], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${project.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-prfaq.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('PR-FAQ exported!', 'success');
 }
 
 /**
@@ -542,6 +580,7 @@ function setupProjectViewListeners(workflow) {
 // Expose functions globally for inline handlers
 window.openProject = openProject;
 window.deleteProject = deleteProject;
+window.exportProject = exportProject;
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', init);
