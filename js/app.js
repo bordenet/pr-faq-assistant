@@ -184,7 +184,7 @@ function renderEmptyState() {
             <div class="text-6xl mb-4">📰</div>
             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No PR-FAQ Projects Yet</h3>
             <p class="text-gray-500 dark:text-gray-400 mb-4">Create your first PR-FAQ document to get started.</p>
-            <p class="text-sm text-gray-400 dark:text-gray-500">Documents are optimized for pr-faq-validator (70+ score target)</p>
+            <p class="text-sm text-gray-400 dark:text-gray-500">Documents are optimized for <a href="https://github.com/bordenet/pr-faq-validator" target="_blank" rel="noopener" class="text-blue-500 dark:text-blue-400 hover:underline">pr-faq-validator</a> (70+ score target)</p>
         </div>
     `;
 }
