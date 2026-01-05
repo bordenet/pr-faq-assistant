@@ -55,18 +55,15 @@ venv/
 htmlcov/
 
 # ------------------------------------------------------------------------------
-# Go (conditional)
+# Go
 # ------------------------------------------------------------------------------
-# IF {{ENABLE_BACKEND}}
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
-{{PROJECT_NAME}}
 coverage.out
 *.test
-# END IF
 
 # ------------------------------------------------------------------------------
 # IDE
@@ -94,14 +91,12 @@ desktop.ini
 ehthumbs.db
 
 # ------------------------------------------------------------------------------
-# Desktop Clients (conditional)
+# Desktop Clients
 # ------------------------------------------------------------------------------
-# IF {{ENABLE_DESKTOP_CLIENTS}}
 dist/
 cmd/webview/go.sum
 cmd/electron/node_modules/
 cmd/electron/package-lock.json
-# END IF
 
 # ------------------------------------------------------------------------------
 # Node.js / JavaScript
@@ -129,16 +124,12 @@ dist/
 *.log
 
 # ------------------------------------------------------------------------------
-# GitHub Pages Architecture B (conditional)
+# GitHub Pages (served from root)
 # ------------------------------------------------------------------------------
-# IF {{GITHUB_PAGES_FROM_ROOT}}
-# When GitHub Pages serves from root, docs/ should ONLY contain documentation,
-# NOT copies of app files. This prevents drift between root and docs/.
-# See: genesis/docs/deployment/GITHUB-PAGES-template.md for architecture details
+# When GitHub Pages serves from root, docs/ should ONLY contain documentation
 docs/js/
 docs/css/
 docs/index.html
 docs/data/
 docs/*.html
 !docs/*.md
-# END IF
