@@ -491,7 +491,7 @@ function setupProjectViewListeners(workflow) {
         showToast('Exported!', 'success');
     });
 
-    // Save Response
+    // Save Response - auto-advance to next phase
     saveResponseBtn?.addEventListener('click', async () => {
         const output = responseTextarea?.value?.trim() || '';
         if (output.length < 10) {
@@ -499,9 +499,20 @@ function setupProjectViewListeners(workflow) {
             return;
         }
         workflow.savePhaseOutput(output);
-        await storage.saveProject(currentProject);
-        showToast('Response saved!', 'success');
-        renderProjectView(); // Re-render to show Next Phase button
+
+        // Auto-advance to next phase if not on final phase
+        if (workflow.currentPhase < WORKFLOW_CONFIG.phaseCount) {
+            workflow.advancePhase();
+            await storage.saveProject(currentProject);
+            showToast('Response saved! Moving to next phase...', 'success');
+            renderProjectView();
+        } else {
+            // Final phase - mark complete
+            currentProject.phase = WORKFLOW_CONFIG.phaseCount + 1;
+            await storage.saveProject(currentProject);
+            showToast('PR-FAQ Complete!', 'success');
+            renderHome();
+        }
     });
 
     // Previous Phase
