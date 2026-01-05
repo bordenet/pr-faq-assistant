@@ -1,0 +1,51 @@
+{
+  "name": "pr-faq-assistant",
+  "version": "1.0.0",
+  "description": "AI-assisted PR-FAQ document generator optimized for pr-faq-validator compatibility",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint js/**/*.js",
+    "lint:fix": "eslint js/**/*.js --fix",
+    "serve": "python3 -m http.server 8080",
+    "deploy": "./scripts/deploy-web.sh"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^1.0.0",
+    "eslint": "^8.50.0",
+    "happy-dom": "^12.10.0",
+    "vitest": "^1.0.0"
+  },
+  "vitest": {
+    "environment": "happy-dom",
+    "coverage": {
+      "provider": "v8",
+      "reporter": ["text", "json", "html"],
+      "exclude": [
+        "node_modules/",
+        "tests/",
+        "*.config.js"
+      ]
+    }
+  },
+  "keywords": [
+    "pr-faq",
+    "press-release",
+    "ai-assisted",
+    "workflow",
+    "amazon-style"
+  ],
+  "author": "bordenet",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bordenet/pr-faq-assistant.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bordenet/pr-faq-assistant/issues"
+  },
+  "homepage": "https://bordenet.github.io/pr-faq-assistant/"
+}
+
