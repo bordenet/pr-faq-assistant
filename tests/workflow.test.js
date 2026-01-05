@@ -150,16 +150,24 @@ describe('Workflow', () => {
     });
 
     describe('exportAsMarkdown', () => {
-        it('should export phase 3 output if available', () => {
+        const attribution = '\n\n---\n\n*Generated with [PR-FAQ Assistant](https://bordenet.github.io/pr-faq-assistant/)*';
+
+        it('should export phase 3 output with attribution if available', () => {
             project.phase3_output = 'Final PR-FAQ document';
             const md = workflow.exportAsMarkdown();
-            expect(md).toBe('Final PR-FAQ document');
+            expect(md).toBe('Final PR-FAQ document' + attribution);
         });
 
-        it('should fallback to phase 1 if phase 3 not available', () => {
+        it('should fallback to phase 1 with attribution if phase 3 not available', () => {
             project.phase1_output = 'Initial draft';
             const md = workflow.exportAsMarkdown();
-            expect(md).toBe('Initial draft');
+            expect(md).toBe('Initial draft' + attribution);
+        });
+
+        it('should include link to PR-FAQ Assistant in attribution', () => {
+            project.phase3_output = 'Some content';
+            const md = workflow.exportAsMarkdown();
+            expect(md).toContain('https://bordenet.github.io/pr-faq-assistant/');
         });
     });
 
@@ -182,13 +190,14 @@ describe('getPhaseMetadata', () => {
 });
 
 describe('exportFinalDocument', () => {
-    it('should export project as markdown', () => {
+    it('should export project as markdown with attribution', () => {
         const project = {
             title: 'Test',
             phase3_output: 'Final content'
         };
         const md = exportFinalDocument(project);
-        expect(md).toBe('Final content');
+        expect(md).toContain('Final content');
+        expect(md).toContain('https://bordenet.github.io/pr-faq-assistant/');
     });
 });
 
