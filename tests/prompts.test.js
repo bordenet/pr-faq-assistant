@@ -1,0 +1,156 @@
+/**
+ * Tests for PR-FAQ Prompts Module
+ * Validates prompt generation for validator compatibility
+ */
+
+import { describe, it, expect } from 'vitest';
+import {
+    WORKFLOW_CONFIG,
+    generatePhase1Prompt,
+    generatePhase2Prompt,
+    generatePhase3Prompt,
+    getPhaseMetadata
+} from '../js/prompts.js';
+
+describe('WORKFLOW_CONFIG', () => {
+    it('should have 3 phases', () => {
+        expect(WORKFLOW_CONFIG.phaseCount).toBe(3);
+        expect(WORKFLOW_CONFIG.phases).toHaveLength(3);
+    });
+
+    it('should have correct phase names', () => {
+        expect(WORKFLOW_CONFIG.phases[0].name).toBe('Initial Draft');
+        expect(WORKFLOW_CONFIG.phases[1].name).toBe('Critical Review');
+        expect(WORKFLOW_CONFIG.phases[2].name).toBe('Final Polish');
+    });
+
+    it('should have sequential phase numbers', () => {
+        WORKFLOW_CONFIG.phases.forEach((phase, index) => {
+            expect(phase.number).toBe(index + 1);
+        });
+    });
+});
+
+describe('generatePhase1Prompt', () => {
+    const sampleFormData = {
+        productName: 'DataSync Pro',
+        companyName: 'AcmeCorp',
+        targetCustomer: 'Enterprise IT teams',
+        problem: 'Data migration takes too long',
+        solution: 'Automated sync with ML optimization',
+        benefits: 'Faster migrations, less downtime',
+        metrics: '75% faster, $1M savings',
+        location: 'Seattle, WA'
+    };
+
+    it('should include product name in prompt', () => {
+        const prompt = generatePhase1Prompt(sampleFormData);
+        expect(prompt).toContain('DataSync Pro');
+    });
+
+    it('should include company name in prompt', () => {
+        const prompt = generatePhase1Prompt(sampleFormData);
+        expect(prompt).toContain('AcmeCorp');
+    });
+
+    it('should include validator requirements', () => {
+        const prompt = generatePhase1Prompt(sampleFormData);
+        expect(prompt).toContain('6-12 words');
+        expect(prompt).toContain('Dateline');
+        expect(prompt).toContain('WHO, WHAT, WHEN, WHERE, WHY');
+    });
+
+    it('should warn against fluff words', () => {
+        const prompt = generatePhase1Prompt(sampleFormData);
+        expect(prompt).toContain('revolutionary');
+        expect(prompt).toContain('groundbreaking');
+        expect(prompt).toContain('AVOID');
+    });
+
+    it('should require customer quotes with metrics', () => {
+        const prompt = generatePhase1Prompt(sampleFormData);
+        expect(prompt).toContain('QUANTITATIVE METRICS');
+        expect(prompt).toContain('3-4 customer quotes');
+    });
+
+    it('should include a future release date', () => {
+        const prompt = generatePhase1Prompt(sampleFormData);
+        // Should contain a date format like "Month Day, Year"
+        expect(prompt).toMatch(/\w+ \d+, \d{4}/);
+    });
+});
+
+describe('generatePhase2Prompt', () => {
+    const samplePhase1Output = `
+# AcmeCorp Launches DataSync Pro
+
+Seattle, WA — January 5, 2026 — AcmeCorp today announced DataSync Pro...
+    `;
+
+    it('should include phase 1 output', () => {
+        const prompt = generatePhase2Prompt(samplePhase1Output);
+        expect(prompt).toContain('DataSync Pro');
+    });
+
+    it('should include scoring criteria checklist', () => {
+        const prompt = generatePhase2Prompt(samplePhase1Output);
+        expect(prompt).toContain('Structure & Hook');
+        expect(prompt).toContain('Content Quality');
+        expect(prompt).toContain('Professional Tone');
+        expect(prompt).toContain('Customer Evidence');
+    });
+
+    it('should request specific fixes', () => {
+        const prompt = generatePhase2Prompt(samplePhase1Output);
+        expect(prompt).toContain('SPECIFIC FIXES');
+        expect(prompt).toContain('before/after');
+    });
+});
+
+describe('generatePhase3Prompt', () => {
+    const phase1Output = 'Original PR-FAQ content...';
+    const phase2Output = 'Critical review feedback...';
+
+    it('should include both phase outputs', () => {
+        const prompt = generatePhase3Prompt(phase1Output, phase2Output);
+        expect(prompt).toContain('Original PR-FAQ content');
+        expect(prompt).toContain('Critical review feedback');
+    });
+
+    it('should include mandatory checklist', () => {
+        const prompt = generatePhase3Prompt(phase1Output, phase2Output);
+        expect(prompt).toContain('MANDATORY CHECKLIST');
+        expect(prompt).toContain('Headline');
+        expect(prompt).toContain('Dateline');
+    });
+
+    it('should request final document only', () => {
+        const prompt = generatePhase3Prompt(phase1Output, phase2Output);
+        expect(prompt).toContain('FINAL PR-FAQ document only');
+        expect(prompt).toContain('No commentary');
+    });
+});
+
+describe('getPhaseMetadata', () => {
+    it('should return correct metadata for phase 1', () => {
+        const meta = getPhaseMetadata(1);
+        expect(meta.name).toBe('Initial Draft');
+        expect(meta.number).toBe(1);
+    });
+
+    it('should return correct metadata for phase 2', () => {
+        const meta = getPhaseMetadata(2);
+        expect(meta.name).toBe('Critical Review');
+    });
+
+    it('should return correct metadata for phase 3', () => {
+        const meta = getPhaseMetadata(3);
+        expect(meta.name).toBe('Final Polish');
+    });
+
+    it('should return undefined for invalid phase', () => {
+        const meta = getPhaseMetadata(99);
+        expect(meta).toBeUndefined();
+    });
+});
+
