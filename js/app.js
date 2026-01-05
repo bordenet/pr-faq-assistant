@@ -336,21 +336,30 @@ function renderProjectView() {
     const workflow = new Workflow(currentProject);
     const phase = workflow.getCurrentPhase();
     const container = document.getElementById('app-container');
+    const hasExistingOutput = workflow.getPhaseOutput(workflow.currentPhase);
+    const aiUrl = workflow.currentPhase === 2 ? 'https://gemini.google.com' : 'https://claude.ai';
+    const aiName = workflow.currentPhase === 2 ? 'Gemini' : 'Claude';
 
     container.innerHTML = `
         <div class="mb-4">
-            <button id="back-home" class="text-blue-600 dark:text-blue-400 hover:underline">← Back to Projects</button>
+            <button id="back-home" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center">
+                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                Back to Projects
+            </button>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
             <div class="flex justify-between items-start mb-6">
                 <div>
                     <h2 class="text-xl font-bold text-gray-900 dark:text-white">${escapeHtml(currentProject.title)}</h2>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Phase ${workflow.currentPhase}: ${phase.name}</p>
+                    <div class="inline-flex items-center mt-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 rounded-full text-sm">
+                        <span class="mr-2">🤖</span>
+                        Use with ${aiName}
+                    </div>
                 </div>
-                <div class="flex gap-2">
-                    <button id="copy-prompt-btn" class="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">Copy Prompt</button>
-                    <button id="export-md-btn" class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">Export MD</button>
-                </div>
+                <button id="export-md-btn" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm rounded hover:bg-gray-300 dark:hover:bg-gray-600">Export MD</button>
             </div>
 
             <!-- Progress bar -->
@@ -364,24 +373,66 @@ function renderProjectView() {
                 </div>
             </div>
 
-            <!-- Phase content -->
-            <div class="space-y-4">
-                <div>
-                    <h3 class="font-medium text-gray-900 dark:text-white mb-2">Instructions for Phase ${workflow.currentPhase}</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">${phase.description}</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-500 mt-1">Use: ${phase.aiModel}</p>
+            <!-- Step A: Copy Prompt -->
+            <div class="mb-6">
+                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                    Step A: Copy Prompt to AI
+                </h4>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">${phase.description}</p>
+                <div class="flex gap-3 flex-wrap">
+                    <button id="copy-prompt-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                        📋 Copy Prompt to Clipboard
+                    </button>
+                    <a
+                        id="open-ai-btn"
+                        href="${aiUrl}"
+                        target="ai-assistant-tab"
+                        rel="noopener noreferrer"
+                        class="px-6 py-3 bg-green-600 text-white rounded-lg transition-colors font-medium ${hasExistingOutput ? 'hover:bg-green-700' : 'opacity-50 cursor-not-allowed pointer-events-none'}"
+                        ${hasExistingOutput ? '' : 'aria-disabled="true"'}
+                    >
+                        🔗 Open ${aiName}
+                    </a>
                 </div>
+            </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">AI Response</label>
-                    <textarea id="phase-output" rows="12" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm" placeholder="Paste the AI response here...">${escapeHtml(workflow.getPhaseOutput(workflow.currentPhase))}</textarea>
-                </div>
+            <!-- Step B: Paste Response -->
+            <div class="mb-6">
+                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                    Step B: Paste ${aiName}'s Response
+                </h4>
+                <textarea
+                    id="phase-output"
+                    rows="12"
+                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white font-mono text-sm ${hasExistingOutput ? '' : 'disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 dark:disabled:bg-gray-800'}"
+                    placeholder="Paste ${aiName}'s response here..."
+                    ${hasExistingOutput ? '' : 'disabled'}
+                >${escapeHtml(workflow.getPhaseOutput(workflow.currentPhase))}</textarea>
 
-                <div class="flex gap-3">
-                    ${workflow.currentPhase > 1 ? '<button id="prev-phase-btn" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600">← Previous</button>' : ''}
-                    <button id="save-phase-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save</button>
-                    ${workflow.currentPhase < WORKFLOW_CONFIG.phaseCount ? '<button id="next-phase-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">Save & Next →</button>' : '<button id="finish-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">Finish ✓</button>'}
+                <div class="mt-3 flex justify-between items-center">
+                    <span class="text-sm text-gray-600 dark:text-gray-400">
+                        ${hasExistingOutput ? '✓ Response saved' : 'Copy prompt first, then paste response'}
+                    </span>
+                    <button id="save-response-btn" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        Save Response
+                    </button>
                 </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="flex justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
+                <button id="prev-phase-btn" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors ${workflow.currentPhase === 1 ? 'invisible' : ''}">
+                    ← Previous Phase
+                </button>
+                ${hasExistingOutput && workflow.currentPhase < WORKFLOW_CONFIG.phaseCount ? `
+                <button id="next-phase-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    Next Phase →
+                </button>
+                ` : hasExistingOutput && workflow.currentPhase === WORKFLOW_CONFIG.phaseCount ? `
+                <button id="finish-btn" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                    ✓ Complete
+                </button>
+                ` : '<div></div>'}
             </div>
         </div>
     `;
@@ -393,13 +444,41 @@ function renderProjectView() {
  * Setup project view event listeners
  */
 function setupProjectViewListeners(workflow) {
+    const responseTextarea = document.getElementById('phase-output');
+    const saveResponseBtn = document.getElementById('save-response-btn');
+
     document.getElementById('back-home')?.addEventListener('click', renderHome);
 
+    // Copy Prompt - enables the Open AI button and textarea
     document.getElementById('copy-prompt-btn')?.addEventListener('click', () => {
         const prompt = workflow.generatePrompt();
         copyToClipboard(prompt);
+
+        // Enable the "Open AI" button
+        const openAiBtn = document.getElementById('open-ai-btn');
+        if (openAiBtn) {
+            openAiBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+            openAiBtn.classList.add('hover:bg-green-700');
+            openAiBtn.removeAttribute('aria-disabled');
+        }
+
+        // Enable the response textarea
+        if (responseTextarea) {
+            responseTextarea.disabled = false;
+            responseTextarea.classList.remove('disabled:opacity-50', 'disabled:cursor-not-allowed');
+            responseTextarea.focus();
+        }
     });
 
+    // Update save button state as user types
+    responseTextarea?.addEventListener('input', () => {
+        const hasEnoughContent = responseTextarea.value.trim().length >= 10;
+        if (saveResponseBtn) {
+            saveResponseBtn.disabled = !hasEnoughContent;
+        }
+    });
+
+    // Export Markdown
     document.getElementById('export-md-btn')?.addEventListener('click', () => {
         const md = workflow.exportAsMarkdown();
         const blob = new Blob([md], { type: 'text/markdown' });
@@ -412,30 +491,36 @@ function setupProjectViewListeners(workflow) {
         showToast('Exported!', 'success');
     });
 
-    document.getElementById('save-phase-btn')?.addEventListener('click', async () => {
-        const output = document.getElementById('phase-output')?.value || '';
+    // Save Response
+    saveResponseBtn?.addEventListener('click', async () => {
+        const output = responseTextarea?.value?.trim() || '';
+        if (output.length < 10) {
+            showToast('Please enter at least 10 characters', 'warning');
+            return;
+        }
         workflow.savePhaseOutput(output);
         await storage.saveProject(currentProject);
-        showToast('Saved!', 'success');
+        showToast('Response saved!', 'success');
+        renderProjectView(); // Re-render to show Next Phase button
     });
 
+    // Previous Phase
     document.getElementById('prev-phase-btn')?.addEventListener('click', async () => {
         workflow.previousPhase();
         await storage.saveProject(currentProject);
         renderProjectView();
     });
 
+    // Next Phase
     document.getElementById('next-phase-btn')?.addEventListener('click', async () => {
-        const output = document.getElementById('phase-output')?.value || '';
-        workflow.savePhaseOutput(output);
         workflow.advancePhase();
         await storage.saveProject(currentProject);
+        showToast('Moving to next phase...', 'success');
         renderProjectView();
     });
 
+    // Finish
     document.getElementById('finish-btn')?.addEventListener('click', async () => {
-        const output = document.getElementById('phase-output')?.value || '';
-        workflow.savePhaseOutput(output);
         currentProject.phase = WORKFLOW_CONFIG.phaseCount + 1; // Mark complete
         await storage.saveProject(currentProject);
         showToast('PR-FAQ Complete!', 'success');
