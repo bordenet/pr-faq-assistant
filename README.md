@@ -4,76 +4,121 @@
 [![codecov](https://codecov.io/gh/bordenet/pr-faq-assistant/graph/badge.svg)](https://codecov.io/gh/bordenet/pr-faq-assistant)
 [![GitHub Pages](https://img.shields.io/badge/demo-live-brightgreen)](https://bordenet.github.io/pr-faq-assistant/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-**AI-assisted PR-FAQ document generator optimized for [pr-faq-validator](https://github.com/bordenet/pr-faq-validator) compatibility (70+ score target).**
+An opinionated, AI-assisted workflow helper for generating high-quality PR-FAQ documents that score well against journalistic standards.
 
-🔗 **Live Demo**: [https://bordenet.github.io/pr-faq-assistant/](https://bordenet.github.io/pr-faq-assistant/)
+**🌐 Try it now: [https://bordenet.github.io/pr-faq-assistant/](https://bordenet.github.io/pr-faq-assistant/)**
 
-## Features
+---
 
-- 📝 **3-Phase Workflow**: Initial Draft → Critical Review → Final Polish
-- 🎯 **Validator-Optimized**: Prompts designed to score 70+ on pr-faq-validator
-- 🔐 **100% Client-Side**: All data stored locally in IndexedDB - no server required
-- 🌙 **Dark Mode**: Full dark mode support
-- 📤 **Export/Import**: JSON export for backup, Markdown export for final documents
-- 📱 **Responsive**: Works on desktop and mobile
+## What is a PR-FAQ?
+
+A **PR-FAQ** (Press Release / Frequently Asked Questions) is Amazon's "Working Backwards" mechanism for product development. You write a fictitious press release for a product that doesn't exist yet, forcing you to articulate customer value before writing a single line of code.
+
+**The format seems simple, but the discipline saves teams from building the wrong thing.**
+
+> 📖 **Learn more:** [The PR-FAQ Mechanism](https://github.com/bordenet/Engineering_Culture/blob/main/SDLC/The_PR-FAQ.md) — Complete guide with examples, templates, and best practices
+
+### When to Use PR-FAQs
+
+| ✅ **Use For** | ❌ **Skip For** |
+|----------------|-----------------|
+| New products or major features with unclear value | Bug fixes or performance improvements |
+| Initiatives requiring 6+ months, 10+ people | Features with obvious customer value |
+| Cross-team alignment is critical | Small iterations on existing products |
+| Validating "should we build this?" | When the team already has strong alignment |
+
+**Simple test:** If writing the press release feels forced, you probably don't need one.
+
+---
+
+## What is This Tool?
+
+This tool helps you write PR-FAQs that meet journalistic standards using a **3-phase adversarial AI workflow**. The key insight: **using two different AI models produces better results than one**.
+
+### Why Two Different AIs?
+
+Single-AI workflows suffer from **confirmation bias** — the same model that drafts your document will be too agreeable when reviewing it. By using Claude for drafting and Gemini for critical review (or vice versa), you get genuinely different perspectives that expose weak thinking.
+
+**The differences between Claude and Gemini's viewpoints are what make rapid iteration possible.** Each model brings unique strengths that, when combined, create better documents than either could produce alone.
+
+---
+
+## How It Works
+
+### Phase 1: Initial Draft (Claude)
+Fill in the form with your product details. The tool generates a prompt optimized for Claude that produces a complete PR-FAQ draft following journalistic conventions.
+
+### Phase 2: Critical Review (Gemini)
+Copy your draft into Gemini with a review prompt. Gemini acts as an adversarial editor, scoring your draft against [pr-faq-validator](https://github.com/bordenet/pr-faq-validator) criteria and identifying specific improvements.
+
+### Phase 3: Final Synthesis (Claude)
+Return to Claude with both the original draft and Gemini's critique. Claude synthesizes the feedback into a polished document targeting 70+ validator score.
+
+**Result:** A PR-FAQ that reads like something TechCrunch would actually publish, not marketing fluff.
+
+---
 
 ## Quick Start
 
 ### Option 1: Use Online (Recommended)
 
-Visit [https://bordenet.github.io/pr-faq-assistant/](https://bordenet.github.io/pr-faq-assistant/)
+**🌐 [Launch Web App](https://bordenet.github.io/pr-faq-assistant/)**
+
+No download required. Works on any device. 100% client-side and privacy-first.
 
 ### Option 2: Run Locally
 
 ```bash
-# Clone the repository
 git clone https://github.com/bordenet/pr-faq-assistant.git
 cd pr-faq-assistant
-
-# Run setup script (installs dependencies, runs tests)
 ./scripts/setup-macos.sh
-
-# Start local server
 npm run serve
-
 # Open http://localhost:8080
 ```
 
-## How It Works
+---
 
-### Phase 1: Initial Draft
-Fill out the form with your product details. Copy the generated prompt to Claude/GPT-4 to create an initial PR-FAQ draft.
-
-### Phase 2: Critical Review
-Use a **different AI** (prevents groupthink) to review the draft. The prompt includes the pr-faq-validator scoring criteria.
-
-### Phase 3: Final Polish
-The AI synthesizes the original draft and review feedback into a polished document targeting 70+ validator score.
-
-## Validator Compatibility
+## What Makes a Good PR-FAQ?
 
 This tool generates prompts optimized for [pr-faq-validator](https://github.com/bordenet/pr-faq-validator) scoring:
 
 | Category | Points | Key Requirements |
 |----------|--------|------------------|
-| Structure & Hook | 30 | 6-12 word headline, dateline, 5 Ws in opening |
-| Content Quality | 35 | Inverted pyramid, concrete details, mechanism |
-| Professional Tone | 20 | No fluff words, factual language |
-| Customer Evidence | 15 | 3-4 quotes with quantitative metrics |
+| **Structure & Hook** | 30 | 8-15 word headline with action verb, dateline, 5 Ws in opening |
+| **Content Quality** | 35 | Inverted pyramid structure, concrete details, measurable outcomes |
+| **Professional Tone** | 20 | No marketing fluff, factual language, journalistic style |
+| **Customer Evidence** | 15 | 2-4 quotes with specific quantitative metrics |
 
-### Words to Avoid (Reduce Score)
-- revolutionary, groundbreaking, cutting-edge
-- excited, pleased, thrilled, delighted
-- comprehensive solution, seamless integration
-- game-changing, innovative, transformative
+### 🚫 Words That Kill Your Score
 
-### What to Include
-- Specific numbers and percentages
-- Concrete outcomes and results
-- Customer quotes with metrics (e.g., "reduced costs by 40%")
+| **Avoid** | **Replace With** |
+|-----------|------------------|
+| Revolutionary, game-changing | Specific improvement: "reduces time by 40%" |
+| Excited to announce | Just announce it: "today announced" |
+| Best-in-class, world-class | Customer evidence: "trusted by 500+ enterprises" |
+| Innovative, cutting-edge | What it actually does: "automatically detects..." |
+| Seamless integration | Concrete: "requires no configuration" |
+
+### ✅ What Strong PR-FAQs Include
+
+- **Specific numbers:** "reduced review cycles from 12 hours to 3 hours"
+- **Multiple metric types:** percentages, time savings, cost savings, scale
+- **Named customer quotes:** "said Sarah Chen, VP of Engineering at TechStart"
+- **Quantified outcomes:** "saving our team 120 hours last quarter"
+
+---
+
+## Features
+
+- **🔄 3-Phase Adversarial Workflow**: Leverage Claude and Gemini's different perspectives
+- **🎯 Validator-Optimized**: Prompts designed to score 70+ on pr-faq-validator
+- **💾 Local Storage**: Projects stored in browser (IndexedDB) - no server
+- **📤 Export Options**: JSON for backup, Markdown for final documents
+- **🌙 Dark Mode**: Full dark mode support
+- **🔐 Privacy-First**: No tracking, no data collection, 100% client-side
+
+---
 
 ## Development
 
@@ -81,7 +126,7 @@ This tool generates prompts optimized for [pr-faq-validator](https://github.com/
 # Run tests
 npm test
 
-# Run tests with coverage
+# Run with coverage
 npm run test:coverage
 
 # Run linter
@@ -91,7 +136,7 @@ npm run lint
 npm run lint:fix
 ```
 
-## Deployment
+### Deploy to GitHub Pages
 
 **⚠️ Always use the deployment script (never manual git commands):**
 
@@ -101,14 +146,24 @@ npm run lint:fix
 
 The script enforces quality gates (linting, tests) before deploying.
 
+---
+
 ## Privacy
 
 All data is stored locally in your browser using IndexedDB. No data is ever sent to any server. You can export your projects as JSON files anytime.
 
+---
+
 ## Related Projects
 
-- [pr-faq-validator](https://github.com/bordenet/pr-faq-validator) - CLI tool to score PR-FAQ documents
-- [product-requirements-assistant](https://github.com/bordenet/product-requirements-assistant) - Similar tool for PRDs
+| Project | Description |
+|---------|-------------|
+| [pr-faq-validator](https://github.com/bordenet/pr-faq-validator) | CLI tool to score PR-FAQ documents against journalistic standards |
+| [product-requirements-assistant](https://github.com/bordenet/product-requirements-assistant) | Similar adversarial workflow for PRD documents |
+| [one-pager](https://github.com/bordenet/one-pager) | Quick decision-making documents (500-700 words) |
+| [The PR-FAQ Methodology](https://github.com/bordenet/Engineering_Culture/blob/main/SDLC/The_PR-FAQ.md) | Complete guide with examples and templates |
+
+---
 
 ## License
 
