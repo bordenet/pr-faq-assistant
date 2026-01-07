@@ -6,6 +6,7 @@
 import storage from './storage.js';
 import { showToast, showLoading, hideLoading, confirm, formatDate, formatBytes, copyToClipboard } from './ui.js';
 import { Workflow, WORKFLOW_CONFIG } from './workflow.js';
+import { initMockMode, setMockMode } from './ai-mock.js';
 
 // Application state
 let currentProject = null;
@@ -23,6 +24,8 @@ async function init() {
         setupEventListeners();
         setupThemeToggle();
         setupRelatedProjects();
+        setupPrivacyNotice();
+        initMockMode();
         updateStorageInfo();
 
         renderHome();
@@ -48,9 +51,19 @@ function setupEventListeners() {
 
     document.getElementById('import-file-input')?.addEventListener('change', handleImport);
 
-    // Privacy notice close
+    // Privacy notice close (with localStorage persistence)
     document.getElementById('close-privacy-notice')?.addEventListener('click', () => {
         document.getElementById('privacy-notice')?.classList.add('hidden');
+        localStorage.setItem('privacy-notice-dismissed', 'true');
+    });
+
+    // AI Mock mode toggle
+    document.getElementById('mockModeCheckbox')?.addEventListener('change', (e) => {
+        setMockMode(e.target.checked);
+        showToast(
+            e.target.checked ? 'AI Mock Mode enabled' : 'AI Mock Mode disabled',
+            'info'
+        );
     });
 
     // About link
@@ -95,6 +108,15 @@ function setupRelatedProjects() {
             menu?.classList.add('hidden');
         }
     });
+}
+
+/**
+ * Setup privacy notice (show if not dismissed)
+ */
+function setupPrivacyNotice() {
+    if (!localStorage.getItem('privacy-notice-dismissed')) {
+        document.getElementById('privacy-notice')?.classList.remove('hidden');
+    }
 }
 
 /**
@@ -324,15 +346,23 @@ async function exportProject(id) {
     }
 
     const workflow = new Workflow(project);
+    downloadMarkdown(workflow, project.title);
+}
+
+/**
+ * Download markdown file from workflow
+ */
+function downloadMarkdown(workflow, title = null) {
+    const projectTitle = title || currentProject?.title || 'pr-faq';
     const md = workflow.exportAsMarkdown();
     const blob = new Blob([md], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${project.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-prfaq.md`;
+    a.download = `${projectTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-prfaq.md`;
     a.click();
     URL.revokeObjectURL(url);
-    showToast('PR-FAQ exported!', 'success');
+    showToast('PR-FAQ downloaded as Markdown!', 'success');
 }
 
 /**
@@ -506,6 +536,27 @@ function renderProjectView() {
                 </div>
             </div>
 
+            ${workflow.currentPhase === WORKFLOW_CONFIG.phaseCount && hasExistingOutput ? `
+            <!-- Phase 3 Download Section -->
+            <div class="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="text-lg font-semibold text-green-900 dark:text-green-100">📥 Download Your Final PR-FAQ</h4>
+                        <p class="text-sm text-green-700 dark:text-green-300 mt-1">
+                            Save your polished PR-FAQ as a properly formatted Markdown file.
+                            <strong>Don't copy as plain text</strong> — download preserves formatting!
+                        </p>
+                    </div>
+                    <button id="download-final-btn" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Download Markdown
+                    </button>
+                </div>
+            </div>
+            ` : ''}
+
             <!-- Navigation -->
             <div class="flex justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
                 <button id="prev-phase-btn" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors ${workflow.currentPhase === 1 ? 'invisible' : ''}">
@@ -565,17 +616,14 @@ function setupProjectViewListeners(workflow) {
         }
     });
 
-    // Export Markdown
+    // Export Markdown (small button in header)
     document.getElementById('export-md-btn')?.addEventListener('click', () => {
-        const md = workflow.exportAsMarkdown();
-        const blob = new Blob([md], { type: 'text/markdown' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${currentProject.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.md`;
-        a.click();
-        URL.revokeObjectURL(url);
-        showToast('Exported!', 'success');
+        downloadMarkdown(workflow);
+    });
+
+    // Download Final PR-FAQ (prominent Phase 3 button)
+    document.getElementById('download-final-btn')?.addEventListener('click', () => {
+        downloadMarkdown(workflow);
     });
 
     // Save Response - auto-advance to next phase
