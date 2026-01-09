@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "vitest run",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint js/**/*.js",
@@ -13,6 +15,7 @@
     "deploy": "./scripts/deploy-web.sh"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "@vitest/coverage-v8": "^1.0.0",
     "eslint": "^8.50.0",
     "happy-dom": "^12.10.0",
@@ -22,7 +25,11 @@
     "environment": "happy-dom",
     "coverage": {
       "provider": "v8",
-      "reporter": ["text", "json", "html"],
+      "reporter": [
+        "text",
+        "json",
+        "html"
+      ],
       "exclude": [
         "node_modules/",
         "tests/",
@@ -48,4 +55,3 @@
   },
   "homepage": "https://bordenet.github.io/pr-faq-assistant/"
 }
-

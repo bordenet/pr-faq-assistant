@@ -575,7 +575,7 @@ function renderProjectView() {
             </button>
             ${isFullyComplete ? `
                 <button id="export-final-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                    ✓ Export Final PR-FAQ
+                    📄 Export as Markdown
                 </button>
             ` : ''}
         </div>
@@ -618,8 +618,28 @@ function renderPhaseContent(workflow) {
     const hasExistingOutput = workflow.getPhaseOutput(workflow.currentPhase);
     const aiUrl = phase.aiModel === 'Gemini' ? 'https://gemini.google.com' : 'https://claude.ai';
     const aiName = phase.aiModel;
+    const isFullyComplete = workflow.currentPhase === WORKFLOW_CONFIG.phaseCount && hasExistingOutput;
 
     return `
+        ${isFullyComplete ? `
+        <!-- Phase 3 Complete: Export Call-to-Action -->
+        <div class="mb-6 p-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+            <div class="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                    <h4 class="text-lg font-semibold text-green-800 dark:text-green-300 flex items-center">
+                        <span class="mr-2">🎉</span> Your PR-FAQ is Complete!
+                    </h4>
+                    <p class="text-green-700 dark:text-green-400 mt-1">
+                        Download your finished PR-FAQ document as a Markdown (.md) file.
+                    </p>
+                </div>
+                <button id="export-complete-btn" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-lg">
+                    📄 Export as Markdown
+                </button>
+            </div>
+        </div>
+        ` : ''}
+
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div class="mb-6">
                 <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -693,7 +713,7 @@ function renderPhaseContent(workflow) {
                     </button>
                     ` : ''}
                 </div>
-                <button id="delete-project-btn" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                <button id="delete-project-btn" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">
                     Delete
                 </button>
             </div>
@@ -750,6 +770,11 @@ function setupPhaseContentListeners(workflow) {
     const responseTextarea = document.getElementById('phase-output');
     const saveResponseBtn = document.getElementById('save-response-btn');
     const phase = workflow.getCurrentPhase();
+
+    // Export complete button (Phase 3 completion CTA)
+    document.getElementById('export-complete-btn')?.addEventListener('click', () => {
+        downloadMarkdown(workflow, currentProject.title);
+    });
 
     // View Prompt button - shows modal
     document.getElementById('view-prompt-btn')?.addEventListener('click', () => {
