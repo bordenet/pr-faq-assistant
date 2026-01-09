@@ -15,20 +15,23 @@ export const WORKFLOW_CONFIG = {
         {
             number: 1,
             name: 'Initial Draft',
-            aiModel: 'Claude/GPT-4',
-            description: 'AI generates initial PR-FAQ from your inputs'
+            icon: '📝',
+            aiModel: 'Claude',
+            description: 'Generate the first draft of your PR-FAQ using Claude'
         },
         {
             number: 2,
             name: 'Critical Review',
-            aiModel: 'Different AI',
+            icon: '🔍',
+            aiModel: 'Gemini',
             description: 'Different AI reviews and critiques (prevents groupthink)'
         },
         {
             number: 3,
             name: 'Final Polish',
-            aiModel: 'Claude/GPT-4',
-            description: 'AI synthesizes feedback into final document'
+            icon: '✨',
+            aiModel: 'Claude',
+            description: 'Synthesize feedback into polished final document'
         }
     ]
 };

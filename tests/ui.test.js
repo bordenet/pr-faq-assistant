@@ -86,3 +86,53 @@ describe('escapeHtml', () => {
     });
 });
 
+describe('showPromptModal', () => {
+    let appendChildSpy;
+
+    beforeEach(() => {
+        // Mock document.body.appendChild
+        appendChildSpy = vi.spyOn(document.body, 'appendChild').mockImplementation(() => {});
+    });
+
+    it('should be a function', async () => {
+        const { showPromptModal } = await import('../js/ui.js');
+        expect(typeof showPromptModal).toBe('function');
+    });
+
+    it('should create and append a modal element', async () => {
+        const { showPromptModal } = await import('../js/ui.js');
+        showPromptModal('Test prompt content', 'Test Title');
+
+        expect(appendChildSpy).toHaveBeenCalled();
+        const modalElement = appendChildSpy.mock.calls[0][0];
+        expect(modalElement.tagName).toBe('DIV');
+        expect(modalElement.className).toContain('fixed');
+        expect(modalElement.className).toContain('inset-0');
+    });
+
+    it('should include the prompt text in the modal', async () => {
+        const { showPromptModal } = await import('../js/ui.js');
+        showPromptModal('My custom prompt text', 'Prompt Title');
+
+        const modalElement = appendChildSpy.mock.calls[0][0];
+        expect(modalElement.innerHTML).toContain('My custom prompt text');
+    });
+
+    it('should include the title in the modal', async () => {
+        const { showPromptModal } = await import('../js/ui.js');
+        showPromptModal('Content', 'Phase 1: Initial Draft Prompt');
+
+        const modalElement = appendChildSpy.mock.calls[0][0];
+        expect(modalElement.innerHTML).toContain('Phase 1: Initial Draft Prompt');
+    });
+
+    it('should include copy and close buttons', async () => {
+        const { showPromptModal } = await import('../js/ui.js');
+        showPromptModal('Test', 'Title');
+
+        const modalElement = appendChildSpy.mock.calls[0][0];
+        expect(modalElement.innerHTML).toContain('Copy Prompt');
+        expect(modalElement.innerHTML).toContain('Close');
+    });
+});
+
