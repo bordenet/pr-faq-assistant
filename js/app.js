@@ -673,21 +673,26 @@ function renderPhaseContent(workflow) {
             </div>
 
             <!-- Navigation -->
-            <div class="flex justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
-                ${workflow.currentPhase === 1 && !hasExistingOutput ? `
-                <button id="edit-details-btn" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
-                    ← Edit Details
+            <div class="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex gap-3">
+                    ${workflow.currentPhase === 1 && !hasExistingOutput ? `
+                    <button id="edit-details-btn" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                        ← Edit Details
+                    </button>
+                    ` : workflow.currentPhase > 1 ? `
+                    <button id="prev-phase-btn" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                        ← Previous Phase
+                    </button>
+                    ` : ''}
+                    ${hasExistingOutput && workflow.currentPhase < WORKFLOW_CONFIG.phaseCount ? `
+                    <button id="next-phase-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        Next Phase →
+                    </button>
+                    ` : ''}
+                </div>
+                <button id="delete-project-btn" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                    Delete
                 </button>
-                ` : workflow.currentPhase === 1 ? '<div></div>' : `
-                <button id="prev-phase-btn" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
-                    ← Previous Phase
-                </button>
-                `}
-                ${hasExistingOutput && workflow.currentPhase < WORKFLOW_CONFIG.phaseCount ? `
-                <button id="next-phase-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                    Next Phase →
-                </button>
-                ` : '<div></div>'}
             </div>
         </div>
     `;
@@ -826,6 +831,13 @@ function setupPhaseContentListeners(workflow) {
         updatePhaseTabStyles(workflow.currentPhase);
         document.getElementById('phase-content').innerHTML = renderPhaseContent(workflow);
         setupPhaseContentListeners(workflow);
+    });
+
+    // Delete project button
+    document.getElementById('delete-project-btn')?.addEventListener('click', async () => {
+        if (currentProject) {
+            await deleteProject(currentProject.id);
+        }
     });
 }
 
