@@ -777,12 +777,17 @@ function setupPhaseContentListeners(workflow) {
         }
     });
 
-    // Update save button state as user types
-    responseTextarea?.addEventListener('input', () => {
+    // Update save button state as user types or pastes
+    const updateSaveButtonState = () => {
         const hasEnoughContent = responseTextarea.value.trim().length >= 10;
         if (saveResponseBtn) {
             saveResponseBtn.disabled = !hasEnoughContent;
         }
+    };
+    responseTextarea?.addEventListener('input', updateSaveButtonState);
+    // Paste event fires before input updates, so check after a microtask
+    responseTextarea?.addEventListener('paste', () => {
+        setTimeout(updateSaveButtonState, 0);
     });
 
     // Save Response - auto-advance to next phase
