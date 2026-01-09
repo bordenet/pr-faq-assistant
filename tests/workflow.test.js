@@ -201,3 +201,110 @@ describe('exportFinalDocument', () => {
     });
 });
 
+describe('Edit Input Flow (Phase 1 without response)', () => {
+    let project;
+    let workflow;
+
+    beforeEach(() => {
+        project = {
+            id: 'edit-test-123',
+            title: 'Editable PR-FAQ',
+            phase: 1,
+            formData: {
+                productName: 'OriginalProduct',
+                companyName: 'OriginalCorp',
+                targetCustomer: 'Original customers',
+                problem: 'Original problem',
+                solution: 'Original solution',
+                benefits: 'Original benefits',
+                metrics: '',
+                location: 'Seattle, WA'
+            },
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        workflow = new Workflow(project);
+    });
+
+    it('should allow editing formData when on Phase 1 with no output', () => {
+        // Verify no phase 1 output exists
+        expect(workflow.getPhaseOutput(1)).toBe('');
+        expect(workflow.currentPhase).toBe(1);
+
+        // Simulate editing formData (what happens when edit form is saved)
+        project.formData.productName = 'UpdatedProduct';
+        project.formData.problem = 'Updated problem statement';
+        project.title = project.formData.productName;
+        project.updatedAt = new Date().toISOString();
+
+        // Verify the edit was applied
+        expect(project.formData.productName).toBe('UpdatedProduct');
+        expect(project.title).toBe('UpdatedProduct');
+        expect(project.formData.problem).toBe('Updated problem statement');
+    });
+
+    it('should generate prompt with updated formData after edit', () => {
+        // Update formData
+        project.formData.productName = 'NewProduct';
+        project.formData.companyName = 'NewCorp';
+
+        // Generate prompt should use updated data
+        const prompt = workflow.generatePrompt();
+        expect(prompt).toContain('NewProduct');
+        expect(prompt).toContain('NewCorp');
+        expect(prompt).not.toContain('OriginalProduct');
+    });
+
+    it('should preserve formData structure after multiple edits', () => {
+        const requiredFields = ['productName', 'companyName', 'targetCustomer', 'problem', 'solution', 'benefits'];
+
+        // First edit
+        project.formData.productName = 'Edit1';
+        requiredFields.forEach(field => {
+            expect(project.formData[field]).toBeDefined();
+        });
+
+        // Second edit
+        project.formData.problem = 'Edit2 problem';
+        project.formData.solution = 'Edit2 solution';
+        requiredFields.forEach(field => {
+            expect(project.formData[field]).toBeDefined();
+        });
+    });
+
+    it('should NOT allow returning to edit once Phase 1 output exists', () => {
+        // Save Phase 1 output
+        workflow.savePhaseOutput('AI generated PR-FAQ draft');
+
+        // Now there is output, editing should be blocked in UI
+        // (This test documents the expected behavior)
+        expect(workflow.getPhaseOutput(1)).toBe('AI generated PR-FAQ draft');
+        expect(workflow.currentPhase).toBe(1);
+
+        // The UI will hide the Edit button when output exists
+        // Here we just verify the condition is detectable
+        const hasOutput = workflow.getPhaseOutput(workflow.currentPhase);
+        expect(hasOutput).toBeTruthy();
+    });
+
+    it('should maintain project integrity when editing and then proceeding', () => {
+        // Edit formData
+        project.formData.productName = 'FinalProduct';
+        project.title = 'FinalProduct';
+
+        // Generate and save Phase 1 output
+        const prompt = workflow.generatePrompt();
+        expect(prompt).toContain('FinalProduct');
+
+        workflow.savePhaseOutput('AI response based on FinalProduct');
+        expect(project.phase1_output).toBe('AI response based on FinalProduct');
+
+        // Advance to Phase 2
+        workflow.advancePhase();
+        expect(workflow.currentPhase).toBe(2);
+
+        // FormData should still be intact
+        expect(project.formData.productName).toBe('FinalProduct');
+    });
+});
+
