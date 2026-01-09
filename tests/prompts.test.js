@@ -29,6 +29,25 @@ describe('WORKFLOW_CONFIG', () => {
             expect(phase.number).toBe(index + 1);
         });
     });
+
+    it('should have icons for each phase', () => {
+        expect(WORKFLOW_CONFIG.phases[0].icon).toBe('📝');
+        expect(WORKFLOW_CONFIG.phases[1].icon).toBe('🔍');
+        expect(WORKFLOW_CONFIG.phases[2].icon).toBe('✨');
+    });
+
+    it('should have AI model names for each phase', () => {
+        expect(WORKFLOW_CONFIG.phases[0].aiModel).toBe('Claude');
+        expect(WORKFLOW_CONFIG.phases[1].aiModel).toBe('Gemini');
+        expect(WORKFLOW_CONFIG.phases[2].aiModel).toBe('Claude');
+    });
+
+    it('should have descriptions for each phase', () => {
+        WORKFLOW_CONFIG.phases.forEach(phase => {
+            expect(phase.description).toBeDefined();
+            expect(phase.description.length).toBeGreaterThan(10);
+        });
+    });
 });
 
 describe('generatePhase1Prompt', () => {
