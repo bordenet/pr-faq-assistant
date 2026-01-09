@@ -335,6 +335,30 @@ npm run lint:fix
 - Use descriptive test names
 - Mock external dependencies
 
+### E2E Testing (Playwright)
+**Key patterns for this project:**
+
+1. **IndexedDB clearing**: Must navigate to app origin first, then clear database. Cannot access IndexedDB from `about:blank`.
+   ```javascript
+   await page.goto('/');
+   await page.evaluate(() => {
+     return new Promise((resolve) => {
+       const request = indexedDB.deleteDatabase('pr-faq-assistant-db');
+       request.onsuccess = () => resolve();
+       request.onerror = () => resolve();
+     });
+   });
+   await page.reload();
+   ```
+
+2. **Textarea workflow**: The `#phase-output` textarea is disabled until user clicks "Copy Prompt to Clipboard". Tests must click that button first.
+
+3. **Phase detection**: Phase text appears as "Phase N: Phase Name" in a `<p>` tag, not an `<h3>`. Use `text=Phase 2` or `text=Critical Review` selectors.
+
+4. **Minimum content**: Save button requires ≥10 characters in textarea.
+
+5. **Test isolation**: Use `test.use({ storageState: { cookies: [], origins: [] } })` and clear IndexedDB in `beforeEach` for clean state.
+
 ---
 
 ## 📝 Communication Style
