@@ -416,9 +416,12 @@ function renderNewProjectForm() {
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
                     <input type="text" name="location" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Seattle, WA" value="Seattle, WA">
                 </div>
-                <div class="flex gap-3 pt-4">
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Create Project</button>
-                    <button type="button" id="cancel-new" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Cancel</button>
+                <div class="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex gap-3">
+                        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">Create</button>
+                        <button type="button" id="cancel-new" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Cancel</button>
+                    </div>
+                    <button type="button" id="delete-new-disabled" class="px-4 py-2 bg-red-400 text-white rounded-lg cursor-not-allowed opacity-50" disabled title="Nothing to delete yet">Delete</button>
                 </div>
             </form>
         </div>
@@ -448,6 +451,89 @@ async function handleNewProject(event) {
     await storage.saveProject(project);
     currentProject = project;
     showToast('Project created!', 'success');
+    renderProjectView();
+}
+
+/**
+ * Render edit project form (allows editing initial input before Phase 1 response is saved)
+ */
+function renderEditProjectForm() {
+    if (!currentProject) return;
+    currentView = 'edit';
+    const container = document.getElementById('app-container');
+    const data = currentProject.formData || {};
+    const prfaqDocsUrl = 'https://github.com/bordenet/Engineering_Culture/blob/main/SDLC/The_PR-FAQ.md';
+
+    container.innerHTML = `
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Edit <a href="${prfaqDocsUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-700 dark:hover:text-blue-300">PR-FAQ</a> Input</h2>
+            <form id="edit-project-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Product/Feature Name *</label>
+                    <input type="text" name="productName" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="e.g., DataSync Pro" value="${escapeHtml(data.productName || '')}">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Company Name *</label>
+                    <input type="text" name="companyName" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="e.g., AcmeCorp" value="${escapeHtml(data.companyName || '')}">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Target Customer *</label>
+                    <input type="text" name="targetCustomer" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="e.g., Enterprise IT teams" value="${escapeHtml(data.targetCustomer || '')}">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Problem Being Solved *</label>
+                    <textarea name="problem" required rows="3" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="What pain point does this solve?">${escapeHtml(data.problem || '')}</textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Solution/How It Works *</label>
+                    <textarea name="solution" required rows="3" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="How does your product solve the problem?">${escapeHtml(data.solution || '')}</textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Key Benefits *</label>
+                    <textarea name="benefits" required rows="2" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="List 3-5 key benefits">${escapeHtml(data.benefits || '')}</textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Metrics/Results (optional)</label>
+                    <textarea name="metrics" rows="2" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="e.g., 40% faster, $1.5M savings, 3x improvement">${escapeHtml(data.metrics || '')}</textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
+                    <input type="text" name="location" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Seattle, WA" value="${escapeHtml(data.location || 'Seattle, WA')}">
+                </div>
+                <div class="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex gap-3">
+                        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">Save Changes</button>
+                        <button type="button" id="cancel-edit" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Cancel</button>
+                    </div>
+                    <button type="button" id="delete-from-edit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">Delete</button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    document.getElementById('edit-project-form')?.addEventListener('submit', handleEditProject);
+    document.getElementById('cancel-edit')?.addEventListener('click', renderProjectView);
+    document.getElementById('delete-from-edit')?.addEventListener('click', async () => {
+        if (currentProject) {
+            await deleteProject(currentProject.id);
+        }
+    });
+}
+
+/**
+ * Handle edit project form submission
+ */
+async function handleEditProject(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData);
+
+    currentProject.title = data.productName;
+    currentProject.formData = data;
+    currentProject.updatedAt = new Date().toISOString();
+
+    await storage.saveProject(currentProject);
+    showToast('Changes saved!', 'success');
     renderProjectView();
 }
 
@@ -570,9 +656,15 @@ function renderProjectView() {
 
             <!-- Navigation -->
             <div class="flex justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
+                ${workflow.currentPhase === 1 && !hasExistingOutput ? `
+                <button id="edit-input-btn" class="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
+                    ✏️ Edit Input
+                </button>
+                ` : `
                 <button id="prev-phase-btn" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors ${workflow.currentPhase === 1 ? 'invisible' : ''}">
                     ← Previous Phase
                 </button>
+                `}
                 ${hasExistingOutput && workflow.currentPhase < WORKFLOW_CONFIG.phaseCount ? `
                 <button id="next-phase-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                     Next Phase →
@@ -602,6 +694,13 @@ function setupProjectViewListeners(workflow) {
     document.getElementById('delete-project-btn')?.addEventListener('click', async () => {
         if (currentProject) {
             await deleteProject(currentProject.id);
+        }
+    });
+
+    // Edit Input button (Phase 1 only, before response saved)
+    document.getElementById('edit-input-btn')?.addEventListener('click', () => {
+        if (currentProject) {
+            renderEditProjectForm();
         }
     });
 
