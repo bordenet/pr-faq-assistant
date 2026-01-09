@@ -137,13 +137,14 @@ async function updateStorageInfo() {
  * Show about modal
  */
 function showAboutModal() {
+    const prfaqDocsUrl = 'https://github.com/bordenet/Engineering_Culture/blob/main/SDLC/The_PR-FAQ.md';
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
     modal.innerHTML = `
         <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">About PR-FAQ Assistant</h3>
             <div class="text-gray-600 dark:text-gray-400 space-y-3">
-                <p>A privacy-first tool for creating high-quality PR-FAQ documents using Amazon's Working Backwards methodology with AI assistance.</p>
+                <p>A privacy-first tool for creating high-quality <a href="${prfaqDocsUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">PR-FAQ documents</a> using Amazon's Working Backwards methodology with AI assistance.</p>
                 <p><strong>Features:</strong></p>
                 <ul class="list-disc list-inside space-y-1 text-sm">
                     <li>100% client-side processing</li>
@@ -232,9 +233,10 @@ async function renderHome() {
     const projects = await storage.getAllProjects();
     const container = document.getElementById('app-container');
 
+    const prfaqDocsUrl = 'https://github.com/bordenet/Engineering_Culture/blob/main/SDLC/The_PR-FAQ.md';
     container.innerHTML = `
         <div class="mb-6 flex justify-between items-center">
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Your PR-FAQ Projects</h2>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Your <a href="${prfaqDocsUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-700 dark:hover:text-blue-300">PR-FAQ</a> Projects</h2>
             <button id="new-project-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                 + New PR-FAQ
             </button>
@@ -372,9 +374,10 @@ function renderNewProjectForm() {
     currentView = 'new';
     const container = document.getElementById('app-container');
 
+    const prfaqDocsUrl = 'https://github.com/bordenet/Engineering_Culture/blob/main/SDLC/The_PR-FAQ.md';
     container.innerHTML = `
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Create New PR-FAQ</h2>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Create New <a href="${prfaqDocsUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-700 dark:hover:text-blue-300">PR-FAQ</a></h2>
             <form id="new-project-form" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Product/Feature Name *</label>
