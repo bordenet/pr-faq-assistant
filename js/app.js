@@ -484,7 +484,10 @@ function renderProjectView() {
                         Use with ${aiName}
                     </div>
                 </div>
-                <button id="export-md-btn" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm rounded hover:bg-gray-300 dark:hover:bg-gray-600">Export MD</button>
+                <div class="flex gap-2">
+                    <button id="export-md-btn" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm rounded hover:bg-gray-300 dark:hover:bg-gray-600">Export MD</button>
+                    <button id="delete-project-btn" class="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700">Delete</button>
+                </div>
             </div>
 
             <!-- Progress bar -->
@@ -594,6 +597,13 @@ function setupProjectViewListeners(workflow) {
     const saveResponseBtn = document.getElementById('save-response-btn');
 
     document.getElementById('back-home')?.addEventListener('click', renderHome);
+
+    // Delete project button
+    document.getElementById('delete-project-btn')?.addEventListener('click', async () => {
+        if (currentProject) {
+            await deleteProject(currentProject.id);
+        }
+    });
 
     // Copy Prompt - enables the Open AI button and textarea
     document.getElementById('copy-prompt-btn')?.addEventListener('click', () => {
