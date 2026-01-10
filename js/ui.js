@@ -129,17 +129,55 @@ export function escapeHtml(text) {
 
 /**
  * Copy text to clipboard
+ *
+ * Uses a fallback chain for maximum compatibility:
+ * 1. Modern Clipboard API (navigator.clipboard.writeText)
+ * 2. Legacy execCommand('copy') for older browsers and iPad/mobile
+ *
  * @param {string} text - Text to copy
  * @returns {Promise<void>} Resolves if successful, throws if failed
+ * @throws {Error} If copy fails
  */
 export async function copyToClipboard(text) {
-  await navigator.clipboard.writeText(text);
+  // Try modern Clipboard API first
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return;
+    } catch {
+      // Fall through to legacy method (iPad/mobile often fails here)
+    }
+  }
+
+  // Fallback for iOS Safari, older browsers, or when Clipboard API fails
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+  textArea.style.position = 'fixed';
+  textArea.style.left = '-999999px';
+  textArea.style.top = '-999999px';
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+
+  try {
+    const successful = document.execCommand('copy');
+    document.body.removeChild(textArea);
+    if (!successful) {
+      throw new Error('Copy command failed');
+    }
+  } catch {
+    document.body.removeChild(textArea);
+    throw new Error('Failed to copy to clipboard');
+  }
 }
 
 /**
  * Show a modal with prompt content (View Prompt feature)
+ * @param {string} promptText - The prompt text to display
+ * @param {string} title - Modal title
+ * @param {Function} [onCopySuccess] - Optional callback to run after successful copy (enables workflow progression)
  */
-export function showPromptModal(promptText, title = 'Prompt') {
+export function showPromptModal(promptText, title = 'Prompt', onCopySuccess = null) {
   const modal = document.createElement('div');
   modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
   modal.innerHTML = `
@@ -176,6 +214,10 @@ export function showPromptModal(promptText, title = 'Prompt') {
     try {
       await copyToClipboard(promptText);
       showToast('Prompt copied to clipboard!', 'success');
+      // Run callback to enable workflow progression (Open AI button, textarea, etc.)
+      if (onCopySuccess) {
+        onCopySuccess();
+      }
     } catch {
       showToast('Failed to copy to clipboard', 'error');
     }

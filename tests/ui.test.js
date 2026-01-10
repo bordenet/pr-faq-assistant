@@ -151,7 +151,10 @@ describe('copyToClipboard', () => {
 
     it('should throw error on failure (callers must handle)', async () => {
         writeTextSpy.mockRejectedValueOnce(new Error('Clipboard access denied'));
-        await expect(copyToClipboard('test text')).rejects.toThrow('Clipboard access denied');
+        // Also mock execCommand to fail (fallback)
+        document.execCommand = vi.fn().mockReturnValue(false);
+        // The function should throw an error when both methods fail
+        await expect(copyToClipboard('test text')).rejects.toThrow();
     });
 
     it('should not show any toast notifications (callers handle their own)', async () => {
