@@ -2,8 +2,29 @@
  * Tests for Workflow Module
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, beforeAll, vi } from 'vitest';
 import { Workflow, WORKFLOW_CONFIG, getPhaseMetadata, exportFinalDocument } from '../js/workflow.js';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+// Mock fetch to load files from disk in test environment
+beforeAll(() => {
+  global.fetch = vi.fn((url) => {
+    const filePath = join(process.cwd(), url);
+    try {
+      const content = readFileSync(filePath, 'utf-8');
+      return Promise.resolve({
+        ok: true,
+        text: () => Promise.resolve(content)
+      });
+    } catch {
+      return Promise.resolve({
+        ok: false,
+        text: () => Promise.resolve('')
+      });
+    }
+  });
+});
 
 describe('Workflow', () => {
     let project;
@@ -101,24 +122,24 @@ describe('Workflow', () => {
     });
 
     describe('generatePrompt', () => {
-        it('should generate phase 1 prompt', () => {
-            const prompt = workflow.generatePrompt();
+        it('should generate phase 1 prompt', async () => {
+            const prompt = await workflow.generatePrompt();
             expect(prompt).toContain('TestProduct');
             expect(prompt).toContain('TestCorp');
         });
 
-        it('should generate phase 2 prompt with phase 1 output', () => {
+        it('should generate phase 2 prompt with phase 1 output', async () => {
             project.phase1_output = 'Phase 1 content here';
             workflow.currentPhase = 2;
-            const prompt = workflow.generatePrompt();
+            const prompt = await workflow.generatePrompt();
             expect(prompt).toContain('Phase 1 content here');
         });
 
-        it('should generate phase 3 prompt with both outputs', () => {
+        it('should generate phase 3 prompt with both outputs', async () => {
             project.phase1_output = 'Phase 1 content';
             project.phase2_output = 'Phase 2 review';
             workflow.currentPhase = 3;
-            const prompt = workflow.generatePrompt();
+            const prompt = await workflow.generatePrompt();
             expect(prompt).toContain('Phase 1 content');
             expect(prompt).toContain('Phase 2 review');
         });
@@ -243,13 +264,13 @@ describe('Edit Input Flow (Phase 1 without response)', () => {
         expect(project.formData.problem).toBe('Updated problem statement');
     });
 
-    it('should generate prompt with updated formData after edit', () => {
+    it('should generate prompt with updated formData after edit', async () => {
         // Update formData
         project.formData.productName = 'NewProduct';
         project.formData.companyName = 'NewCorp';
 
         // Generate prompt should use updated data
-        const prompt = workflow.generatePrompt();
+        const prompt = await workflow.generatePrompt();
         expect(prompt).toContain('NewProduct');
         expect(prompt).toContain('NewCorp');
         expect(prompt).not.toContain('OriginalProduct');
@@ -287,13 +308,13 @@ describe('Edit Input Flow (Phase 1 without response)', () => {
         expect(hasOutput).toBeTruthy();
     });
 
-    it('should maintain project integrity when editing and then proceeding', () => {
+    it('should maintain project integrity when editing and then proceeding', async () => {
         // Edit formData
         project.formData.productName = 'FinalProduct';
         project.title = 'FinalProduct';
 
         // Generate and save Phase 1 output
-        const prompt = workflow.generatePrompt();
+        const prompt = await workflow.generatePrompt();
         expect(prompt).toContain('FinalProduct');
 
         workflow.savePhaseOutput('AI response based on FinalProduct');
