@@ -14,20 +14,20 @@ const PRFAQ_DOCS_URL = 'https://github.com/bordenet/Engineering_Culture/blob/mai
  * Render the project detail view
  */
 export async function renderProjectView(projectId) {
-    const project = await getProject(projectId);
+  const project = await getProject(projectId);
 
-    if (!project) {
-        showToast('Project not found', 'error');
-        navigateTo('home');
-        return;
-    }
+  if (!project) {
+    showToast('Project not found', 'error');
+    navigateTo('home');
+    return;
+  }
 
-    const workflow = new Workflow(project);
-    const container = document.getElementById('app-container');
-    const isFullyComplete = workflow.currentPhase > WORKFLOW_CONFIG.phaseCount ||
+  const workflow = new Workflow(project);
+  const container = document.getElementById('app-container');
+  const isFullyComplete = workflow.currentPhase > WORKFLOW_CONFIG.phaseCount ||
         (workflow.getPhaseOutput(WORKFLOW_CONFIG.phaseCount) && workflow.currentPhase === WORKFLOW_CONFIG.phaseCount);
 
-    container.innerHTML = `
+  container.innerHTML = `
         <div class="mb-6 flex items-center justify-between">
             <button id="back-home" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center">
                 <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -46,20 +46,20 @@ export async function renderProjectView(projectId) {
         <div class="mb-6 border-b border-gray-200 dark:border-gray-700">
             <div class="flex space-x-1">
                 ${WORKFLOW_CONFIG.phases.map(p => {
-        const isActive = workflow.currentPhase === p.number;
-        const hasOutput = workflow.getPhaseOutput(p.number);
-        return `
+    const isActive = workflow.currentPhase === p.number;
+    const hasOutput = workflow.getPhaseOutput(p.number);
+    return `
                     <button class="phase-tab px-6 py-3 font-medium transition-colors ${
-    isActive
-        ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400'
-        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+  isActive
+    ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400'
+    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
 }" data-phase="${p.number}">
                         <span class="mr-2">${p.icon}</span>
                         Phase ${p.number}
                         ${hasOutput ? '<span class="ml-2 text-green-500">✓</span>' : ''}
                     </button>
                 `;
-    }).join('')}
+  }).join('')}
             </div>
         </div>
 
@@ -69,20 +69,20 @@ export async function renderProjectView(projectId) {
         </div>
     `;
 
-    setupProjectViewListeners(project, workflow);
+  setupProjectViewListeners(project, workflow);
 }
 
 /**
  * Render content for the current phase
  */
 function renderPhaseContent(workflow) {
-    const phase = workflow.getCurrentPhase();
-    const hasExistingOutput = workflow.getPhaseOutput(workflow.currentPhase);
-    const aiUrl = phase.aiModel === 'Gemini' ? 'https://gemini.google.com' : 'https://claude.ai';
-    const aiName = phase.aiModel;
-    const isFullyComplete = workflow.currentPhase === WORKFLOW_CONFIG.phaseCount && hasExistingOutput;
+  const phase = workflow.getCurrentPhase();
+  const hasExistingOutput = workflow.getPhaseOutput(workflow.currentPhase);
+  const aiUrl = phase.aiModel === 'Gemini' ? 'https://gemini.google.com' : 'https://claude.ai';
+  const aiName = phase.aiModel;
+  const isFullyComplete = workflow.currentPhase === WORKFLOW_CONFIG.phaseCount && hasExistingOutput;
 
-    return `
+  return `
         ${isFullyComplete ? `
         <!-- Phase 3 Complete: Export Call-to-Action -->
         <div class="mb-6 p-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
@@ -167,7 +167,7 @@ function renderPhaseContent(workflow) {
  * Render phase navigation buttons
  */
 function renderPhaseNavigation(workflow, hasExistingOutput) {
-    return `
+  return `
         <div class="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
             <div class="flex gap-3">
                 ${workflow.currentPhase === 1 && !hasExistingOutput ? `
@@ -196,152 +196,152 @@ function renderPhaseNavigation(workflow, hasExistingOutput) {
  * Setup project view event listeners
  */
 function setupProjectViewListeners(project, workflow) {
-    document.getElementById('back-home')?.addEventListener('click', () => navigateTo('home'));
+  document.getElementById('back-home')?.addEventListener('click', () => navigateTo('home'));
 
-    // Phase tabs - switch between phases
-    document.querySelectorAll('.phase-tab').forEach(tab => {
-        tab.addEventListener('click', async () => {
-            const targetPhase = parseInt(tab.dataset.phase);
-            workflow.currentPhase = targetPhase;
-            project.phase = targetPhase;
-            updatePhaseTabStyles(targetPhase);
-            document.getElementById('phase-content').innerHTML = renderPhaseContent(workflow);
-            setupPhaseContentListeners(project, workflow);
-        });
+  // Phase tabs - switch between phases
+  document.querySelectorAll('.phase-tab').forEach(tab => {
+    tab.addEventListener('click', async () => {
+      const targetPhase = parseInt(tab.dataset.phase);
+      workflow.currentPhase = targetPhase;
+      project.phase = targetPhase;
+      updatePhaseTabStyles(targetPhase);
+      document.getElementById('phase-content').innerHTML = renderPhaseContent(workflow);
+      setupPhaseContentListeners(project, workflow);
     });
+  });
 
-    // Export final PR-FAQ button (header)
-    document.getElementById('export-final-btn')?.addEventListener('click', () => {
-        exportProjectAsMarkdown(project.id);
-    });
+  // Export final PR-FAQ button (header)
+  document.getElementById('export-final-btn')?.addEventListener('click', () => {
+    exportProjectAsMarkdown(project.id);
+  });
 
-    setupPhaseContentListeners(project, workflow);
+  setupPhaseContentListeners(project, workflow);
 }
 
 /**
  * Update phase tab visual styles
  */
 function updatePhaseTabStyles(activePhase) {
-    document.querySelectorAll('.phase-tab').forEach(tab => {
-        const tabPhase = parseInt(tab.dataset.phase);
-        if (tabPhase === activePhase) {
-            tab.classList.remove('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-900', 'dark:hover:text-gray-200');
-            tab.classList.add('border-b-2', 'border-blue-600', 'text-blue-600', 'dark:text-blue-400');
-        } else {
-            tab.classList.remove('border-b-2', 'border-blue-600', 'text-blue-600', 'dark:text-blue-400');
-            tab.classList.add('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-900', 'dark:hover:text-gray-200');
-        }
-    });
+  document.querySelectorAll('.phase-tab').forEach(tab => {
+    const tabPhase = parseInt(tab.dataset.phase);
+    if (tabPhase === activePhase) {
+      tab.classList.remove('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-900', 'dark:hover:text-gray-200');
+      tab.classList.add('border-b-2', 'border-blue-600', 'text-blue-600', 'dark:text-blue-400');
+    } else {
+      tab.classList.remove('border-b-2', 'border-blue-600', 'text-blue-600', 'dark:text-blue-400');
+      tab.classList.add('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-900', 'dark:hover:text-gray-200');
+    }
+  });
 }
 
 /**
  * Setup event listeners for phase content (called when phase changes)
  */
 function setupPhaseContentListeners(project, workflow) {
-    const responseTextarea = document.getElementById('phase-output');
-    const saveResponseBtn = document.getElementById('save-response-btn');
-    const phase = workflow.getCurrentPhase();
+  const responseTextarea = document.getElementById('phase-output');
+  const saveResponseBtn = document.getElementById('save-response-btn');
+  const phase = workflow.getCurrentPhase();
 
-    // Export complete button (Phase 3 completion CTA)
-    document.getElementById('export-complete-btn')?.addEventListener('click', () => {
-        exportProjectAsMarkdown(project.id);
-    });
+  // Export complete button (Phase 3 completion CTA)
+  document.getElementById('export-complete-btn')?.addEventListener('click', () => {
+    exportProjectAsMarkdown(project.id);
+  });
 
-    // View Prompt button - shows modal
-    document.getElementById('view-prompt-btn')?.addEventListener('click', () => {
-        const prompt = workflow.generatePrompt();
-        showPromptModal(prompt, `Phase ${workflow.currentPhase}: ${phase.name} Prompt`);
-    });
+  // View Prompt button - shows modal
+  document.getElementById('view-prompt-btn')?.addEventListener('click', () => {
+    const prompt = workflow.generatePrompt();
+    showPromptModal(prompt, `Phase ${workflow.currentPhase}: ${phase.name} Prompt`);
+  });
 
-    // Copy Prompt - enables the Open AI button and textarea
-    document.getElementById('copy-prompt-btn')?.addEventListener('click', () => {
-        const prompt = workflow.generatePrompt();
-        copyToClipboard(prompt);
+  // Copy Prompt - enables the Open AI button and textarea
+  document.getElementById('copy-prompt-btn')?.addEventListener('click', () => {
+    const prompt = workflow.generatePrompt();
+    copyToClipboard(prompt);
 
-        // Enable the "Open AI" button
-        const openAiBtn = document.getElementById('open-ai-btn');
-        if (openAiBtn) {
-            openAiBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
-            openAiBtn.classList.add('hover:bg-green-700');
-            openAiBtn.removeAttribute('aria-disabled');
-        }
+    // Enable the "Open AI" button
+    const openAiBtn = document.getElementById('open-ai-btn');
+    if (openAiBtn) {
+      openAiBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+      openAiBtn.classList.add('hover:bg-green-700');
+      openAiBtn.removeAttribute('aria-disabled');
+    }
 
-        // Enable the response textarea
-        if (responseTextarea) {
-            responseTextarea.disabled = false;
-            responseTextarea.focus();
-        }
-    });
+    // Enable the response textarea
+    if (responseTextarea) {
+      responseTextarea.disabled = false;
+      responseTextarea.focus();
+    }
+  });
 
-    // Update save button state as user types or pastes
-    const updateSaveButtonState = () => {
-        const hasEnoughContent = responseTextarea.value.trim().length >= 10;
-        if (saveResponseBtn) {
-            saveResponseBtn.disabled = !hasEnoughContent;
-        }
-    };
-    responseTextarea?.addEventListener('input', updateSaveButtonState);
-    responseTextarea?.addEventListener('paste', () => {
-        setTimeout(updateSaveButtonState, 0);
-    });
+  // Update save button state as user types or pastes
+  const updateSaveButtonState = () => {
+    const hasEnoughContent = responseTextarea.value.trim().length >= 10;
+    if (saveResponseBtn) {
+      saveResponseBtn.disabled = !hasEnoughContent;
+    }
+  };
+  responseTextarea?.addEventListener('input', updateSaveButtonState);
+  responseTextarea?.addEventListener('paste', () => {
+    setTimeout(updateSaveButtonState, 0);
+  });
 
-    // Save Response - auto-advance to next phase
-    saveResponseBtn?.addEventListener('click', async () => {
-        const output = responseTextarea?.value?.trim() || '';
-        if (output.length < 10) {
-            showToast('Please enter at least 10 characters', 'warning');
-            return;
-        }
+  // Save Response - auto-advance to next phase
+  saveResponseBtn?.addEventListener('click', async () => {
+    const output = responseTextarea?.value?.trim() || '';
+    if (output.length < 10) {
+      showToast('Please enter at least 10 characters', 'warning');
+      return;
+    }
 
-        await savePhaseOutput(project.id, workflow.currentPhase, output);
-        workflow.savePhaseOutput(output);
+    await savePhaseOutput(project.id, workflow.currentPhase, output);
+    workflow.savePhaseOutput(output);
 
-        // Auto-advance to next phase if not on final phase
-        if (workflow.currentPhase < WORKFLOW_CONFIG.phaseCount) {
-            workflow.advancePhase();
-            project.phase = workflow.currentPhase;
-            showToast('Response saved! Moving to next phase...', 'success');
-            updatePhaseTabStyles(workflow.currentPhase);
-            document.getElementById('phase-content').innerHTML = renderPhaseContent(workflow);
-            setupPhaseContentListeners(project, workflow);
-        } else {
-            // Final phase - mark complete and show export
-            showToast('PR-FAQ Complete! You can now export your document.', 'success');
-            renderProjectView(project.id);
-        }
-    });
+    // Auto-advance to next phase if not on final phase
+    if (workflow.currentPhase < WORKFLOW_CONFIG.phaseCount) {
+      workflow.advancePhase();
+      project.phase = workflow.currentPhase;
+      showToast('Response saved! Moving to next phase...', 'success');
+      updatePhaseTabStyles(workflow.currentPhase);
+      document.getElementById('phase-content').innerHTML = renderPhaseContent(workflow);
+      setupPhaseContentListeners(project, workflow);
+    } else {
+      // Final phase - mark complete and show export
+      showToast('PR-FAQ Complete! You can now export your document.', 'success');
+      renderProjectView(project.id);
+    }
+  });
 
-    // Edit Details button (Phase 1 only, before response saved)
-    document.getElementById('edit-details-btn')?.addEventListener('click', () => {
-        navigateTo('edit/' + project.id);
-    });
+  // Edit Details button (Phase 1 only, before response saved)
+  document.getElementById('edit-details-btn')?.addEventListener('click', () => {
+    navigateTo('edit/' + project.id);
+  });
 
-    // Previous Phase
-    document.getElementById('prev-phase-btn')?.addEventListener('click', async () => {
-        workflow.previousPhase();
-        project.phase = workflow.currentPhase;
-        updatePhaseTabStyles(workflow.currentPhase);
-        document.getElementById('phase-content').innerHTML = renderPhaseContent(workflow);
-        setupPhaseContentListeners(project, workflow);
-    });
+  // Previous Phase
+  document.getElementById('prev-phase-btn')?.addEventListener('click', async () => {
+    workflow.previousPhase();
+    project.phase = workflow.currentPhase;
+    updatePhaseTabStyles(workflow.currentPhase);
+    document.getElementById('phase-content').innerHTML = renderPhaseContent(workflow);
+    setupPhaseContentListeners(project, workflow);
+  });
 
-    // Next Phase
-    document.getElementById('next-phase-btn')?.addEventListener('click', async () => {
-        workflow.advancePhase();
-        project.phase = workflow.currentPhase;
-        showToast('Moving to next phase...', 'success');
-        updatePhaseTabStyles(workflow.currentPhase);
-        document.getElementById('phase-content').innerHTML = renderPhaseContent(workflow);
-        setupPhaseContentListeners(project, workflow);
-    });
+  // Next Phase
+  document.getElementById('next-phase-btn')?.addEventListener('click', async () => {
+    workflow.advancePhase();
+    project.phase = workflow.currentPhase;
+    showToast('Moving to next phase...', 'success');
+    updatePhaseTabStyles(workflow.currentPhase);
+    document.getElementById('phase-content').innerHTML = renderPhaseContent(workflow);
+    setupPhaseContentListeners(project, workflow);
+  });
 
-    // Delete project button
-    document.getElementById('delete-project-btn')?.addEventListener('click', async () => {
-        if (await confirm(`Are you sure you want to delete "${project.title}"?`, 'Delete Project')) {
-            await deleteProject(project.id);
-            showToast('Project deleted', 'success');
-            navigateTo('home');
-        }
-    });
+  // Delete project button
+  document.getElementById('delete-project-btn')?.addEventListener('click', async () => {
+    if (await confirm(`Are you sure you want to delete "${project.title}"?`, 'Delete Project')) {
+      await deleteProject(project.id);
+      showToast('Project deleted', 'success');
+      navigateTo('home');
+    }
+  });
 }
 

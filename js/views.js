@@ -14,10 +14,10 @@ const PRFAQ_DOCS_URL = 'https://github.com/bordenet/Engineering_Culture/blob/mai
  * Render the projects list view (home)
  */
 export async function renderProjectsList() {
-    const projects = await getAllProjects();
-    const container = document.getElementById('app-container');
+  const projects = await getAllProjects();
+  const container = document.getElementById('app-container');
 
-    container.innerHTML = `
+  container.innerHTML = `
         <div class="mb-6 flex justify-between items-center">
             <h2 class="text-xl font-bold text-gray-900 dark:text-white">Your <a href="${PRFAQ_DOCS_URL}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-700 dark:hover:text-blue-300">PR-FAQ</a> Projects</h2>
             <button id="new-project-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
@@ -27,39 +27,39 @@ export async function renderProjectsList() {
         ${projects.length === 0 ? renderEmptyState() : renderProjectCards(projects)}
     `;
 
-    // Event listeners
-    document.getElementById('new-project-btn')?.addEventListener('click', () => navigateTo('new'));
-    document.getElementById('empty-state-new-btn')?.addEventListener('click', () => navigateTo('new'));
+  // Event listeners
+  document.getElementById('new-project-btn')?.addEventListener('click', () => navigateTo('new'));
+  document.getElementById('empty-state-new-btn')?.addEventListener('click', () => navigateTo('new'));
 
-    // Project card clicks
-    container.querySelectorAll('[data-project-id]').forEach(card => {
-        card.addEventListener('click', (e) => {
-            if (!e.target.closest('.delete-btn')) {
-                navigateTo('project/' + card.dataset.projectId);
-            }
-        });
+  // Project card clicks
+  container.querySelectorAll('[data-project-id]').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (!e.target.closest('.delete-btn')) {
+        navigateTo('project/' + card.dataset.projectId);
+      }
     });
+  });
 
-    // Delete buttons
-    container.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            const projectId = btn.dataset.projectId;
-            const project = projects.find(p => p.id === projectId);
-            if (await confirm(`Are you sure you want to delete "${project?.title}"?`, 'Delete Project')) {
-                await deleteProject(projectId);
-                showToast('Project deleted', 'success');
-                renderProjectsList();
-            }
-        });
+  // Delete buttons
+  container.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const projectId = btn.dataset.projectId;
+      const project = projects.find(p => p.id === projectId);
+      if (await confirm(`Are you sure you want to delete "${project?.title}"?`, 'Delete Project')) {
+        await deleteProject(projectId);
+        showToast('Project deleted', 'success');
+        renderProjectsList();
+      }
     });
+  });
 }
 
 /**
  * Render empty state
  */
 function renderEmptyState() {
-    return `
+  return `
         <div class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
             <div class="text-6xl mb-4">📰</div>
             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No PR-FAQs yet</h3>
@@ -76,12 +76,12 @@ function renderEmptyState() {
  * Render project cards grid
  */
 function renderProjectCards(projects) {
-    return `
+  return `
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             ${projects.map(p => {
-        const isComplete = p.phase > WORKFLOW_CONFIG.phaseCount;
-        const progress = ((p.phase || 1) / WORKFLOW_CONFIG.phaseCount) * 100;
-        return `
+    const isComplete = p.phase > WORKFLOW_CONFIG.phaseCount;
+    const progress = ((p.phase || 1) / WORKFLOW_CONFIG.phaseCount) * 100;
+    return `
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow cursor-pointer" data-project-id="${p.id}">
                     <div class="p-5">
                         <div class="flex items-start justify-between mb-3">
@@ -111,7 +111,7 @@ function renderProjectCards(projects) {
                     </div>
                 </div>
             `;
-    }).join('')}
+  }).join('')}
         </div>
     `;
 }
@@ -120,9 +120,9 @@ function renderProjectCards(projects) {
  * Render new project form
  */
 export function renderNewProjectForm() {
-    const container = document.getElementById('app-container');
+  const container = document.getElementById('app-container');
 
-    container.innerHTML = `
+  container.innerHTML = `
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
             <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Create New <a href="${PRFAQ_DOCS_URL}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-700 dark:hover:text-blue-300">PR-FAQ</a></h2>
             <form id="new-project-form" class="space-y-4">
@@ -138,18 +138,18 @@ export function renderNewProjectForm() {
         </div>
     `;
 
-    document.getElementById('new-project-form')?.addEventListener('submit', handleNewProject);
-    document.getElementById('cancel-btn')?.addEventListener('click', () => navigateTo('home'));
+  document.getElementById('new-project-form')?.addEventListener('submit', handleNewProject);
+  document.getElementById('cancel-btn')?.addEventListener('click', () => navigateTo('home'));
 }
 
 /**
  * Render edit project form
  */
 export function renderEditProjectForm(project) {
-    const container = document.getElementById('app-container');
-    const data = project.formData || {};
+  const container = document.getElementById('app-container');
+  const data = project.formData || {};
 
-    container.innerHTML = `
+  container.innerHTML = `
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
             <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Edit <a href="${PRFAQ_DOCS_URL}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-700 dark:hover:text-blue-300">PR-FAQ</a> Details</h2>
             <div class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
@@ -169,35 +169,35 @@ export function renderEditProjectForm(project) {
         </div>
     `;
 
-    document.getElementById('edit-project-form')?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const formObj = Object.fromEntries(formData);
-        const { updateProject } = await import('./projects.js');
+  document.getElementById('edit-project-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const formObj = Object.fromEntries(formData);
+    const { updateProject } = await import('./projects.js');
 
-        await updateProject(project.id, {
-            title: formObj.productName,
-            formData: formObj
-        });
-
-        showToast('Changes saved!', 'success');
-        navigateTo('project/' + project.id);
+    await updateProject(project.id, {
+      title: formObj.productName,
+      formData: formObj
     });
 
-    document.getElementById('delete-btn')?.addEventListener('click', async () => {
-        if (await confirm(`Are you sure you want to delete "${project.title}"?`, 'Delete Project')) {
-            await deleteProject(project.id);
-            showToast('Project deleted', 'success');
-            navigateTo('home');
-        }
-    });
+    showToast('Changes saved!', 'success');
+    navigateTo('project/' + project.id);
+  });
+
+  document.getElementById('delete-btn')?.addEventListener('click', async () => {
+    if (await confirm(`Are you sure you want to delete "${project.title}"?`, 'Delete Project')) {
+      await deleteProject(project.id);
+      showToast('Project deleted', 'success');
+      navigateTo('home');
+    }
+  });
 }
 
 /**
  * Render form fields (shared by new and edit forms)
  */
 function renderFormFields(data = {}) {
-    return `
+  return `
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Product/Feature Name <span class="text-red-500">*</span></label>
             <input type="text" name="productName" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="e.g., DataSync Pro" value="${escapeHtml(data.productName || '')}">
@@ -237,12 +237,12 @@ function renderFormFields(data = {}) {
  * Handle new project form submission
  */
 async function handleNewProject(event) {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    const data = Object.fromEntries(formData);
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const data = Object.fromEntries(formData);
 
-    const project = await createProject(data);
-    showToast('Project created!', 'success');
-    navigateTo('project/' + project.id);
+  const project = await createProject(data);
+  showToast('Project created!', 'success');
+  navigateTo('project/' + project.id);
 }
 

@@ -14,12 +14,12 @@ let currentRoute = null;
  * Initialize the router
  */
 export function initRouter() {
-    // Handle browser back/forward buttons
-    window.addEventListener('popstate', handlePopState);
+  // Handle browser back/forward buttons
+  window.addEventListener('popstate', handlePopState);
 
-    // Handle initial route
-    const path = window.location.hash.slice(1) || 'home';
-    navigateTo(path, false);
+  // Handle initial route
+  const path = window.location.hash.slice(1) || 'home';
+  navigateTo(path, false);
 }
 
 /**
@@ -28,96 +28,96 @@ export function initRouter() {
  * @param {boolean} pushState - Whether to push to browser history
  */
 export function navigateTo(route, pushState = true) {
-    const [path, param] = route.split('/');
+  const [path, param] = route.split('/');
 
-    if (pushState) {
-        window.history.pushState({ route }, '', `#${route}`);
-    }
+  if (pushState) {
+    window.history.pushState({ route }, '', `#${route}`);
+  }
 
-    currentRoute = route;
-    renderRoute(path, param);
+  currentRoute = route;
+  renderRoute(path, param);
 }
 
 /**
  * Handle browser back/forward navigation
  */
 function handlePopState(event) {
-    const route = event.state?.route || 'home';
-    navigateTo(route, false);
+  const route = event.state?.route || 'home';
+  navigateTo(route, false);
 }
 
 /**
  * Update storage info in footer
  */
 export async function updateStorageInfo() {
-    try {
-        const info = await storage.getStorageInfo();
-        const projects = await storage.getAllProjects();
-        const el = document.getElementById('storage-info');
+  try {
+    const info = await storage.getStorageInfo();
+    const projects = await storage.getAllProjects();
+    const el = document.getElementById('storage-info');
 
-        if (info && el) {
-            el.textContent = `${projects.length} projects • ${formatBytes(info.usage)} used (${info.percentage}%)`;
-        } else if (el) {
-            el.textContent = `${projects.length} projects stored locally`;
-        }
-    } catch (error) {
-        console.error('Failed to update storage info:', error);
+    if (info && el) {
+      el.textContent = `${projects.length} projects • ${formatBytes(info.usage)} used (${info.percentage}%)`;
+    } else if (el) {
+      el.textContent = `${projects.length} projects stored locally`;
     }
+  } catch (error) {
+    console.error('Failed to update storage info:', error);
+  }
 }
 
 /**
  * Render the current route
  */
 async function renderRoute(path, param) {
-    try {
-        switch (path) {
-        case 'home':
-        case '':
-            await renderProjectsList();
-            break;
+  try {
+    switch (path) {
+    case 'home':
+    case '':
+      await renderProjectsList();
+      break;
 
-        case 'new':
-            renderNewProjectForm();
-            break;
+    case 'new':
+      renderNewProjectForm();
+      break;
 
-        case 'edit':
-            if (param) {
-                const project = await storage.getProject(param);
-                if (project) {
-                    renderEditProjectForm(project);
-                } else {
-                    navigateTo('home');
-                }
-            } else {
-                navigateTo('home');
-            }
-            break;
-
-        case 'project':
-            if (param) {
-                await renderProjectView(param);
-            } else {
-                navigateTo('home');
-            }
-            break;
-
-        default:
-            navigateTo('home');
-            break;
+    case 'edit':
+      if (param) {
+        const project = await storage.getProject(param);
+        if (project) {
+          renderEditProjectForm(project);
+        } else {
+          navigateTo('home');
         }
-
-        // Always update footer after route render
-        await updateStorageInfo();
-    } catch (error) {
-        console.error('Route rendering error:', error);
+      } else {
         navigateTo('home');
+      }
+      break;
+
+    case 'project':
+      if (param) {
+        await renderProjectView(param);
+      } else {
+        navigateTo('home');
+      }
+      break;
+
+    default:
+      navigateTo('home');
+      break;
     }
+
+    // Always update footer after route render
+    await updateStorageInfo();
+  } catch (error) {
+    console.error('Route rendering error:', error);
+    navigateTo('home');
+  }
 }
 
 /**
  * Get current route
  */
 export function getCurrentRoute() {
-    return currentRoute;
+  return currentRoute;
 }
 

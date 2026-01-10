@@ -1,54 +1,38 @@
-/**
- * ESLint Configuration for PR-FAQ Assistant
- * Using flat config format (ESLint 9.x)
- */
+import js from '@eslint/js';
+import globals from 'globals';
 
 export default [
-    {
-        languageOptions: {
-            ecmaVersion: 2022,
-            sourceType: 'module',
-            globals: {
-                // Browser globals
-                window: 'readonly',
-                document: 'readonly',
-                navigator: 'readonly',
-                localStorage: 'readonly',
-                indexedDB: 'readonly',
-                crypto: 'readonly',
-                URL: 'readonly',
-                Blob: 'readonly',
-                FormData: 'readonly',
-                setTimeout: 'readonly',
-                console: 'readonly',
-                fetch: 'readonly'
-            }
-        },
-        rules: {
-            // Error prevention
-            'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-            'no-undef': 'error',
-            'no-console': 'off',
-            
-            // Code style
-            'semi': ['error', 'always'],
-            'quotes': ['error', 'single', { avoidEscape: true }],
-            'indent': ['error', 4],
-            'no-trailing-spaces': 'error',
-            'eol-last': ['error', 'always'],
-            
-            // Best practices
-            'eqeqeq': ['error', 'always'],
-            'no-var': 'error',
-            'prefer-const': 'error'
-        }
+  js.configs.recommended,
+  {
+    files: ['js/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+      },
     },
-    {
-        ignores: [
-            'node_modules/**',
-            'coverage/**',
-            'tests/**'
-        ]
-    }
+    rules: {
+      'indent': ['error', 2],
+      'linebreak-style': ['error', 'unix'],
+      'quotes': ['error', 'single'],
+      'semi': ['error', 'always'],
+      'no-unused-vars': ['warn'],
+      'no-console': 'off',
+    },
+  },
+  {
+    files: ['tests/**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        ...globals.jest,
+      },
+    },
+  },
+  {
+    ignores: ['coverage/**', 'node_modules/**', 'dist/**'],
+  },
 ];
 

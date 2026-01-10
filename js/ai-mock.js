@@ -5,7 +5,7 @@
 
 // Mock responses for each phase
 const mockResponses = {
-    1: `# [Product Name] - Press Release
+  1: `# [Product Name] - Press Release
 
 **[City, State] - [Date]** — Today, [Company] announced [Product Name], a revolutionary solution that [key benefit].
 
@@ -42,7 +42,7 @@ A: [Pricing information]
 **Q: How is this different from existing solutions?**
 A: [Differentiation points]`,
 
-    2: `## Review Feedback
+  2: `## Review Feedback
 
 ### Strengths
 1. Clear problem statement with quantifiable impact
@@ -61,7 +61,7 @@ A: [Differentiation points]`,
 - Include competitive differentiation
 - Strengthen the customer quote with metrics`,
 
-    3: `# [Product Name] - Press Release (Final)
+  3: `# [Product Name] - Press Release (Final)
 
 **[City, State] - [Date]** — [Company] today announced [Product Name], delivering [specific measurable benefit] for [target customers].
 
@@ -110,29 +110,29 @@ let mockModeEnabled = false;
  * Initialize mock mode from localStorage
  */
 export function initMockMode() {
-    const saved = localStorage.getItem('aiMockMode');
-    mockModeEnabled = saved === 'true';
+  const saved = localStorage.getItem('aiMockMode');
+  mockModeEnabled = saved === 'true';
 
-    // Show toggle only on localhost
-    if (isLocalhost()) {
-        const toggle = document.getElementById('aiMockToggle');
-        if (toggle) {
-            toggle.classList.remove('hidden');
-            const checkbox = document.getElementById('mockModeCheckbox');
-            if (checkbox) {
-                checkbox.checked = mockModeEnabled;
-            }
-        }
+  // Show toggle only on localhost
+  if (isLocalhost()) {
+    const toggle = document.getElementById('aiMockToggle');
+    if (toggle) {
+      toggle.classList.remove('hidden');
+      const checkbox = document.getElementById('mockModeCheckbox');
+      if (checkbox) {
+        checkbox.checked = mockModeEnabled;
+      }
     }
+  }
 
-    return mockModeEnabled;
+  return mockModeEnabled;
 }
 
 /**
  * Check if running on localhost
  */
 function isLocalhost() {
-    return window.location.hostname === 'localhost' ||
+  return window.location.hostname === 'localhost' ||
            window.location.hostname === '127.0.0.1' ||
            window.location.hostname === '';
 }
@@ -141,28 +141,28 @@ function isLocalhost() {
  * Set mock mode enabled/disabled
  */
 export function setMockMode(enabled) {
-    mockModeEnabled = enabled;
-    localStorage.setItem('aiMockMode', enabled.toString());
+  mockModeEnabled = enabled;
+  localStorage.setItem('aiMockMode', enabled.toString());
 
-    const checkbox = document.getElementById('mockModeCheckbox');
-    if (checkbox) {
-        checkbox.checked = enabled;
-    }
+  const checkbox = document.getElementById('mockModeCheckbox');
+  if (checkbox) {
+    checkbox.checked = enabled;
+  }
 
-    return mockModeEnabled;
+  return mockModeEnabled;
 }
 
 /**
  * Check if mock mode is enabled
  */
 export function isMockMode() {
-    return mockModeEnabled;
+  return mockModeEnabled;
 }
 
 /**
  * Get mock response for a phase
  */
 export function getMockResponse(phaseNumber) {
-    return mockResponses[phaseNumber] || 'Mock response not available for this phase.';
+  return mockResponses[phaseNumber] || 'Mock response not available for this phase.';
 }
 
