@@ -247,23 +247,11 @@ function setupPhaseContentListeners(project, workflow) {
     exportProjectAsMarkdown(project.id);
   });
 
-  // View Prompt button - shows modal
-  document.getElementById('view-prompt-btn')?.addEventListener('click', async () => {
-    const prompt = await workflow.generatePrompt();
-    showPromptModal(prompt, `Phase ${workflow.currentPhase}: ${phase.name} Prompt`);
-  });
-
-  // Copy Prompt - enables the Open AI button and textarea
-  document.getElementById('copy-prompt-btn')?.addEventListener('click', async () => {
-    const prompt = await workflow.generatePrompt();
-    try {
-      await copyToClipboard(prompt);
-      showToast('Prompt copied to clipboard!', 'success');
-    } catch {
-      showToast('Failed to copy to clipboard', 'error');
-      return; // Don't enable buttons if copy failed
-    }
-
+  /**
+   * Enable workflow progression after prompt is copied
+   * Called from both main copy button and modal copy button
+   */
+  const enableWorkflowProgression = () => {
     // Enable the "Open AI" button
     const openAiBtn = document.getElementById('open-ai-btn');
     if (openAiBtn) {
@@ -276,6 +264,24 @@ function setupPhaseContentListeners(project, workflow) {
     if (responseTextarea) {
       responseTextarea.disabled = false;
       responseTextarea.focus();
+    }
+  };
+
+  // View Prompt button - shows modal with copy callback for workflow progression
+  document.getElementById('view-prompt-btn')?.addEventListener('click', async () => {
+    const prompt = await workflow.generatePrompt();
+    showPromptModal(prompt, `Phase ${workflow.currentPhase}: ${phase.name} Prompt`, enableWorkflowProgression);
+  });
+
+  // Copy Prompt - enables the Open AI button and textarea
+  document.getElementById('copy-prompt-btn')?.addEventListener('click', async () => {
+    const prompt = await workflow.generatePrompt();
+    try {
+      await copyToClipboard(prompt);
+      showToast('Prompt copied to clipboard!', 'success');
+      enableWorkflowProgression();
+    } catch {
+      showToast('Failed to copy to clipboard', 'error');
     }
   });
 
