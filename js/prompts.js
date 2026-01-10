@@ -10,30 +10,30 @@
  */
 
 export const WORKFLOW_CONFIG = {
-    phaseCount: 3,
-    phases: [
-        {
-            number: 1,
-            name: 'Initial Draft',
-            icon: '📝',
-            aiModel: 'Claude',
-            description: 'Generate the first draft of your PR-FAQ using Claude'
-        },
-        {
-            number: 2,
-            name: 'Critical Review',
-            icon: '🔍',
-            aiModel: 'Gemini',
-            description: 'Different AI reviews and critiques (prevents groupthink)'
-        },
-        {
-            number: 3,
-            name: 'Final Polish',
-            icon: '✨',
-            aiModel: 'Claude',
-            description: 'Synthesize feedback into polished final document'
-        }
-    ]
+  phaseCount: 3,
+  phases: [
+    {
+      number: 1,
+      name: 'Initial Draft',
+      icon: '📝',
+      aiModel: 'Claude',
+      description: 'Generate the first draft of your PR-FAQ using Claude'
+    },
+    {
+      number: 2,
+      name: 'Critical Review',
+      icon: '🔍',
+      aiModel: 'Gemini',
+      description: 'Different AI reviews and critiques (prevents groupthink)'
+    },
+    {
+      number: 3,
+      name: 'Final Polish',
+      icon: '✨',
+      aiModel: 'Claude',
+      description: 'Synthesize feedback into polished final document'
+    }
+  ]
 };
 
 /**
@@ -41,13 +41,13 @@ export const WORKFLOW_CONFIG = {
  * Emphasizes validator requirements from the start
  */
 export function generatePhase1Prompt(formData) {
-    const today = new Date();
-    const futureDate = new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000);
-    const releaseDate = futureDate.toLocaleDateString('en-US', {
-        month: 'long', day: 'numeric', year: 'numeric'
-    });
+  const today = new Date();
+  const futureDate = new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000);
+  const releaseDate = futureDate.toLocaleDateString('en-US', {
+    month: 'long', day: 'numeric', year: 'numeric'
+  });
 
-    return `You are an expert at writing Amazon-style PR-FAQ documents. Generate a press release that would score 70+ on the pr-faq-validator tool.
+  return `You are an expert at writing Amazon-style PR-FAQ documents. Generate a press release that would score 70+ on the pr-faq-validator tool.
 
 ## CRITICAL REQUIREMENTS FOR HIGH SCORES
 
@@ -110,7 +110,7 @@ Begin the press release now:`;
  * Different AI reviews for objectivity (prevents groupthink)
  */
 export function generatePhase2Prompt(phase1Output) {
-    return `You are a critical reviewer for PR-FAQ documents. Your job is to identify weaknesses and suggest improvements based on the pr-faq-validator scoring criteria.
+  return `You are a critical reviewer for PR-FAQ documents. Your job is to identify weaknesses and suggest improvements based on the pr-faq-validator scoring criteria.
 
 ## SCORING CRITERIA TO EVALUATE
 
@@ -160,7 +160,7 @@ Be specific and actionable. Quote exact phrases that need changing.`;
  * Synthesizes original + critique into final document
  */
 export function generatePhase3Prompt(phase1Output, phase2Output) {
-    return `You are finalizing a PR-FAQ document. Incorporate the review feedback to create a polished document that scores 70+ on the pr-faq-validator.
+  return `You are finalizing a PR-FAQ document. Incorporate the review feedback to create a polished document that scores 70+ on the pr-faq-validator.
 
 ## ORIGINAL DOCUMENT
 
@@ -196,6 +196,6 @@ Start directly with the headline.`;
  * Get phase metadata
  */
 export function getPhaseMetadata(phaseNumber) {
-    return WORKFLOW_CONFIG.phases.find(p => p.number === phaseNumber);
+  return WORKFLOW_CONFIG.phases.find(p => p.number === phaseNumber);
 }
 
