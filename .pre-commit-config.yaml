@@ -1,0 +1,51 @@
+# Pre-commit hooks for quality enforcement
+# See https://pre-commit.com for more information
+
+repos:
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-json
+      - id: check-merge-conflict
+      - id: debug-statements
+        exclude: ^tests/
+      - id: mixed-line-ending
+
+  # JavaScript/Node.js specific checks
+  - repo: local
+    hooks:
+      # ESLint
+      - id: eslint
+        name: eslint
+        entry: npm
+        args: ['run', 'lint']
+        language: system
+        types: [javascript]
+        require_serial: true
+        pass_filenames: false
+        always_run: true
+
+      # Vitest tests with coverage
+      - id: vitest
+        name: vitest
+        entry: npm
+        args: ['test']
+        language: system
+        types: [javascript]
+        require_serial: true
+        pass_filenames: false
+        always_run: true
+
+  # Check package.json is sorted
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-json
+        files: package.json
+
