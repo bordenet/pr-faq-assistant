@@ -127,15 +127,13 @@ export function escapeHtml(text) {
   return div.innerHTML;
 }
 
+/**
+ * Copy text to clipboard
+ * @param {string} text - Text to copy
+ * @returns {Promise<void>} Resolves if successful, throws if failed
+ */
 export async function copyToClipboard(text) {
-  try {
-    await navigator.clipboard.writeText(text);
-    showToast('Copied to clipboard!', 'success');
-    return true;
-  } catch {
-    showToast('Failed to copy to clipboard', 'error');
-    return false;
-  }
+  await navigator.clipboard.writeText(text);
 }
 
 /**
@@ -175,7 +173,12 @@ export function showPromptModal(promptText, title = 'Prompt') {
   modal.querySelector('#close-prompt-modal').addEventListener('click', closeModal);
   modal.querySelector('#close-prompt-modal-btn').addEventListener('click', closeModal);
   modal.querySelector('#copy-modal-prompt').addEventListener('click', async () => {
-    await copyToClipboard(promptText);
+    try {
+      await copyToClipboard(promptText);
+      showToast('Prompt copied to clipboard!', 'success');
+    } catch {
+      showToast('Failed to copy to clipboard', 'error');
+    }
   });
 
   modal.addEventListener('click', (e) => {
