@@ -248,14 +248,14 @@ function setupPhaseContentListeners(project, workflow) {
   });
 
   // View Prompt button - shows modal
-  document.getElementById('view-prompt-btn')?.addEventListener('click', () => {
-    const prompt = workflow.generatePrompt();
+  document.getElementById('view-prompt-btn')?.addEventListener('click', async () => {
+    const prompt = await workflow.generatePrompt();
     showPromptModal(prompt, `Phase ${workflow.currentPhase}: ${phase.name} Prompt`);
   });
 
   // Copy Prompt - enables the Open AI button and textarea
-  document.getElementById('copy-prompt-btn')?.addEventListener('click', () => {
-    const prompt = workflow.generatePrompt();
+  document.getElementById('copy-prompt-btn')?.addEventListener('click', async () => {
+    const prompt = await workflow.generatePrompt();
     copyToClipboard(prompt);
 
     // Enable the "Open AI" button

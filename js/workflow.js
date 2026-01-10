@@ -49,14 +49,14 @@ export class Workflow {
   /**
      * Generate prompt for current phase
      */
-  generatePrompt() {
+  async generatePrompt() {
     switch (this.currentPhase) {
     case 1:
-      return generatePhase1Prompt(this.project.formData || {});
+      return await generatePhase1Prompt(this.project.formData || {});
     case 2:
-      return generatePhase2Prompt(this.project.phase1_output || '');
+      return await generatePhase2Prompt(this.project.phase1_output || '');
     case 3:
-      return generatePhase3Prompt(
+      return await generatePhase3Prompt(
         this.project.phase1_output || '',
         this.project.phase2_output || ''
       );

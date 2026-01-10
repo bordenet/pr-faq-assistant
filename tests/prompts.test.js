@@ -3,14 +3,35 @@
  * Validates prompt generation for validator compatibility
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeAll } from 'vitest';
 import {
-    WORKFLOW_CONFIG,
-    generatePhase1Prompt,
-    generatePhase2Prompt,
-    generatePhase3Prompt,
-    getPhaseMetadata
+  WORKFLOW_CONFIG,
+  generatePhase1Prompt,
+  generatePhase2Prompt,
+  generatePhase3Prompt,
+  getPhaseMetadata
 } from '../js/prompts.js';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+// Mock fetch to load files from disk in test environment
+beforeAll(() => {
+  global.fetch = vi.fn((url) => {
+    const filePath = join(process.cwd(), url);
+    try {
+      const content = readFileSync(filePath, 'utf-8');
+      return Promise.resolve({
+        ok: true,
+        text: () => Promise.resolve(content)
+      });
+    } catch {
+      return Promise.resolve({
+        ok: false,
+        text: () => Promise.resolve('')
+      });
+    }
+  });
+});
 
 describe('WORKFLOW_CONFIG', () => {
     it('should have 3 phases', () => {
@@ -51,125 +72,125 @@ describe('WORKFLOW_CONFIG', () => {
 });
 
 describe('generatePhase1Prompt', () => {
-    const sampleFormData = {
-        productName: 'DataSync Pro',
-        companyName: 'AcmeCorp',
-        targetCustomer: 'Enterprise IT teams',
-        problem: 'Data migration takes too long',
-        solution: 'Automated sync with ML optimization',
-        benefits: 'Faster migrations, less downtime',
-        metrics: '75% faster, $1M savings',
-        location: 'Seattle, WA'
-    };
+  const sampleFormData = {
+    productName: 'DataSync Pro',
+    companyName: 'AcmeCorp',
+    targetCustomer: 'Enterprise IT teams',
+    problem: 'Data migration takes too long',
+    solution: 'Automated sync with ML optimization',
+    benefits: 'Faster migrations, less downtime',
+    metrics: '75% faster, $1M savings',
+    location: 'Seattle, WA'
+  };
 
-    it('should include product name in prompt', () => {
-        const prompt = generatePhase1Prompt(sampleFormData);
-        expect(prompt).toContain('DataSync Pro');
-    });
+  it('should include product name in prompt', async () => {
+    const prompt = await generatePhase1Prompt(sampleFormData);
+    expect(prompt).toContain('DataSync Pro');
+  });
 
-    it('should include company name in prompt', () => {
-        const prompt = generatePhase1Prompt(sampleFormData);
-        expect(prompt).toContain('AcmeCorp');
-    });
+  it('should include company name in prompt', async () => {
+    const prompt = await generatePhase1Prompt(sampleFormData);
+    expect(prompt).toContain('AcmeCorp');
+  });
 
-    it('should include validator requirements', () => {
-        const prompt = generatePhase1Prompt(sampleFormData);
-        expect(prompt).toContain('6-12 words');
-        expect(prompt).toContain('Dateline');
-        expect(prompt).toContain('WHO, WHAT, WHEN, WHERE, WHY');
-    });
+  it('should include validator requirements', async () => {
+    const prompt = await generatePhase1Prompt(sampleFormData);
+    expect(prompt).toContain('6-12 words');
+    expect(prompt).toContain('Dateline');
+    expect(prompt).toContain('WHO, WHAT, WHEN, WHERE, WHY');
+  });
 
-    it('should warn against fluff words', () => {
-        const prompt = generatePhase1Prompt(sampleFormData);
-        expect(prompt).toContain('revolutionary');
-        expect(prompt).toContain('groundbreaking');
-        expect(prompt).toContain('AVOID');
-    });
+  it('should warn against fluff words', async () => {
+    const prompt = await generatePhase1Prompt(sampleFormData);
+    expect(prompt).toContain('revolutionary');
+    expect(prompt).toContain('groundbreaking');
+    expect(prompt).toContain('AVOID');
+  });
 
-    it('should require customer quotes with metrics', () => {
-        const prompt = generatePhase1Prompt(sampleFormData);
-        expect(prompt).toContain('QUANTITATIVE METRICS');
-        expect(prompt).toContain('3-4 customer quotes');
-    });
+  it('should require customer quotes with metrics', async () => {
+    const prompt = await generatePhase1Prompt(sampleFormData);
+    expect(prompt).toContain('QUANTITATIVE METRICS');
+    expect(prompt).toContain('3-4 customer quotes');
+  });
 
-    it('should include a future release date', () => {
-        const prompt = generatePhase1Prompt(sampleFormData);
-        // Should contain a date format like "Month Day, Year"
-        expect(prompt).toMatch(/\w+ \d+, \d{4}/);
-    });
+  it('should include a future release date', async () => {
+    const prompt = await generatePhase1Prompt(sampleFormData);
+    // Should contain a date format like "Month Day, Year"
+    expect(prompt).toMatch(/\w+ \d+, \d{4}/);
+  });
 });
 
 describe('generatePhase2Prompt', () => {
-    const samplePhase1Output = `
+  const samplePhase1Output = `
 # AcmeCorp Launches DataSync Pro
 
 Seattle, WA — January 5, 2026 — AcmeCorp today announced DataSync Pro...
-    `;
+  `;
 
-    it('should include phase 1 output', () => {
-        const prompt = generatePhase2Prompt(samplePhase1Output);
-        expect(prompt).toContain('DataSync Pro');
-    });
+  it('should include phase 1 output', async () => {
+    const prompt = await generatePhase2Prompt(samplePhase1Output);
+    expect(prompt).toContain('DataSync Pro');
+  });
 
-    it('should include scoring criteria checklist', () => {
-        const prompt = generatePhase2Prompt(samplePhase1Output);
-        expect(prompt).toContain('Structure & Hook');
-        expect(prompt).toContain('Content Quality');
-        expect(prompt).toContain('Professional Tone');
-        expect(prompt).toContain('Customer Evidence');
-    });
+  it('should include scoring criteria checklist', async () => {
+    const prompt = await generatePhase2Prompt(samplePhase1Output);
+    expect(prompt).toContain('Structure & Hook');
+    expect(prompt).toContain('Content Quality');
+    expect(prompt).toContain('Professional Tone');
+    expect(prompt).toContain('Customer Evidence');
+  });
 
-    it('should request specific fixes', () => {
-        const prompt = generatePhase2Prompt(samplePhase1Output);
-        expect(prompt).toContain('SPECIFIC FIXES');
-        expect(prompt).toContain('before/after');
-    });
+  it('should request specific fixes', async () => {
+    const prompt = await generatePhase2Prompt(samplePhase1Output);
+    expect(prompt).toContain('SPECIFIC FIXES');
+    expect(prompt).toContain('before/after');
+  });
 });
 
 describe('generatePhase3Prompt', () => {
-    const phase1Output = 'Original PR-FAQ content...';
-    const phase2Output = 'Critical review feedback...';
+  const phase1Output = 'Original PR-FAQ content...';
+  const phase2Output = 'Critical review feedback...';
 
-    it('should include both phase outputs', () => {
-        const prompt = generatePhase3Prompt(phase1Output, phase2Output);
-        expect(prompt).toContain('Original PR-FAQ content');
-        expect(prompt).toContain('Critical review feedback');
-    });
+  it('should include both phase outputs', async () => {
+    const prompt = await generatePhase3Prompt(phase1Output, phase2Output);
+    expect(prompt).toContain('Original PR-FAQ content');
+    expect(prompt).toContain('Critical review feedback');
+  });
 
-    it('should include mandatory checklist', () => {
-        const prompt = generatePhase3Prompt(phase1Output, phase2Output);
-        expect(prompt).toContain('MANDATORY CHECKLIST');
-        expect(prompt).toContain('Headline');
-        expect(prompt).toContain('Dateline');
-    });
+  it('should include mandatory checklist', async () => {
+    const prompt = await generatePhase3Prompt(phase1Output, phase2Output);
+    expect(prompt).toContain('MANDATORY CHECKLIST');
+    expect(prompt).toContain('Headline');
+    expect(prompt).toContain('Dateline');
+  });
 
-    it('should request final document only', () => {
-        const prompt = generatePhase3Prompt(phase1Output, phase2Output);
-        expect(prompt).toContain('FINAL PR-FAQ document only');
-        expect(prompt).toContain('No commentary');
-    });
+  it('should request final document only', async () => {
+    const prompt = await generatePhase3Prompt(phase1Output, phase2Output);
+    expect(prompt).toContain('FINAL PR-FAQ document only');
+    expect(prompt).toContain('No commentary');
+  });
 });
 
 describe('getPhaseMetadata', () => {
-    it('should return correct metadata for phase 1', () => {
-        const meta = getPhaseMetadata(1);
-        expect(meta.name).toBe('Initial Draft');
-        expect(meta.number).toBe(1);
-    });
+  it('should return correct metadata for phase 1', () => {
+    const meta = getPhaseMetadata(1);
+    expect(meta.name).toBe('Initial Draft');
+    expect(meta.number).toBe(1);
+  });
 
-    it('should return correct metadata for phase 2', () => {
-        const meta = getPhaseMetadata(2);
-        expect(meta.name).toBe('Critical Review');
-    });
+  it('should return correct metadata for phase 2', () => {
+    const meta = getPhaseMetadata(2);
+    expect(meta.name).toBe('Critical Review');
+  });
 
-    it('should return correct metadata for phase 3', () => {
-        const meta = getPhaseMetadata(3);
-        expect(meta.name).toBe('Final Polish');
-    });
+  it('should return correct metadata for phase 3', () => {
+    const meta = getPhaseMetadata(3);
+    expect(meta.name).toBe('Final Polish');
+  });
 
-    it('should return undefined for invalid phase', () => {
-        const meta = getPhaseMetadata(99);
-        expect(meta).toBeUndefined();
-    });
+  it('should return undefined for invalid phase', () => {
+    const meta = getPhaseMetadata(99);
+    expect(meta).toBeUndefined();
+  });
 });
 
