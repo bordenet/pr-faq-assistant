@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { formatDate, formatBytes, escapeHtml } from '../js/ui.js';
+import { formatDate, formatBytes, escapeHtml, copyToClipboard } from '../js/ui.js';
 
 describe('formatDate', () => {
     it('should return "Just now" for recent dates', () => {
@@ -136,3 +136,33 @@ describe('showPromptModal', () => {
     });
 });
 
+describe('copyToClipboard', () => {
+    let writeTextSpy;
+
+    beforeEach(() => {
+        // Spy on the existing clipboard.writeText method
+        writeTextSpy = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined);
+    });
+
+    it('should call clipboard.writeText with provided text', async () => {
+        await copyToClipboard('test text');
+        expect(writeTextSpy).toHaveBeenCalledWith('test text');
+    });
+
+    it('should throw error on failure (callers must handle)', async () => {
+        writeTextSpy.mockRejectedValueOnce(new Error('Clipboard access denied'));
+        await expect(copyToClipboard('test text')).rejects.toThrow('Clipboard access denied');
+    });
+
+    it('should not show any toast notifications (callers handle their own)', async () => {
+        // The function should not have any toast logic - it just calls clipboard API
+        // If it were to show toast, we'd see it in the DOM
+        document.body.innerHTML = '';
+
+        await copyToClipboard('test text');
+
+        // No toast container should be created by copyToClipboard
+        const toastContainer = document.getElementById('toast-container');
+        expect(toastContainer).toBeNull();
+    });
+});

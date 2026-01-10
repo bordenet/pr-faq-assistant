@@ -144,14 +144,14 @@ function renderPhaseContent(workflow) {
                 <textarea id="phase-output" rows="12"
                     class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white font-mono text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 dark:disabled:bg-gray-800"
                     placeholder="Paste ${aiName}'s response here..."
-                    disabled
+                    ${!hasExistingOutput ? 'disabled' : ''}
                 >${escapeHtml(hasExistingOutput || '')}</textarea>
 
                 <div class="mt-3 flex justify-between items-center">
                     <span class="text-sm text-gray-600 dark:text-gray-400">
                         ${hasExistingOutput ? '✓ Phase completed' : 'Paste response to complete this phase'}
                     </span>
-                    <button id="save-response-btn" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    <button id="save-response-btn" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" ${!hasExistingOutput || hasExistingOutput.trim().length < 10 ? 'disabled' : ''}>
                         Save Response
                     </button>
                 </div>
@@ -256,7 +256,13 @@ function setupPhaseContentListeners(project, workflow) {
   // Copy Prompt - enables the Open AI button and textarea
   document.getElementById('copy-prompt-btn')?.addEventListener('click', async () => {
     const prompt = await workflow.generatePrompt();
-    copyToClipboard(prompt);
+    try {
+      await copyToClipboard(prompt);
+      showToast('Prompt copied to clipboard!', 'success');
+    } catch {
+      showToast('Failed to copy to clipboard', 'error');
+      return; // Don't enable buttons if copy failed
+    }
 
     // Enable the "Open AI" button
     const openAiBtn = document.getElementById('open-ai-btn');
@@ -273,17 +279,15 @@ function setupPhaseContentListeners(project, workflow) {
     }
   });
 
-  // Update save button state as user types or pastes
-  const updateSaveButtonState = () => {
-    const hasEnoughContent = responseTextarea.value.trim().length >= 10;
-    if (saveResponseBtn) {
-      saveResponseBtn.disabled = !hasEnoughContent;
-    }
-  };
-  responseTextarea?.addEventListener('input', updateSaveButtonState);
-  responseTextarea?.addEventListener('paste', () => {
-    setTimeout(updateSaveButtonState, 0);
-  });
+  // Update save button state as user types
+  if (responseTextarea) {
+    responseTextarea.addEventListener('input', () => {
+      const hasEnoughContent = responseTextarea.value.trim().length >= 10;
+      if (saveResponseBtn) {
+        saveResponseBtn.disabled = !hasEnoughContent;
+      }
+    });
+  }
 
   // Save Response - auto-advance to next phase
   saveResponseBtn?.addEventListener('click', async () => {
