@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "AI-assisted PR-FAQ document generator optimized for pr-faq-validator compatibility",
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "test": "vitest run",
     "test:unit": "vitest run",
