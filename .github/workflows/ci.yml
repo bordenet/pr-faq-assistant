@@ -83,8 +83,9 @@ jobs:
         fi
         echo "✅ genesis/ directory properly removed"
 
-        # Check for unreplaced template variables (exclude .github, coverage, node_modules, .git)
-        if grep -r "{{" . --include="*.md" --include="*.js" --include="*.json" --include="*.html" --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.github --exclude-dir=coverage 2>/dev/null | grep -v "^Binary"; then
+        # Check for unreplaced template variables (exclude .github, coverage, node_modules, .git, prompts)
+        # Note: prompts/ directory intentionally uses {{VARIABLE}} syntax for AI prompt templates
+        if grep -r "{{" . --include="*.md" --include="*.js" --include="*.json" --include="*.html" --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.github --exclude-dir=coverage --exclude-dir=prompts 2>/dev/null | grep -v "^Binary"; then
           echo "❌ ERROR: Found unreplaced template variables ({{...}})"
           echo "All {{VARIABLE}} placeholders must be replaced with actual values."
           exit 1
