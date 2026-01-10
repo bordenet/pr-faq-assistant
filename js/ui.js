@@ -152,12 +152,18 @@ export async function copyToClipboard(text) {
   // Fallback for iOS Safari, older browsers, or when Clipboard API fails
   const textArea = document.createElement('textarea');
   textArea.value = text;
+  // Prevent iOS keyboard from appearing
+  textArea.setAttribute('readonly', '');
+  textArea.setAttribute('contenteditable', 'true');
   textArea.style.position = 'fixed';
   textArea.style.left = '-999999px';
   textArea.style.top = '-999999px';
+  // Prevent zoom on iOS (font-size < 16px triggers zoom)
+  textArea.style.fontSize = '16px';
   document.body.appendChild(textArea);
   textArea.focus();
-  textArea.select();
+  // iOS requires setSelectionRange instead of select()
+  textArea.setSelectionRange(0, text.length);
 
   try {
     const successful = document.execCommand('copy');
