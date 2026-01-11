@@ -11,10 +11,6 @@ export default {
     '!js/router.js',
     '!js/views.js',
     '!js/project-view.js',
-    '!js/ai-mock.js',
-    '!js/error-handler.js',
-    '!js/projects.js',
-    '!js/storage.js',
     '!**/node_modules/**'
   ],
   coverageThreshold: {

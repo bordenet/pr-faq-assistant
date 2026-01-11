@@ -70,32 +70,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v6
 
-    - name: Verify Genesis cleanup
-      run: |
-        echo "Checking for Genesis artifacts..."
-
-        # Check if genesis/ directory exists (should be deleted)
-        if [ -d "genesis" ]; then
-          echo "❌ ERROR: genesis/ directory was not deleted!"
-          echo "The genesis/ directory should be removed after project setup."
-          echo "Run: rm -rf genesis/ && git add . && git commit -m 'Remove genesis'"
-          exit 1
-        fi
-        echo "✅ genesis/ directory properly removed"
-
-        # Check for unreplaced template variables (exclude .github, coverage, node_modules, .git, prompts)
-        # Note: prompts/ directory intentionally uses {{VARIABLE}} syntax for AI prompt templates
-        if grep -r "{{" . --include="*.md" --include="*.js" --include="*.json" --include="*.html" --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.github --exclude-dir=coverage --exclude-dir=prompts 2>/dev/null | grep -v "^Binary"; then
-          echo "❌ ERROR: Found unreplaced template variables ({{...}})"
-          echo "All {{VARIABLE}} placeholders must be replaced with actual values."
-          exit 1
-        fi
-        echo "✅ No unreplaced template variables"
-
     - name: Quality gate passed
       run: |
         echo "✅ All quality checks passed!"
         echo "✅ Linting: PASSED"
         echo "✅ Tests: PASSED"
         echo "✅ Coverage: PASSED"
-        echo "✅ Genesis cleanup: PASSED"

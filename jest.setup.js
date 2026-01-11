@@ -4,7 +4,6 @@
  * This file runs before each test suite to set up the testing environment.
  */
 
-// Mock IndexedDB for testing
 import 'fake-indexeddb/auto';
 import { webcrypto } from 'node:crypto';
 import { jest } from '@jest/globals';
@@ -27,17 +26,6 @@ if (typeof global.structuredClone === 'undefined') {
 // Global test utilities
 global.sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Mock console methods in tests (optional)
-global.console = {
-  ...console,
-  // Uncomment to suppress console.log in tests
-  // log: jest.fn(),
-  // Uncomment to suppress console.error in tests
-  // error: jest.fn(),
-  // Uncomment to suppress console.warn in tests
-  // warn: jest.fn(),
-};
-
 // Mock localStorage
 const localStorageMock = {
   getItem: jest.fn(),
@@ -58,10 +46,16 @@ global.sessionStorage = sessionStorageMock;
 
 // Mock File API
 class MockBlob {
-  constructor(parts, options = {}) {
-    this.parts = parts;
+  constructor(parts = [], options = {}) {
+    // Flatten parts - handle nested Blobs
+    this.parts = parts.map(part => {
+      if (part instanceof MockBlob) {
+        return part.parts.join('');
+      }
+      return part;
+    });
     this.type = options.type || '';
-    this.size = parts.reduce((acc, part) => acc + (part.length || 0), 0);
+    this.size = this.parts.reduce((acc, part) => acc + (part?.length || 0), 0);
   }
 }
 
