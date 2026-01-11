@@ -1,15 +1,19 @@
-import js from '@eslint/js';
 import globals from 'globals';
+import js from '@eslint/js';
 
 export default [
+  // Recommended rules
   js.configs.recommended,
+
+  // Global settings for all files
   {
-    files: ['js/**/*.js'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
       globals: {
         ...globals.browser,
+        ...globals.es2021,
+        process: 'readonly',
       },
     },
     rules: {
@@ -21,18 +25,25 @@ export default [
       'no-console': 'off',
     },
   },
+
+  // Test files configuration
   {
-    files: ['tests/**/*.js'],
+    files: ['tests/**/*.js', '**/*.test.js'],
     languageOptions: {
       globals: {
-        ...globals.browser,
-        ...globals.node,
         ...globals.jest,
       },
     },
   },
+
+  // Ignore patterns
   {
-    ignores: ['coverage/**', 'node_modules/**', 'dist/**'],
+    ignores: [
+      'node_modules/**',
+      'coverage/**',
+      'docs/**',
+      'dist/**',
+      '*.min.js',
+    ],
   },
 ];
-

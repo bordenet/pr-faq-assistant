@@ -2,14 +2,14 @@
  * Tests for Workflow Module
  */
 
-import { describe, it, expect, beforeEach, beforeAll, vi } from 'vitest';
+import { jest } from '@jest/globals';
 import { Workflow, WORKFLOW_CONFIG, getPhaseMetadata, exportFinalDocument } from '../js/workflow.js';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
 // Mock fetch to load files from disk in test environment
 beforeAll(() => {
-  global.fetch = vi.fn((url) => {
+  global.fetch = jest.fn((url) => {
     const filePath = join(process.cwd(), url);
     try {
       const content = readFileSync(filePath, 'utf-8');
@@ -328,4 +328,3 @@ describe('Edit Input Flow (Phase 1 without response)', () => {
         expect(project.formData.productName).toBe('FinalProduct');
     });
 });
-

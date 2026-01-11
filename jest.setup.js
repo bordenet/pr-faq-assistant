@@ -7,6 +7,10 @@
 // Mock IndexedDB for testing
 import 'fake-indexeddb/auto';
 import { webcrypto } from 'node:crypto';
+import { jest } from '@jest/globals';
+
+// Expose jest globally for test files
+global.jest = jest;
 
 // Polyfill crypto.randomUUID for Node.js
 Object.defineProperty(globalThis, 'crypto', {
@@ -112,4 +116,3 @@ beforeEach(() => {
 afterEach(() => {
   jest.restoreAllMocks();
 });
-

@@ -2,7 +2,7 @@
  * Tests for UI Utilities Module
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { jest } from '@jest/globals';
 import { formatDate, formatBytes, escapeHtml, copyToClipboard } from '../js/ui.js';
 
 describe('formatDate', () => {
@@ -91,7 +91,7 @@ describe('showPromptModal', () => {
 
     beforeEach(() => {
         // Mock document.body.appendChild
-        appendChildSpy = vi.spyOn(document.body, 'appendChild').mockImplementation(() => {});
+        appendChildSpy = jest.spyOn(document.body, 'appendChild').mockImplementation(() => {});
     });
 
     it('should be a function', async () => {
@@ -141,7 +141,7 @@ describe('copyToClipboard', () => {
 
     beforeEach(() => {
         // Spy on the existing clipboard.writeText method
-        writeTextSpy = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined);
+        writeTextSpy = jest.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined);
     });
 
     it('should call clipboard.writeText with provided text', async () => {
@@ -152,7 +152,7 @@ describe('copyToClipboard', () => {
     it('should throw error on failure (callers must handle)', async () => {
         writeTextSpy.mockRejectedValueOnce(new Error('Clipboard access denied'));
         // Also mock execCommand to fail (fallback)
-        document.execCommand = vi.fn().mockReturnValue(false);
+        document.execCommand = jest.fn().mockReturnValue(false);
         // The function should throw an error when both methods fail
         await expect(copyToClipboard('test text')).rejects.toThrow();
     });

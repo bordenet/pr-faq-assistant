@@ -3,7 +3,7 @@
  * Validates prompt generation for validator compatibility
  */
 
-import { describe, it, expect, vi, beforeAll } from 'vitest';
+import { jest } from '@jest/globals';
 import {
   WORKFLOW_CONFIG,
   generatePhase1Prompt,
@@ -16,7 +16,7 @@ import { join } from 'path';
 
 // Mock fetch to load files from disk in test environment
 beforeAll(() => {
-  global.fetch = vi.fn((url) => {
+  global.fetch = jest.fn((url) => {
     const filePath = join(process.cwd(), url);
     try {
       const content = readFileSync(filePath, 'utf-8');
@@ -193,4 +193,3 @@ describe('getPhaseMetadata', () => {
     expect(meta).toBeUndefined();
   });
 });
-

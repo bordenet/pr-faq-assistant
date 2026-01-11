@@ -1,8 +1,5 @@
-# Codecov Configuration for pr-faq-assistant
+# Codecov Configuration
 # Documentation: https://docs.codecov.com/docs/codecov-yaml
-#
-# REFERENCE IMPLEMENTATION:
-#     https://github.com/bordenet/product-requirements-assistant/blob/main/codecov.yml
 
 coverage:
   status:
@@ -29,4 +26,3 @@ ignore:
   - "node_modules/**/*"
   - "*.config.js"
   - "*.setup.js"
-
