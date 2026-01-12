@@ -1,10 +1,14 @@
 /**
  * PR-FAQ Prompts Module
+ * @module prompts
  * Optimized for pr-faq-validator compatibility (target: 70+ score)
+ * @module prompts
  *
  * Prompts are stored in prompts/ directory as markdown files.
+ * @module prompts
  *
  * Scoring Categories:
+ * @module prompts
  * - Structure & Hook: 30 points (headline, dateline, newsworthy opening)
  * - Content Quality: 35 points (5 Ws, credibility, inverted pyramid)
  * - Professional Quality: 20 points (tone, readability, NO fluff)
@@ -43,6 +47,7 @@ const promptCache = {};
 
 /**
  * Load prompt template from markdown file
+ * @module prompts
  */
 async function loadPromptTemplate(phaseNumber) {
   if (promptCache[phaseNumber]) {
@@ -65,6 +70,7 @@ async function loadPromptTemplate(phaseNumber) {
 
 /**
  * Replace template variables with actual values
+ * @module prompts
  */
 function replaceTemplateVars(template, vars) {
   let result = template;
@@ -77,7 +83,9 @@ function replaceTemplateVars(template, vars) {
 
 /**
  * Phase 1 Prompt: Initial Draft Generation
+ * @module prompts
  * Emphasizes validator requirements from the start
+ * @module prompts
  */
 export async function generatePhase1Prompt(formData) {
   const today = new Date();
@@ -102,7 +110,9 @@ export async function generatePhase1Prompt(formData) {
 
 /**
  * Phase 2 Prompt: Critical Review
+ * @module prompts
  * Different AI reviews for objectivity (prevents groupthink)
+ * @module prompts
  */
 export async function generatePhase2Prompt(phase1Output) {
   const template = await loadPromptTemplate(2);
@@ -113,7 +123,9 @@ export async function generatePhase2Prompt(phase1Output) {
 
 /**
  * Phase 3 Prompt: Final Polish
+ * @module prompts
  * Synthesizes original + critique into final document
+ * @module prompts
  */
 export async function generatePhase3Prompt(phase1Output, phase2Output) {
   const template = await loadPromptTemplate(3);
@@ -125,8 +137,8 @@ export async function generatePhase3Prompt(phase1Output, phase2Output) {
 
 /**
  * Get phase metadata
+ * @module prompts
  */
 export function getPhaseMetadata(phaseNumber) {
   return WORKFLOW_CONFIG.phases.find(p => p.number === phaseNumber);
 }
-

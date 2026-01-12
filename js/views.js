@@ -1,6 +1,8 @@
 /**
  * Views Module
+ * @module views
  * Handles rendering different views/screens
+ * @module views
  */
 
 import { getAllProjects, createProject, deleteProject } from './projects.js';
@@ -12,6 +14,7 @@ const PRFAQ_DOCS_URL = 'https://github.com/bordenet/Engineering_Culture/blob/mai
 
 /**
  * Render the projects list view (home)
+ * @module views
  */
 export async function renderProjectsList() {
   const projects = await getAllProjects();
@@ -57,6 +60,7 @@ export async function renderProjectsList() {
 
 /**
  * Render empty state
+ * @module views
  */
 function renderEmptyState() {
   return `
@@ -74,6 +78,7 @@ function renderEmptyState() {
 
 /**
  * Render project cards grid
+ * @module views
  */
 function renderProjectCards(projects) {
   return `
@@ -118,6 +123,7 @@ function renderProjectCards(projects) {
 
 /**
  * Render new project form
+ * @module views
  */
 export function renderNewProjectForm() {
   const container = document.getElementById('app-container');
@@ -144,6 +150,7 @@ export function renderNewProjectForm() {
 
 /**
  * Render edit project form
+ * @module views
  */
 export function renderEditProjectForm(project) {
   const container = document.getElementById('app-container');
@@ -195,6 +202,7 @@ export function renderEditProjectForm(project) {
 
 /**
  * Render form fields (shared by new and edit forms)
+ * @module views
  */
 function renderFormFields(data = {}) {
   return `
@@ -235,6 +243,7 @@ function renderFormFields(data = {}) {
 
 /**
  * Handle new project form submission
+ * @module views
  */
 async function handleNewProject(event) {
   event.preventDefault();
@@ -245,4 +254,3 @@ async function handleNewProject(event) {
   showToast('Project created!', 'success');
   navigateTo('project/' + project.id);
 }
-

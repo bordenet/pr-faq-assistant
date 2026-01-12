@@ -1,6 +1,8 @@
 /**
  * Project View Module
+ * @module project-view
  * Handles rendering the project workflow view with phase tabs
+ * @module project-view
  */
 
 import { getProject, deleteProject, savePhaseOutput, exportProjectAsMarkdown } from './projects.js';
@@ -12,6 +14,7 @@ const PRFAQ_DOCS_URL = 'https://github.com/bordenet/Engineering_Culture/blob/mai
 
 /**
  * Render the project detail view
+ * @module project-view
  */
 export async function renderProjectView(projectId) {
   const project = await getProject(projectId);
@@ -74,6 +77,7 @@ export async function renderProjectView(projectId) {
 
 /**
  * Render content for the current phase
+ * @module project-view
  */
 function renderPhaseContent(workflow) {
   const phase = workflow.getCurrentPhase();
@@ -167,6 +171,7 @@ function renderPhaseContent(workflow) {
 
 /**
  * Render phase navigation buttons
+ * @module project-view
  */
 function renderPhaseNavigation(workflow, hasExistingOutput) {
   return `
@@ -196,6 +201,7 @@ function renderPhaseNavigation(workflow, hasExistingOutput) {
 
 /**
  * Setup project view event listeners
+ * @module project-view
  */
 function setupProjectViewListeners(project, workflow) {
   document.getElementById('back-home')?.addEventListener('click', () => navigateTo('home'));
@@ -222,6 +228,7 @@ function setupProjectViewListeners(project, workflow) {
 
 /**
  * Update phase tab visual styles
+ * @module project-view
  */
 function updatePhaseTabStyles(activePhase) {
   document.querySelectorAll('.phase-tab').forEach(tab => {
@@ -238,6 +245,7 @@ function updatePhaseTabStyles(activePhase) {
 
 /**
  * Setup event listeners for phase content (called when phase changes)
+ * @module project-view
  */
 function setupPhaseContentListeners(project, workflow) {
   const responseTextarea = document.getElementById('phase-output');
@@ -356,4 +364,3 @@ function setupPhaseContentListeners(project, workflow) {
     }
   });
 }
-

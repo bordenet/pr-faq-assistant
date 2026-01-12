@@ -1,6 +1,7 @@
 /**
  * Projects Module
  * Handles project CRUD operations and business logic
+ * @module projects
  */
 
 import storage from './storage.js';
@@ -152,4 +153,3 @@ function sanitizeFilename(filename) {
     .toLowerCase()
     .substring(0, 50);
 }
-

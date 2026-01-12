@@ -1,9 +1,13 @@
 /**
  * Main Application Module
+ * @module app
  * PR-FAQ Assistant - AI-assisted PR-FAQ document generator
+ * @module app
  *
  * This module handles app initialization and global event listeners.
+ * @module app
  * Route handling and view rendering are delegated to:
+ * @module app
  * - router.js: Hash-based navigation
  * - views.js: Home, new project, edit project forms
  * - project-view.js: Project workflow view with phase tabs
@@ -18,6 +22,7 @@ import { initMockMode, setMockMode } from './ai-mock.js';
 
 /**
  * Initialize the application
+ * @module app
  */
 async function init() {
   try {
@@ -47,6 +52,7 @@ async function init() {
 
 /**
  * Setup global event listeners
+ * @module app
  */
 function setupEventListeners() {
   // Export all button
@@ -83,6 +89,7 @@ function setupEventListeners() {
 
 /**
  * Setup theme toggle
+ * @module app
  */
 function setupThemeToggle() {
   const toggle = document.getElementById('theme-toggle');
@@ -101,6 +108,7 @@ function setupThemeToggle() {
 
 /**
  * Setup related projects dropdown
+ * @module app
  */
 function setupRelatedProjects() {
   const btn = document.getElementById('related-projects-btn');
@@ -120,6 +128,7 @@ function setupRelatedProjects() {
 
 /**
  * Setup privacy notice (show if not dismissed)
+ * @module app
  */
 function setupPrivacyNotice() {
   if (!localStorage.getItem('privacy-notice-dismissed')) {
@@ -129,6 +138,7 @@ function setupPrivacyNotice() {
 
 /**
  * Show about modal
+ * @module app
  */
 function showAboutModal() {
   const prfaqDocsUrl = 'https://github.com/bordenet/Engineering_Culture/blob/main/SDLC/The_PR-FAQ.md';
@@ -173,6 +183,7 @@ function showAboutModal() {
 
 /**
  * Handle import file selection
+ * @module app
  */
 async function handleImport(event) {
   const file = event.target.files?.[0];

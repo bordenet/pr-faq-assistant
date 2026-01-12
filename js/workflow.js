@@ -1,6 +1,8 @@
 /**
  * Workflow Module
+ * @module workflow
  * Manages the 3-phase PR-FAQ generation workflow
+ * @module workflow
  */
 
 import { WORKFLOW_CONFIG, generatePhase1Prompt, generatePhase2Prompt, generatePhase3Prompt } from './prompts.js';
@@ -111,4 +113,3 @@ export function exportFinalDocument(project) {
   const workflow = new Workflow(project);
   return workflow.exportAsMarkdown();
 }
-

@@ -1,6 +1,8 @@
 /**
  * Router Module
+ * @module router
  * Handles client-side hash-based routing and navigation
+ * @module router
  */
 
 import { renderProjectsList, renderNewProjectForm, renderEditProjectForm } from './views.js';
@@ -12,6 +14,7 @@ let currentRoute = null;
 
 /**
  * Initialize the router
+ * @module router
  */
 export function initRouter() {
   // Handle browser back/forward buttons
@@ -24,6 +27,7 @@ export function initRouter() {
 
 /**
  * Navigate to a route
+ * @module router
  * @param {string} route - Route path (e.g., 'home', 'project/123')
  * @param {boolean} pushState - Whether to push to browser history
  */
@@ -40,6 +44,7 @@ export function navigateTo(route, pushState = true) {
 
 /**
  * Handle browser back/forward navigation
+ * @module router
  */
 function handlePopState(event) {
   const route = event.state?.route || 'home';
@@ -48,6 +53,7 @@ function handlePopState(event) {
 
 /**
  * Update storage info in footer
+ * @module router
  */
 export async function updateStorageInfo() {
   try {
@@ -67,6 +73,7 @@ export async function updateStorageInfo() {
 
 /**
  * Render the current route
+ * @module router
  */
 async function renderRoute(path, param) {
   try {
@@ -116,8 +123,8 @@ async function renderRoute(path, param) {
 
 /**
  * Get current route
+ * @module router
  */
 export function getCurrentRoute() {
   return currentRoute;
 }
-

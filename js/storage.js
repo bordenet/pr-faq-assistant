@@ -1,14 +1,24 @@
 /**
  * IndexedDB Storage Module
  * Handles all client-side data persistence for PR-FAQ Assistant
+ * @module storage
  */
 
+/** @type {string} */
 const DB_NAME = 'pr-faq-assistant-db';
+
+/** @type {number} */
 const DB_VERSION = 1;
+
+/** @type {string} */
 const STORE_NAME = 'prfaq-projects';
 
+/**
+ * Storage class for IndexedDB operations
+ */
 class Storage {
   constructor() {
+    /** @type {IDBDatabase | null} */
     this.db = null;
   }
 
@@ -144,4 +154,3 @@ class Storage {
 }
 
 export default new Storage();
-

@@ -1,6 +1,8 @@
 /**
  * AI Mock Module
+ * @module ai-mock
  * Provides mock AI responses for testing (localhost only)
+ * @module ai-mock
  */
 
 // Mock responses for each phase
@@ -108,6 +110,7 @@ let mockModeEnabled = false;
 
 /**
  * Initialize mock mode from localStorage
+ * @module ai-mock
  */
 export function initMockMode() {
   const saved = localStorage.getItem('aiMockMode');
@@ -130,6 +133,7 @@ export function initMockMode() {
 
 /**
  * Check if running on localhost
+ * @module ai-mock
  */
 function isLocalhost() {
   return window.location.hostname === 'localhost' ||
@@ -139,6 +143,7 @@ function isLocalhost() {
 
 /**
  * Set mock mode enabled/disabled
+ * @module ai-mock
  */
 export function setMockMode(enabled) {
   mockModeEnabled = enabled;
@@ -154,6 +159,7 @@ export function setMockMode(enabled) {
 
 /**
  * Check if mock mode is enabled
+ * @module ai-mock
  */
 export function isMockMode() {
   return mockModeEnabled;
@@ -161,8 +167,8 @@ export function isMockMode() {
 
 /**
  * Get mock response for a phase
+ * @module ai-mock
  */
 export function getMockResponse(phaseNumber) {
   return mockResponses[phaseNumber] || 'Mock response not available for this phase.';
 }
-

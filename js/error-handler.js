@@ -1,6 +1,8 @@
 /**
  * Error Handler Module
+ * @module error-handler
  * Provides user-friendly error messages and recovery hints
+ * @module error-handler
  */
 
 const ERROR_MESSAGES = {
@@ -55,6 +57,7 @@ const ERROR_MESSAGES = {
 
 /**
  * Get user-friendly error message
+ * @module error-handler
  * @param {Error|string} error - Error object or error code
  * @returns {object} Error message with title, message, and recovery hint
  */
@@ -84,6 +87,7 @@ function getErrorMessage(error) {
 
 /**
  * Handle storage errors with user-friendly messages
+ * @module error-handler
  * @param {Error} error - The error to handle
  * @param {Function} showToast - Toast notification function
  * @param {string} context - Context for console logging
@@ -103,6 +107,7 @@ function handleStorageError(error, showToast, context = 'Storage Operation') {
 
 /**
  * Handle validation errors with user-friendly messages
+ * @module error-handler
  * @param {Array|string} errors - Validation errors (array of strings or single string)
  * @param {Function} showToast - Toast notification function
  */
@@ -127,4 +132,3 @@ export {
   handleValidationError,
   ERROR_MESSAGES
 };
-

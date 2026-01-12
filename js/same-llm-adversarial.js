@@ -1,11 +1,16 @@
 /**
  * Same-LLM Adversarial Configuration System
+ * @module same-llm-adversarial
  * Automatically detects when Phase 1 and Phase 2 use the same LLM model
+ * @module same-llm-adversarial
  * and applies Gemini personality simulation to maintain adversarial tension
+ * @module same-llm-adversarial
  *
  * ⚠️ CRITICAL: This file MUST use ES6 modules
  * The browser loads this with <script type="module">
+ * @module same-llm-adversarial
  * DO NOT use CommonJS (require/module.exports)
+ * @module same-llm-adversarial
  */
 
 class SameLLMAdversarialSystem {

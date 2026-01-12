@@ -1,6 +1,8 @@
 /**
  * UI Utilities Module
+ * @module ui
  * Handles common UI operations like toasts, modals, loading states
+ * @module ui
  */
 
 export function showToast(message, type = 'info', duration = 3000) {
@@ -129,8 +131,10 @@ export function escapeHtml(text) {
 
 /**
  * Copy text to clipboard
+ * @module ui
  *
  * Uses a fallback chain for maximum compatibility:
+ * @module ui
  * 1. Modern Clipboard API (navigator.clipboard.writeText)
  * 2. Legacy execCommand('copy') for older browsers and iPad/mobile
  *
@@ -179,6 +183,7 @@ export async function copyToClipboard(text) {
 
 /**
  * Show a modal with prompt content (View Prompt feature)
+ * @module ui
  * @param {string} promptText - The prompt text to display
  * @param {string} title - Modal title
  * @param {Function} [onCopySuccess] - Optional callback to run after successful copy (enables workflow progression)
@@ -242,4 +247,3 @@ export function showPromptModal(promptText, title = 'Prompt', onCopySuccess = nu
   };
   document.addEventListener('keydown', handleEscape);
 }
-
