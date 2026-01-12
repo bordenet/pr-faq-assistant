@@ -134,11 +134,9 @@ function renderPhaseContent(workflow) {
                             🔗 Open ${aiName}
                         </a>
                     </div>
-                    ${hasExistingOutput ? `
-                    <button id="view-prompt-btn" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium">
+                    <button id="view-prompt-btn" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium ${hasExistingOutput ? '' : 'hidden'}">
                         👁️ View Prompt
                     </button>
-                    ` : ''}
                 </div>
             </div>
 
@@ -268,6 +266,13 @@ function setupPhaseContentListeners(project, workflow) {
       openAiBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
       openAiBtn.classList.add('hover:bg-green-700');
       openAiBtn.removeAttribute('aria-disabled');
+    }
+
+    // Show and enable the View Prompt button now that prompt is generated
+    const viewPromptBtn = document.getElementById('view-prompt-btn');
+    if (viewPromptBtn) {
+      viewPromptBtn.classList.remove('hidden', 'opacity-50', 'cursor-not-allowed');
+      viewPromptBtn.disabled = false;
     }
 
     // Enable the response textarea
