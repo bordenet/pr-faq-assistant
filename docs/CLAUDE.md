@@ -85,24 +85,44 @@
 
 ---
 
-### 1. **MANDATORY: Script-Only Deployments and Setup**
+### 1. **MANDATORY: Manual Deployment After CI Passes**
 
 **⚠️ CRITICAL - READ THIS FIRST**:
 
-#### Deployment Rule (ABSOLUTE REQUIREMENT)
-**ALL deployments MUST be performed using project scripts. NEVER use manual git commands.**
+#### Deployment Process (ABSOLUTE REQUIREMENT)
+**ALL deployments MUST follow this 3-step process:**
 
 ```bash
-# ✅ CORRECT - Use deployment script
-./scripts/deploy-web.sh
-
-# ❌ WRONG - Manual deployment
+# Step 1: Push changes to GitHub
 git add .
-git commit -m "Deploy"
-git push
+git commit -m "feat: description of changes"
+git push origin main
+
+# Step 2: WAIT for CI to pass
+# Check: https://github.com/bordenet/pr-faq-assistant/actions
+# ⚠️ DO NOT PROCEED until all checks are GREEN
+
+# Step 3: Deploy ONLY after CI passes
+./scripts/deploy-web.sh
 ```
 
-**Why**: The deployment script enforces quality gates (linting, tests, coverage) before deploying. Manual deployments bypass these checks and can deploy broken code.
+**Why**:
+- CI runs comprehensive quality gates (lint, test, coverage, security checks)
+- Deploying before CI passes can ship broken code
+- CI is the single source of truth for code quality
+
+#### What CI Checks:
+- ✅ ESLint (code style)
+- ✅ Jest unit tests (functionality)
+- ✅ Code coverage thresholds
+- ✅ Build verification
+
+#### If CI Fails:
+1. **DO NOT** deploy
+2. Fix the issues locally
+3. Push fixes
+4. Wait for CI to pass
+5. THEN deploy
 
 #### Setup Rule (ABSOLUTE REQUIREMENT)
 **ALL project dependencies MUST be installed via setup scripts. NEVER tell users to run manual install commands.**
