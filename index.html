@@ -6,8 +6,8 @@
     <title>PR-FAQ Assistant</title>
     <meta name="description" content="AI-assisted PR-FAQ document generator - Amazon-style press release creation - 100% client-side, privacy-first">
 
-    <!-- Tailwind CSS with dark mode configuration -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS with Typography plugin -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script>
         // CRITICAL: Configure Tailwind dark mode AFTER script loads
         tailwind.config = {
@@ -15,8 +15,31 @@
         }
     </script>
 
-    <!-- Marked.js for Markdown rendering -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Fallback prose styles for markdown preview -->
+    <style>
+        .prose h1 { font-size: 2em; font-weight: bold; margin: 0.67em 0; }
+        .prose h2 { font-size: 1.5em; font-weight: bold; margin: 0.83em 0; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.3em; }
+        .prose h3 { font-size: 1.17em; font-weight: bold; margin: 1em 0; }
+        .prose p { margin: 1em 0; }
+        .prose ul, .prose ol { margin: 1em 0; padding-left: 2em; }
+        .prose ul { list-style-type: disc; }
+        .prose ol { list-style-type: decimal; }
+        .prose li { margin: 0.5em 0; }
+        .prose table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+        .prose th, .prose td { border: 1px solid #d1d5db; padding: 0.5em 1em; text-align: left; }
+        .prose th { background-color: #f3f4f6; font-weight: bold; }
+        .dark .prose th { background-color: #374151; }
+        .dark .prose h2 { border-bottom-color: #4b5563; }
+        .dark .prose th, .dark .prose td { border-color: #4b5563; }
+        .prose blockquote { border-left: 4px solid #d1d5db; padding-left: 1em; margin: 1em 0; color: #6b7280; }
+        .prose code { background-color: #f3f4f6; padding: 0.2em 0.4em; border-radius: 0.25em; font-size: 0.875em; }
+        .dark .prose code { background-color: #374151; }
+        .prose pre { background-color: #1f2937; color: #e5e7eb; padding: 1em; border-radius: 0.5em; overflow-x: auto; }
+        .prose pre code { background-color: transparent; padding: 0; }
+    </style>
+
+    <!-- Marked.js for Markdown rendering (local copy to avoid CDN blocking) -->
+    <script src="js/lib/marked.min.js"></script>
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">

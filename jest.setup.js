@@ -11,6 +11,19 @@ import { jest } from '@jest/globals';
 // Expose jest globally for test files
 global.jest = jest;
 
+// Suppress jsdom navigation errors (jsdom doesn't support full navigation)
+// These are expected warnings when testing code that performs URL navigation
+const originalConsoleError = console.error;
+console.error = (...args) => {
+  const message = args[0]?.toString?.() || '';
+  // Suppress known jsdom limitations
+  if (message.includes('Not implemented: navigation') ||
+      message.includes('Error: Not implemented')) {
+    return; // Silently ignore these expected jsdom warnings
+  }
+  originalConsoleError.apply(console, args);
+};
+
 // Polyfill crypto.randomUUID for Node.js
 Object.defineProperty(globalThis, 'crypto', {
   value: webcrypto,

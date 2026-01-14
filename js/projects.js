@@ -18,7 +18,12 @@ export async function createProject(formData) {
     phase: 1,
     formData: formData,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
+    phases: {
+      1: { prompt: '', response: '', completed: false },
+      2: { prompt: '', response: '', completed: false },
+      3: { prompt: '', response: '', completed: false }
+    }
   };
 
   await storage.saveProject(project);
@@ -26,17 +31,54 @@ export async function createProject(formData) {
 }
 
 /**
- * Get all projects
+ * Migrate old project format to new phases structure
+ * Old format: phase1_output, phase2_output, phase3_output fields
+ * New format: phases: {1: {completed, response}, 2: {...}, 3: {...}}
+ * @param {Object} project - Project to migrate
+ * @returns {Object} Migrated project
  */
-export async function getAllProjects() {
-  return await storage.getAllProjects();
+function migrateProject(project) {
+  if (!project) return project;
+
+  // Already migrated or new project
+  if (project.phases) return project;
+
+  // Migrate old format to new format
+  project.phases = {
+    1: {
+      prompt: '',
+      response: project.phase1_output || '',
+      completed: !!project.phase1_output
+    },
+    2: {
+      prompt: '',
+      response: project.phase2_output || '',
+      completed: !!project.phase2_output
+    },
+    3: {
+      prompt: '',
+      response: project.phase3_output || '',
+      completed: !!project.phase3_output
+    }
+  };
+
+  return project;
 }
 
 /**
- * Get a single project by ID
+ * Get all projects (with migration for old format)
+ */
+export async function getAllProjects() {
+  const projects = await storage.getAllProjects();
+  return projects.map(migrateProject);
+}
+
+/**
+ * Get a single project by ID (with migration for old format)
  */
 export async function getProject(id) {
-  return await storage.getProject(id);
+  const project = await storage.getProject(id);
+  return migrateProject(project);
 }
 
 /**
@@ -63,14 +105,31 @@ export async function deleteProject(id) {
 /**
  * Save phase output for a project
  */
-export async function savePhaseOutput(projectId, phase, output) {
+export async function savePhaseOutput(projectId, phase, output, prompt = '') {
   const project = await storage.getProject(projectId);
   if (!project) throw new Error('Project not found');
 
+  // Initialize phases if missing (migration for old projects)
+  if (!project.phases) {
+    project.phases = {
+      1: { prompt: '', response: '', completed: false },
+      2: { prompt: '', response: '', completed: false },
+      3: { prompt: '', response: '', completed: false }
+    };
+  }
+
+  // Update phase data using standard pattern
+  project.phases[phase] = {
+    prompt: prompt || project.phases[phase]?.prompt || '',
+    response: output,
+    completed: true
+  };
+
+  // Keep legacy field for backward compatibility during migration
   const phaseKey = `phase${phase}_output`;
   project[phaseKey] = output;
-  project.updatedAt = new Date().toISOString();
 
+  project.updatedAt = new Date().toISOString();
   await storage.saveProject(project);
   return project;
 }

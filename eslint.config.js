@@ -44,7 +44,9 @@ export default [
       'coverage/**',
       'docs/**',
       'dist/**',
+      'js/lib/**',
       '*.min.js',
+      '**/*.min.js',
     ],
   },
 ];

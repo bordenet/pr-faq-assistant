@@ -11,6 +11,7 @@ export default {
     '!js/router.js',
     '!js/views.js',
     '!js/project-view.js',
+    '!js/lib/**',
     '!**/node_modules/**'
   ],
   coverageThreshold: {

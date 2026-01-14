@@ -102,7 +102,11 @@ function renderProjectCards(projects) {
   return `
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             ${projects.map(p => {
-    const isComplete = p.phase > WORKFLOW_CONFIG.phaseCount;
+    // Standard isComplete check - same pattern across all tools
+    const isComplete = p.phases &&
+        p.phases[1]?.completed &&
+        p.phases[2]?.completed &&
+        p.phases[3]?.completed;
     const progress = ((p.phase || 1) / WORKFLOW_CONFIG.phaseCount) * 100;
     return `
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow cursor-pointer" data-project-id="${p.id}">

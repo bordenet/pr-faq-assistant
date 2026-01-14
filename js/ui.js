@@ -260,7 +260,15 @@ export function showPromptModal(promptText, title = 'Prompt', onCopySuccess = nu
 export function showDocumentPreviewModal(markdown, title = 'Your Document is Ready', filename = 'document.md', onDownload = null) {
   // Render markdown to HTML using marked.js
   // @ts-ignore - marked is loaded via CDN
-  const renderedHtml = typeof marked !== 'undefined' ? marked.parse(markdown) : escapeHtml(markdown).replace(/\n/g, '<br>');
+  let renderedHtml;
+  if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+    renderedHtml = marked.parse(markdown);
+  } else if (typeof marked !== 'undefined' && typeof marked === 'function') {
+    renderedHtml = marked(markdown);
+  } else {
+    // Fallback: escape HTML and convert newlines
+    renderedHtml = escapeHtml(markdown).replace(/\n/g, '<br>');
+  }
 
   const modal = document.createElement('div');
   modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
