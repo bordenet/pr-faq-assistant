@@ -5,10 +5,10 @@
  * @module views
  */
 
-import { getAllProjects, createProject, deleteProject } from './projects.js';
-import { formatDate, escapeHtml, confirm, showToast } from './ui.js';
+import { getAllProjects, createProject, deleteProject, getExportFilename, getFinalMarkdown } from './projects.js';
+import { formatDate, escapeHtml, confirm, showToast, showDocumentPreviewModal } from './ui.js';
 import { navigateTo } from './router.js';
-import { WORKFLOW_CONFIG } from './workflow.js';
+import { WORKFLOW_CONFIG, Workflow } from './workflow.js';
 
 const PRFAQ_DOCS_URL = 'https://github.com/bordenet/Engineering_Culture/blob/main/SDLC/The_PR-FAQ.md';
 
@@ -37,8 +37,26 @@ export async function renderProjectsList() {
   // Project card clicks
   container.querySelectorAll('[data-project-id]').forEach(card => {
     card.addEventListener('click', (e) => {
-      if (!e.target.closest('.delete-btn')) {
+      if (!e.target.closest('.delete-btn') && !e.target.closest('.preview-btn')) {
         navigateTo('project/' + card.dataset.projectId);
+      }
+    });
+  });
+
+  // Preview buttons (for completed projects)
+  container.querySelectorAll('.preview-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const projectId = btn.dataset.projectId;
+      const project = projects.find(p => p.id === projectId);
+      if (project) {
+        const workflow = new Workflow(project);
+        const markdown = getFinalMarkdown(project, workflow);
+        if (markdown) {
+          showDocumentPreviewModal(markdown, 'Your PR-FAQ is Ready', getExportFilename(project));
+        } else {
+          showToast('No content to preview', 'warning');
+        }
       }
     });
   });
@@ -91,11 +109,21 @@ function renderProjectCards(projects) {
                     <div class="p-5">
                         <div class="flex items-start justify-between mb-3">
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white line-clamp-2">${escapeHtml(p.title)}</h3>
-                            <button class="delete-btn text-gray-400 hover:text-red-600 transition-colors ml-2" data-project-id="${p.id}">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                            </button>
+                            <div class="flex items-center space-x-2 ml-2">
+                                ${isComplete ? `
+                                <button class="preview-btn text-gray-400 hover:text-blue-600 transition-colors" data-project-id="${p.id}" title="Preview & Copy">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </button>
+                                ` : ''}
+                                <button class="delete-btn text-gray-400 hover:text-red-600 transition-colors" data-project-id="${p.id}" title="Delete">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <div class="flex items-center space-x-2 mb-1">

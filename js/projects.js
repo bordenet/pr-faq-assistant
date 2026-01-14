@@ -144,12 +144,33 @@ export async function exportProjectAsMarkdown(projectId) {
 
 /**
  * Sanitize filename for export
+ * @param {string} filename - Filename to sanitize
+ * @returns {string} Sanitized filename
  */
-function sanitizeFilename(filename) {
+export function sanitizeFilename(filename) {
   return (filename || 'pr-faq')
     .replace(/[^a-z0-9]/gi, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
     .toLowerCase()
     .substring(0, 50);
+}
+
+/**
+ * Generate export filename for a project
+ * @param {Object} project - Project object
+ * @returns {string} Filename with .md extension
+ */
+export function getExportFilename(project) {
+  return `${sanitizeFilename(project.title)}-prfaq.md`;
+}
+
+/**
+ * Get the final markdown content from a project using workflow
+ * @param {Object} project - Project object
+ * @param {Object} workflow - Workflow instance
+ * @returns {string|null} The markdown content or null if none exists
+ */
+export function getFinalMarkdown(project, workflow) {
+  return workflow.exportAsMarkdown();
 }
