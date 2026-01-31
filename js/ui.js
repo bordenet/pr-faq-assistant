@@ -143,41 +143,66 @@ export function escapeHtml(text) {
  * @throws {Error} If copy fails
  */
 export async function copyToClipboard(text) {
-  // Try modern Clipboard API first
-  if (navigator.clipboard && navigator.clipboard.writeText) {
+  // Modern Clipboard API with Safari-compatible ClipboardItem pattern
+  // Using ClipboardItem ensures the API call is synchronous (satisfying
+  // Safari's transient activation requirement) while data resolution is async
+  if (navigator.clipboard && window.isSecureContext) {
     try {
-      await navigator.clipboard.writeText(text);
+      const blob = new Blob([text], { type: 'text/plain' });
+      const item = new ClipboardItem({
+        'text/plain': Promise.resolve(blob)
+      });
+      await navigator.clipboard.write([item]);
       return;
-    } catch {
-      // Fall through to legacy method (iPad/mobile often fails here)
+    } catch (err) {
+      // Fall through to legacy method on any failure
+      // Safari may throw NotAllowedError, TypeError, or fail silently
+      console.warn('Clipboard API failed, trying fallback:', err?.message);
     }
   }
 
-  // Fallback for iOS Safari, older browsers, or when Clipboard API fails
-  const textArea = document.createElement('textarea');
-  textArea.value = text;
+  // Fallback for iOS Safari <13.4, permission denied, or API failure
+  // CRITICAL: Position IN viewport - iOS Safari rejects off-screen elements
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
   // Prevent iOS keyboard from appearing
-  textArea.setAttribute('readonly', '');
-  textArea.setAttribute('contenteditable', 'true');
-  textArea.style.position = 'fixed';
-  textArea.style.left = '-999999px';
-  textArea.style.top = '-999999px';
+  textarea.setAttribute('readonly', '');
+  textarea.setAttribute('contenteditable', 'true');
+  // Position IN viewport but invisible (iOS requirement)
+  textarea.style.position = 'fixed';
+  textarea.style.left = '0';
+  textarea.style.top = '0';
+  textarea.style.width = '0';
+  textarea.style.height = '0';
+  textarea.style.padding = '0';
+  textarea.style.border = 'none';
+  textarea.style.outline = 'none';
+  textarea.style.boxShadow = 'none';
+  textarea.style.background = 'transparent';
+  textarea.style.opacity = '0';
+  textarea.style.zIndex = '-1';
+  textarea.style.pointerEvents = 'none';
   // Prevent zoom on iOS (font-size < 16px triggers zoom)
-  textArea.style.fontSize = '16px';
-  document.body.appendChild(textArea);
-  textArea.focus();
-  // iOS requires setSelectionRange instead of select()
-  textArea.setSelectionRange(0, text.length);
+  textarea.style.fontSize = '16px';
+
+  document.body.appendChild(textarea);
 
   try {
+    textarea.focus();
+    // iOS requires setSelectionRange instead of select()
+    textarea.setSelectionRange(0, text.length);
+
     const successful = document.execCommand('copy');
-    document.body.removeChild(textArea);
     if (!successful) {
-      throw new Error('Copy command failed');
+      throw new Error('execCommand copy returned false');
     }
-  } catch {
-    document.body.removeChild(textArea);
-    throw new Error('Failed to copy to clipboard');
+  } catch (err) {
+    throw new Error('Failed to copy to clipboard: ' + (err?.message || 'unknown error'));
+  } finally {
+    // Always clean up, even on error
+    if (document.body.contains(textarea)) {
+      document.body.removeChild(textarea);
+    }
   }
 }
 

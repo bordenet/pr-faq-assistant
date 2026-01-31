@@ -137,20 +137,20 @@ describe('showPromptModal', () => {
 });
 
 describe('copyToClipboard', () => {
-    let writeTextSpy;
+    let writeSpy;
 
     beforeEach(() => {
-        // Spy on the existing clipboard.writeText method
-        writeTextSpy = jest.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined);
+        // Spy on the existing clipboard.write method (Safari-compatible ClipboardItem pattern)
+        writeSpy = jest.spyOn(navigator.clipboard, 'write').mockResolvedValue(undefined);
     });
 
-    it('should call clipboard.writeText with provided text', async () => {
+    it('should call clipboard.write using ClipboardItem pattern', async () => {
         await copyToClipboard('test text');
-        expect(writeTextSpy).toHaveBeenCalledWith('test text');
+        expect(writeSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should throw error on failure (callers must handle)', async () => {
-        writeTextSpy.mockRejectedValueOnce(new Error('Clipboard access denied'));
+        writeSpy.mockRejectedValueOnce(new Error('Clipboard access denied'));
         // Also mock execCommand to fail (fallback)
         document.execCommand = jest.fn().mockReturnValue(false);
         // The function should throw an error when both methods fail
@@ -167,5 +167,17 @@ describe('copyToClipboard', () => {
         // No toast container should be created by copyToClipboard
         const toastContainer = document.getElementById('toast-container');
         expect(toastContainer).toBeNull();
+    });
+
+    it('should fallback to execCommand when Clipboard API unavailable', async () => {
+        // Remove clipboard API
+        Object.defineProperty(navigator, 'clipboard', {
+            value: undefined,
+            writable: true,
+        });
+        document.execCommand = jest.fn().mockReturnValue(true);
+
+        await copyToClipboard('test text');
+        expect(document.execCommand).toHaveBeenCalledWith('copy');
     });
 });

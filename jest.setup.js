@@ -104,13 +104,24 @@ global.FileReader = class FileReader {
 global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
 global.URL.revokeObjectURL = jest.fn();
 
-// Mock clipboard API
+// Mock clipboard API with ClipboardItem support for Safari-compatible pattern
+global.ClipboardItem = jest.fn().mockImplementation((data) => ({ data }));
 Object.assign(navigator, {
   clipboard: {
     writeText: jest.fn(() => Promise.resolve()),
+    write: jest.fn(() => Promise.resolve()),
     readText: jest.fn(() => Promise.resolve('')),
   },
 });
+
+// Mock window.isSecureContext for Clipboard API availability check
+Object.defineProperty(window, 'isSecureContext', {
+  value: true,
+  writable: true,
+});
+
+// Mock document.execCommand for fallback clipboard operations
+document.execCommand = jest.fn(() => true);
 
 // Reset mocks before each test
 beforeEach(() => {
