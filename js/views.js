@@ -90,7 +90,7 @@ function renderEmptyState() {
                 No PR-FAQs yet
             </h3>
             <p class="text-gray-600 dark:text-gray-400 mb-6">
-                Create your first <a href="${PRFAQ_DOCS_URL}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">PR-FAQ Document</a>
+                Create your first <a href="${PRFAQ_DOCS_URL}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-700 dark:hover:text-blue-300">PR-FAQ Document</a>
             </p>
             <button id="empty-state-new-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
                 + Create Your First PR-FAQ
@@ -146,7 +146,7 @@ function renderProjectCards(projects) {
                                 </div>
                             </div>
                         </div>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">${escapeHtml(p.formData?.problem || '')}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">${escapeHtml(p.formData?.problem || '')}</p>
                         <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                             <span>Updated ${formatDate(p.updatedAt)}</span>
                         </div>
