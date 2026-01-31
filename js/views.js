@@ -166,9 +166,9 @@ export function renderNewProjectForm() {
   const container = document.getElementById('app-container');
 
   container.innerHTML = `
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
             <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Create New <a href="${PRFAQ_DOCS_URL}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-700 dark:hover:text-blue-300">PR-FAQ</a></h2>
-            <form id="new-project-form" class="space-y-4">
+            <form id="new-project-form" class="space-y-6">
                 ${renderFormFields()}
                 <div class="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700">
                     <div class="flex gap-3">
@@ -194,14 +194,14 @@ export function renderEditProjectForm(project) {
   const data = project.formData || {};
 
   container.innerHTML = `
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
             <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Edit <a href="${PRFAQ_DOCS_URL}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-700 dark:hover:text-blue-300">PR-FAQ</a> Details</h2>
             <div class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                 <p class="text-sm text-blue-800 dark:text-blue-300">
                     💡 Update your project details below. Changes will be saved when you continue to Phase 1.
                 </p>
             </div>
-            <form id="edit-project-form" class="space-y-4">
+            <form id="edit-project-form" class="space-y-6">
                 ${renderFormFields(data)}
                 <div class="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700">
                     <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
