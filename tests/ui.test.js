@@ -137,23 +137,22 @@ describe('showPromptModal', () => {
 });
 
 describe('copyToClipboard', () => {
-    it('should copy text to clipboard using writeText first', async () => {
-        const writeTextMock = jest.fn().mockResolvedValue();
-        navigator.clipboard.writeText = writeTextMock;
+    it('should copy text to clipboard using ClipboardItem with Promise', async () => {
+        const writeMock = jest.fn().mockResolvedValue();
+        navigator.clipboard.write = writeMock;
 
         await copyToClipboard('test text');
 
-        // The new implementation tries writeText first (Safari MacOS compatible)
-        expect(writeTextMock).toHaveBeenCalledTimes(1);
-        expect(writeTextMock).toHaveBeenCalledWith('test text');
+        // The new implementation uses ClipboardItem with Promise-wrapped Blob for Safari transient activation
+        expect(writeMock).toHaveBeenCalledTimes(1);
+        // Verify it was called with an array containing a ClipboardItem
+        expect(writeMock).toHaveBeenCalledWith(expect.any(Array));
     });
 
     it('should throw error if all clipboard methods fail', async () => {
         const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
 
-        // Mock writeText to fail
-        navigator.clipboard.writeText = jest.fn().mockRejectedValue(new Error('Not allowed'));
-        // Mock write (ClipboardItem) to also fail
+        // Mock write (ClipboardItem) to fail
         navigator.clipboard.write = jest.fn().mockRejectedValue(new Error('Not allowed'));
         // Mock execCommand to also fail
         document.execCommand = jest.fn().mockReturnValue(false);
@@ -164,8 +163,8 @@ describe('copyToClipboard', () => {
     });
 
     it('should not show any toast notifications (callers handle their own)', async () => {
-        const writeTextMock = jest.fn().mockResolvedValue();
-        navigator.clipboard.writeText = writeTextMock;
+        const writeMock = jest.fn().mockResolvedValue();
+        navigator.clipboard.write = writeMock;
 
         // The function should not have any toast logic - it just calls clipboard API
         // If it were to show toast, we'd see it in the DOM

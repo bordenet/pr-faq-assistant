@@ -6,7 +6,7 @@
  */
 
 import { getProject, deleteProject, savePhaseOutput, getExportFilename, getFinalMarkdown } from './projects.js';
-import { escapeHtml, showToast, copyToClipboard, showPromptModal, confirm, showDocumentPreviewModal } from './ui.js';
+import { escapeHtml, showToast, copyToClipboardAsync, showPromptModal, confirm, showDocumentPreviewModal } from './ui.js';
 import { navigateTo } from './router.js';
 import { Workflow, WORKFLOW_CONFIG } from './workflow.js';
 import { preloadPromptTemplates } from './prompts.js';
@@ -333,15 +333,18 @@ function setupPhaseContentListeners(project, workflow) {
   });
 
   // Copy Prompt - enables the Open AI button and textarea
-  document.getElementById('copy-prompt-btn')?.addEventListener('click', async () => {
-    const prompt = await workflow.generatePrompt();
-    try {
-      await copyToClipboard(prompt);
-      showToast('Prompt copied to clipboard!', 'success');
-      enableWorkflowProgression();
-    } catch {
-      showToast('Failed to copy to clipboard', 'error');
-    }
+  // CRITICAL: Safari transient activation fix - call copyToClipboardAsync synchronously
+  document.getElementById('copy-prompt-btn')?.addEventListener('click', () => {
+    const promptPromise = workflow.generatePrompt();
+
+    copyToClipboardAsync(promptPromise)
+      .then(() => {
+        showToast('Prompt copied to clipboard!', 'success');
+        enableWorkflowProgression();
+      })
+      .catch(() => {
+        showToast('Failed to copy to clipboard', 'error');
+      });
   });
 
   // Update save button state as user types
