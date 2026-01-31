@@ -118,7 +118,7 @@ function renderProjectCards(projects) {
                     <div class="p-6">
                         <div class="flex items-start justify-between mb-3">
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white line-clamp-2">${escapeHtml(p.title)}</h3>
-                            <div class="flex items-center space-x-2 ml-2">
+                            <div class="flex items-center space-x-2">
                                 ${isComplete ? `
                                 <button class="preview-project-btn text-gray-400 hover:text-blue-600 transition-colors" data-project-id="${p.id}" title="Preview & Copy">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -209,7 +209,7 @@ export function renderEditProjectForm(project) {
                     <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
                         Next Phase →
                     </button>
-                    <button type="button" id="delete-btn" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">Delete</button>
+                    <button type="button" id="delete-btn" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">Delete</button>
                 </div>
             </form>
         </div>
