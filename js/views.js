@@ -244,36 +244,36 @@ export function renderEditProjectForm(project) {
 function renderFormFields(data = {}) {
   return `
         <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Product/Feature Name <span class="text-red-500">*</span></label>
-            <input type="text" name="productName" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="e.g., DataSync Pro" value="${escapeHtml(data.productName || '')}">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Product/Feature Name <span class="text-red-500">*</span></label>
+            <input type="text" name="productName" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="e.g., DataSync Pro" value="${escapeHtml(data.productName || '')}">
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Company Name <span class="text-red-500">*</span></label>
-            <input type="text" name="companyName" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="e.g., AcmeCorp" value="${escapeHtml(data.companyName || '')}">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Company Name <span class="text-red-500">*</span></label>
+            <input type="text" name="companyName" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="e.g., AcmeCorp" value="${escapeHtml(data.companyName || '')}">
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Target Customer <span class="text-red-500">*</span></label>
-            <input type="text" name="targetCustomer" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="e.g., Enterprise IT teams" value="${escapeHtml(data.targetCustomer || '')}">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Target Customer <span class="text-red-500">*</span></label>
+            <input type="text" name="targetCustomer" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="e.g., Enterprise IT teams" value="${escapeHtml(data.targetCustomer || '')}">
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Problem Being Solved <span class="text-red-500">*</span></label>
-            <textarea name="problem" required rows="3" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="What pain point does this solve?">${escapeHtml(data.problem || '')}</textarea>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Problem Being Solved <span class="text-red-500">*</span></label>
+            <textarea name="problem" required rows="3" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="What pain point does this solve?">${escapeHtml(data.problem || '')}</textarea>
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Solution/How It Works <span class="text-red-500">*</span></label>
-            <textarea name="solution" required rows="3" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="How does your product solve the problem?">${escapeHtml(data.solution || '')}</textarea>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Solution/How It Works <span class="text-red-500">*</span></label>
+            <textarea name="solution" required rows="3" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="How does your product solve the problem?">${escapeHtml(data.solution || '')}</textarea>
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Key Benefits <span class="text-red-500">*</span></label>
-            <textarea name="benefits" required rows="2" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="List 3-5 key benefits">${escapeHtml(data.benefits || '')}</textarea>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Key Benefits <span class="text-red-500">*</span></label>
+            <textarea name="benefits" required rows="2" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="List 3-5 key benefits">${escapeHtml(data.benefits || '')}</textarea>
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Metrics/Results (optional)</label>
-            <textarea name="metrics" rows="2" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="e.g., 40% faster, $1.5M savings, 3x improvement">${escapeHtml(data.metrics || '')}</textarea>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Metrics/Results (optional)</label>
+            <textarea name="metrics" rows="2" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="e.g., 40% faster, $1.5M savings, 3x improvement">${escapeHtml(data.metrics || '')}</textarea>
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
-            <input type="text" name="location" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Seattle, WA" value="${escapeHtml(data.location || 'Seattle, WA')}">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Location</label>
+            <input type="text" name="location" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Seattle, WA" value="${escapeHtml(data.location || 'Seattle, WA')}">
         </div>
     `;
 }
