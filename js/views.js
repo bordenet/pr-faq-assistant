@@ -34,19 +34,19 @@ export async function renderProjectsList() {
 
   // Event listeners
   document.getElementById('new-project-btn')?.addEventListener('click', () => navigateTo('new'));
-  document.getElementById('empty-state-new-btn')?.addEventListener('click', () => navigateTo('new'));
+  document.getElementById('new-project-btn-empty')?.addEventListener('click', () => navigateTo('new'));
 
   // Project card clicks
   container.querySelectorAll('[data-project-id]').forEach(card => {
     card.addEventListener('click', (e) => {
-      if (!e.target.closest('.delete-btn') && !e.target.closest('.preview-btn')) {
+      if (!e.target.closest('.delete-project-btn') && !e.target.closest('.preview-project-btn')) {
         navigateTo('project/' + card.dataset.projectId);
       }
     });
   });
 
   // Preview buttons (for completed projects)
-  container.querySelectorAll('.preview-btn').forEach(btn => {
+  container.querySelectorAll('.preview-project-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       e.stopPropagation();
       const projectId = btn.dataset.projectId;
@@ -64,7 +64,7 @@ export async function renderProjectsList() {
   });
 
   // Delete buttons
-  container.querySelectorAll('.delete-btn').forEach(btn => {
+  container.querySelectorAll('.delete-project-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       e.stopPropagation();
       const projectId = btn.dataset.projectId;
@@ -92,7 +92,7 @@ function renderEmptyState() {
             <p class="text-gray-600 dark:text-gray-400 mb-6">
                 Create your first <a href="${PRFAQ_DOCS_URL}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-700 dark:hover:text-blue-300">PR-FAQ Document</a>
             </p>
-            <button id="empty-state-new-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+            <button id="new-project-btn-empty" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
                 + Create Your First PR-FAQ
             </button>
         </div>
@@ -115,40 +115,42 @@ function renderProjectCards(projects) {
     const progress = ((p.phase || 1) / WORKFLOW_CONFIG.phaseCount) * 100;
     return `
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow cursor-pointer" data-project-id="${p.id}">
-                    <div class="p-5">
+                    <div class="p-6">
                         <div class="flex items-start justify-between mb-3">
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white line-clamp-2">${escapeHtml(p.title)}</h3>
                             <div class="flex items-center space-x-2 ml-2">
                                 ${isComplete ? `
-                                <button class="preview-btn text-gray-400 hover:text-blue-600 transition-colors" data-project-id="${p.id}" title="Preview & Copy">
+                                <button class="preview-project-btn text-gray-400 hover:text-blue-600 transition-colors" data-project-id="${p.id}" title="Preview & Copy">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                     </svg>
                                 </button>
                                 ` : ''}
-                                <button class="delete-btn text-gray-400 hover:text-red-600 transition-colors" data-project-id="${p.id}" title="Delete">
+                                <button class="delete-project-btn text-gray-400 hover:text-red-600 transition-colors" data-project-id="${p.id}" title="Delete">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                     </svg>
                                 </button>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <div class="flex items-center space-x-2 mb-1">
-                                ${isComplete ? `
-                                    <span class="text-sm font-medium text-green-600 dark:text-green-400">✓ Complete</span>
-                                ` : `
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Phase ${p.phase || 1}/${WORKFLOW_CONFIG.phaseCount}</span>
-                                `}
+                        <div class="mb-4">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Phase ${p.phase || 1}/${WORKFLOW_CONFIG.phaseCount}</span>
                                 <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                    <div class="bg-blue-600 h-2 rounded-full transition-all ${isComplete ? 'bg-green-500' : ''}" style="width: ${isComplete ? 100 : progress}%"></div>
+                                    <div class="bg-blue-600 h-2 rounded-full transition-all" style="width: ${progress}%"></div>
                                 </div>
+                            </div>
+                            <div class="flex space-x-1">
+                                ${[1, 2, 3].map(phase => `
+                                    <div class="flex-1 h-1 rounded ${p.phases && p.phases[phase] && p.phases[phase].completed ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}"></div>
+                                `).join('')}
                             </div>
                         </div>
                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">${escapeHtml(p.formData?.problem || '')}</p>
                         <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                             <span>Updated ${formatDate(p.updatedAt)}</span>
+                            <span>${p.phases ? Object.values(p.phases).filter(ph => ph.completed).length : 0}/${WORKFLOW_CONFIG.phaseCount} complete</span>
                         </div>
                     </div>
                 </div>

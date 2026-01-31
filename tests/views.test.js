@@ -61,7 +61,7 @@ describe('Views Module', () => {
       await renderProjectsList();
 
       const container = document.getElementById('app-container');
-      const deleteBtn = container.querySelector('.delete-btn');
+      const deleteBtn = container.querySelector('.delete-project-btn');
       expect(deleteBtn).toBeTruthy();
     });
 
