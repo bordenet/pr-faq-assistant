@@ -9,6 +9,7 @@ import { getProject, deleteProject, savePhaseOutput, getExportFilename, getFinal
 import { escapeHtml, showToast, copyToClipboard, showPromptModal, confirm, showDocumentPreviewModal } from './ui.js';
 import { navigateTo } from './router.js';
 import { Workflow, WORKFLOW_CONFIG } from './workflow.js';
+import { preloadPromptTemplates } from './prompts.js';
 
 const PRFAQ_DOCS_URL = 'https://github.com/bordenet/Engineering_Culture/blob/main/SDLC/The_PR-FAQ.md';
 
@@ -17,6 +18,10 @@ const PRFAQ_DOCS_URL = 'https://github.com/bordenet/Engineering_Culture/blob/mai
  * @module project-view
  */
 export async function renderProjectView(projectId) {
+  // Preload prompt templates to avoid network delay on first clipboard operation
+  // Fire-and-forget: don't await, let it run in parallel with project load
+  preloadPromptTemplates().catch(() => {});
+
   const project = await getProject(projectId);
 
   if (!project) {

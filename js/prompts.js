@@ -69,6 +69,17 @@ async function loadPromptTemplate(phaseNumber) {
 }
 
 /**
+ * Preload all prompt templates to avoid network delay on first click.
+ * This ensures clipboard operations happen within Safari's transient activation window.
+ * Call this when the app initializes or when entering a project view.
+ * @returns {Promise<void>}
+ */
+export async function preloadPromptTemplates() {
+  const phases = Array.from({ length: WORKFLOW_CONFIG.phaseCount }, (_, i) => i + 1);
+  await Promise.all(phases.map(phase => loadPromptTemplate(phase)));
+}
+
+/**
  * Replace template variables with actual values
  * @module prompts
  */
