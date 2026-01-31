@@ -84,14 +84,17 @@ export async function renderProjectsList() {
  */
 function renderEmptyState() {
   return `
-        <div class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
-            <div class="text-6xl mb-4">📰</div>
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No PR-FAQs yet</h3>
-            <p class="text-gray-500 dark:text-gray-400 mb-6">Create your first <a href="${PRFAQ_DOCS_URL}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">PR-FAQ Document</a></p>
+        <div class="text-center py-16 bg-white dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
+            <span class="text-6xl mb-4 block">📰</span>
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                No PR-FAQs yet
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-6">
+                Create your first <a href="${PRFAQ_DOCS_URL}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">PR-FAQ Document</a>
+            </p>
             <button id="empty-state-new-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
                 + Create Your First PR-FAQ
             </button>
-            <p class="text-sm text-gray-400 dark:text-gray-500 mt-6">Documents are optimized for <a href="https://github.com/bordenet/pr-faq-validator" target="_blank" rel="noopener" class="text-blue-500 dark:text-blue-400 hover:underline">pr-faq-validator</a> (70+ score target)</p>
         </div>
     `;
 }
