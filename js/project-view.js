@@ -230,6 +230,18 @@ function setupProjectViewListeners(project, workflow) {
   document.querySelectorAll('.phase-tab').forEach(tab => {
     tab.addEventListener('click', async () => {
       const targetPhase = parseInt(tab.dataset.phase);
+
+      // Guard: Can only navigate to a phase if all prior phases are complete
+      // Phase 1 is always accessible
+      if (targetPhase > 1) {
+        const priorPhase = targetPhase - 1;
+        const priorPhaseComplete = project.phases?.[priorPhase]?.completed;
+        if (!priorPhaseComplete) {
+          showToast(`Complete Phase ${priorPhase} before proceeding to Phase ${targetPhase}`, 'warning');
+          return;
+        }
+      }
+
       workflow.currentPhase = targetPhase;
       project.phase = targetPhase;
       updatePhaseTabStyles(targetPhase);
