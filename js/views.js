@@ -21,9 +21,11 @@ export async function renderProjectsList() {
   const container = document.getElementById('app-container');
 
   container.innerHTML = `
-        <div class="mb-6 flex justify-between items-center">
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Your <a href="${PRFAQ_DOCS_URL}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-700 dark:hover:text-blue-300">PR-FAQ</a> Projects</h2>
-            <button id="new-project-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+        <div class="mb-6 flex items-center justify-between">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+                My <a href="${PRFAQ_DOCS_URL}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-700 dark:hover:text-blue-300">PR-FAQs</a>
+            </h2>
+            <button id="new-project-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
                 + New PR-FAQ
             </button>
         </div>
@@ -162,7 +164,7 @@ export function renderNewProjectForm() {
 
   container.innerHTML = `
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Create New <a href="${PRFAQ_DOCS_URL}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-700 dark:hover:text-blue-300">PR-FAQ</a></h2>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Create New <a href="${PRFAQ_DOCS_URL}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-700 dark:hover:text-blue-300">PR-FAQ</a></h2>
             <form id="new-project-form" class="space-y-4">
                 ${renderFormFields()}
                 <div class="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700">
@@ -190,7 +192,7 @@ export function renderEditProjectForm(project) {
 
   container.innerHTML = `
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Edit <a href="${PRFAQ_DOCS_URL}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-700 dark:hover:text-blue-300">PR-FAQ</a> Details</h2>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Edit <a href="${PRFAQ_DOCS_URL}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-700 dark:hover:text-blue-300">PR-FAQ</a> Details</h2>
             <div class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                 <p class="text-sm text-blue-800 dark:text-blue-300">
                     💡 Update your project details below. Changes will be saved when you continue to Phase 1.

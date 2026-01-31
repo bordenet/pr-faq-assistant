@@ -33,7 +33,7 @@ describe('Views Module', () => {
 
       const container = document.getElementById('app-container');
       expect(container.innerHTML).toContain('Test PR-FAQ');
-      expect(container.innerHTML).toContain('Your');
+      expect(container.innerHTML).toContain('My');
     });
 
     test('should render new project button', async () => {
