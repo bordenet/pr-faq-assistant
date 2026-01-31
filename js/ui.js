@@ -143,55 +143,53 @@ export function escapeHtml(text) {
  * @throws {Error} If copy fails
  */
 export async function copyToClipboard(text) {
-  // Modern Clipboard API with Safari-compatible ClipboardItem pattern
-  // Using ClipboardItem ensures the API call is synchronous (satisfying
-  // Safari's transient activation requirement) while data resolution is async
+  // Clipboard API fallback chain for cross-browser compatibility
+  // Order: writeText (Safari MacOS) → ClipboardItem (iOS Safari) → execCommand (legacy)
   if (navigator.clipboard && window.isSecureContext) {
+    // Method 1: writeText - simplest, works on Safari MacOS and most browsers
+    try {
+      await navigator.clipboard.writeText(text);
+      return;
+    } catch (err) {
+      console.warn('writeText failed, trying ClipboardItem:', err?.message);
+    }
+
+    // Method 2: ClipboardItem with direct Blob - for iOS Safari
+    // iOS Safari may reject writeText but accept ClipboardItem
     try {
       const blob = new Blob([text], { type: 'text/plain' });
-      const item = new ClipboardItem({
-        'text/plain': Promise.resolve(blob)
-      });
+      const item = new ClipboardItem({ 'text/plain': blob });
       await navigator.clipboard.write([item]);
       return;
     } catch (err) {
-      // Fall through to legacy method on any failure
-      // Safari may throw NotAllowedError, TypeError, or fail silently
-      console.warn('Clipboard API failed, trying fallback:', err?.message);
+      console.warn('ClipboardItem failed, trying execCommand:', err?.message);
     }
   }
 
-  // Fallback for iOS Safari <13.4, permission denied, or API failure
+  // Method 3: Legacy execCommand fallback
   // CRITICAL: Position IN viewport - iOS Safari rejects off-screen elements
   const textarea = document.createElement('textarea');
   textarea.value = text;
-  // Prevent iOS keyboard from appearing
   textarea.setAttribute('readonly', '');
   textarea.setAttribute('contenteditable', 'true');
-  // Position IN viewport but invisible (iOS requirement)
   textarea.style.position = 'fixed';
   textarea.style.left = '0';
   textarea.style.top = '0';
-  textarea.style.width = '0';
-  textarea.style.height = '0';
+  textarea.style.width = '1px';
+  textarea.style.height = '1px';
   textarea.style.padding = '0';
   textarea.style.border = 'none';
   textarea.style.outline = 'none';
   textarea.style.boxShadow = 'none';
   textarea.style.background = 'transparent';
-  textarea.style.opacity = '0';
-  textarea.style.zIndex = '-1';
-  textarea.style.pointerEvents = 'none';
-  // Prevent zoom on iOS (font-size < 16px triggers zoom)
-  textarea.style.fontSize = '16px';
+  textarea.style.opacity = '0.01';
+  textarea.style.fontSize = '16px'; // Prevent iOS zoom
 
   document.body.appendChild(textarea);
 
   try {
     textarea.focus();
-    // iOS requires setSelectionRange instead of select()
     textarea.setSelectionRange(0, text.length);
-
     const successful = document.execCommand('copy');
     if (!successful) {
       throw new Error('execCommand copy returned false');
@@ -199,7 +197,6 @@ export async function copyToClipboard(text) {
   } catch (err) {
     throw new Error('Failed to copy to clipboard: ' + (err?.message || 'unknown error'));
   } finally {
-    // Always clean up, even on error
     if (document.body.contains(textarea)) {
       document.body.removeChild(textarea);
     }
