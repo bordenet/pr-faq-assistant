@@ -40,6 +40,22 @@ The initial draft is critically reviewed by Gemini to identify weak claims, miss
 ### Phase 3: Synthesis
 Claude synthesizes the initial draft with the adversarial feedback to produce a final, polished PR/FAQ.
 
+## Usage
+
+1. **Open the application** - Visit the [live demo](https://bordenet.github.io/pr-faq-assistant/) or run locally
+2. **Create a new project** - Click "New Project" and fill in product vision, customer problem, and solution
+3. **Phase 1: Initial Draft** - Copy the generated prompt to Claude, paste the response back
+4. **Phase 2: Adversarial Review** - Copy the Phase 2 prompt to Gemini, paste the review back
+5. **Phase 3: Synthesis** - Copy the Phase 3 prompt to Claude for final synthesis
+6. **Export** - Download your completed PR/FAQ as Markdown
+
+### AI Mock Mode
+
+For testing without an AI:
+1. Enable "AI Mock Mode" toggle (bottom-right, localhost only)
+2. Mock responses are generated automatically
+3. No need to copy/paste to real AI
+
 ## Development
 
 ### Prerequisites
