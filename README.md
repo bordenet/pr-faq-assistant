@@ -4,7 +4,7 @@ Write Amazon-style press releases and FAQs with AI. Three phases: draft, review,
 
 **Try it**: [bordenet.github.io/pr-faq-assistant](https://bordenet.github.io/pr-faq-assistant/)
 
-> **What is a PR/FAQ?** A PR/FAQ (Press Release / Frequently Asked Questions) is Amazon's "Working Backwards" document format. You write a future press release announcing the finished product, then answer anticipated customer and stakeholder questions. This forces clarity on customer benefit before building. See [Working Backwards](https://www.amazon.jobs/en/landing_pages/working-backwards) for background.
+> **What is a PR/FAQ?** A PR/FAQ (Press Release / Frequently Asked Questions) is Amazon's "Working Backwards" document format. You write a future press release announcing the finished product, then answer anticipated customer and stakeholder questions. This forces clarity on customer benefit before building. See [The PR-FAQ](https://github.com/bordenet/Engineering_Culture/blob/main/SDLC/The_PR-FAQ.md) for background.
 
 [![CI](https://github.com/bordenet/pr-faq-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/bordenet/pr-faq-assistant/actions)
 [![codecov](https://codecov.io/gh/bordenet/pr-faq-assistant/branch/main/graph/badge.svg)](https://codecov.io/gh/bordenet/pr-faq-assistant)
