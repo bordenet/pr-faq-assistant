@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import {
   createProject,
   getAllProjects,
@@ -5,9 +6,16 @@ import {
   updateProject,
   deleteProject,
   savePhaseOutput,
-  advancePhase
+  advancePhase,
+  exportAllProjects,
+  importProjects,
+  exportProjectAsMarkdown,
+  sanitizeFilename,
+  getExportFilename,
+  getFinalMarkdown
 } from '../js/projects.js';
 import storage from '../js/storage.js';
+import { Workflow } from '../js/workflow.js';
 
 describe('Projects Module', () => {
   beforeEach(async () => {
@@ -142,6 +150,158 @@ describe('Projects Module', () => {
     test('should throw error for non-existent project', async () => {
       await expect(advancePhase('non-existent'))
         .rejects.toThrow('Project not found');
+    });
+  });
+
+  describe('sanitizeFilename', () => {
+    test('should convert to lowercase and replace special chars', () => {
+      expect(sanitizeFilename('My Product Name!')).toBe('my-product-name');
+    });
+
+    test('should collapse multiple dashes', () => {
+      expect(sanitizeFilename('test---product')).toBe('test-product');
+    });
+
+    test('should remove leading and trailing dashes', () => {
+      expect(sanitizeFilename('---test---')).toBe('test');
+    });
+
+    test('should truncate long filenames', () => {
+      const longName = 'a'.repeat(100);
+      expect(sanitizeFilename(longName).length).toBeLessThanOrEqual(50);
+    });
+
+    test('should use default for empty string', () => {
+      expect(sanitizeFilename('')).toBe('pr-faq');
+    });
+  });
+
+  describe('getExportFilename', () => {
+    test('should generate sanitized filename with extension', () => {
+      const project = { title: 'My Product' };
+      expect(getExportFilename(project)).toBe('my-product-prfaq.md');
+    });
+
+    test('should handle missing title', () => {
+      const project = {};
+      expect(getExportFilename(project)).toBe('pr-faq-prfaq.md');
+    });
+  });
+
+  describe('getFinalMarkdown', () => {
+    test('should return markdown from workflow', () => {
+      const project = {
+        title: 'Test',
+        phase3_output: 'Final content'
+      };
+      const workflow = new Workflow(project);
+      const markdown = getFinalMarkdown(project, workflow);
+      expect(markdown).toContain('Final content');
+      expect(markdown).toContain('PR-FAQ Assistant');
+    });
+  });
+
+  describe('exportAllProjects', () => {
+    let mockUrl;
+    let mockAnchor;
+    let originalCreateObjectURL;
+    let originalRevokeObjectURL;
+    let originalCreateElement;
+
+    beforeEach(() => {
+      // Add toast container to DOM for showToast
+      document.body.innerHTML = '<div id="toast-container"></div>';
+
+      mockUrl = 'blob:mock-url';
+      mockAnchor = { href: '', download: '', click: jest.fn() };
+
+      originalCreateObjectURL = URL.createObjectURL;
+      originalRevokeObjectURL = URL.revokeObjectURL;
+      originalCreateElement = document.createElement.bind(document);
+
+      URL.createObjectURL = jest.fn(() => mockUrl);
+      URL.revokeObjectURL = jest.fn();
+      document.createElement = jest.fn((tag) => {
+        if (tag === 'a') return mockAnchor;
+        return originalCreateElement(tag);
+      });
+    });
+
+    afterEach(() => {
+      URL.createObjectURL = originalCreateObjectURL;
+      URL.revokeObjectURL = originalRevokeObjectURL;
+      document.createElement = originalCreateElement;
+    });
+
+    test('should export projects as JSON file', async () => {
+      await createProject({ productName: 'Export Test' });
+      await exportAllProjects();
+
+      expect(URL.createObjectURL).toHaveBeenCalled();
+      expect(mockAnchor.download).toMatch(/pr-faq-export-.*\.json/);
+      expect(mockAnchor.click).toHaveBeenCalled();
+      expect(URL.revokeObjectURL).toHaveBeenCalledWith(mockUrl);
+    });
+  });
+
+  describe('importProjects', () => {
+    test('should import projects from JSON file', async () => {
+      const data = {
+        version: '1.0',
+        projects: [{ id: 'test-1', title: 'Imported' }]
+      };
+      const file = new Blob([JSON.stringify(data)], { type: 'application/json' });
+      file.text = async () => JSON.stringify(data);
+
+      const count = await importProjects(file);
+      expect(typeof count).toBe('number');
+    });
+  });
+
+  describe('exportProjectAsMarkdown', () => {
+    let mockUrl;
+    let mockAnchor;
+    let originalCreateObjectURL;
+    let originalRevokeObjectURL;
+    let originalCreateElement;
+
+    beforeEach(() => {
+      // Add toast container to DOM for showToast
+      document.body.innerHTML = '<div id="toast-container"></div>';
+
+      mockUrl = 'blob:mock-md-url';
+      mockAnchor = { href: '', download: '', click: jest.fn() };
+
+      originalCreateObjectURL = URL.createObjectURL;
+      originalRevokeObjectURL = URL.revokeObjectURL;
+      originalCreateElement = document.createElement.bind(document);
+
+      URL.createObjectURL = jest.fn(() => mockUrl);
+      URL.revokeObjectURL = jest.fn();
+      document.createElement = jest.fn((tag) => {
+        if (tag === 'a') return mockAnchor;
+        return originalCreateElement(tag);
+      });
+    });
+
+    afterEach(() => {
+      URL.createObjectURL = originalCreateObjectURL;
+      URL.revokeObjectURL = originalRevokeObjectURL;
+      document.createElement = originalCreateElement;
+    });
+
+    test('should export project as markdown file', async () => {
+      const project = await createProject({ productName: 'Markdown Test' });
+      await exportProjectAsMarkdown(project.id);
+
+      expect(URL.createObjectURL).toHaveBeenCalled();
+      expect(mockAnchor.download).toContain('-prfaq.md');
+      expect(mockAnchor.click).toHaveBeenCalled();
+    });
+
+    test('should show error for non-existent project', async () => {
+      await exportProjectAsMarkdown('non-existent-id');
+      // Should not throw, just show toast
     });
   });
 });

@@ -5,9 +5,14 @@
 
 // Import the classes from same-llm-adversarial.js
 import {
+    SameLLMAdversarialSystem,
     ConfigurationManager,
     AdversarialPromptAugmenter,
-    AdversarialQualityValidator
+    AdversarialQualityValidator,
+    detectSameLLM,
+    getAdversarialStrategy,
+    applyAdversarialPrompt,
+    SAME_LLM_CONFIG
 } from '../js/same-llm-adversarial.js';
 
 describe('Same-LLM Adversarial Configuration Tests', () => {
@@ -384,6 +389,222 @@ Evaluate the document on:
 
             // Should be low difference (mostly same words)
             expect(difference).toBeLessThan(0.3);
+        });
+    });
+
+    describe('SameLLMAdversarialSystem', () => {
+        let system;
+
+        beforeEach(() => {
+            system = new SameLLMAdversarialSystem();
+            // Clear environment variables
+            delete process.env.PHASE1_PROVIDER;
+            delete process.env.PHASE1_MODEL;
+            delete process.env.PHASE1_URL;
+            delete process.env.PHASE1_ENDPOINT;
+            delete process.env.PHASE2_PROVIDER;
+            delete process.env.PHASE2_MODEL;
+            delete process.env.PHASE2_URL;
+            delete process.env.PHASE2_ENDPOINT;
+        });
+
+        test('should create system with all components', () => {
+            expect(system.configManager).toBeInstanceOf(ConfigurationManager);
+            expect(system.promptAugmenter).toBeInstanceOf(AdversarialPromptAugmenter);
+            expect(system.qualityValidator).toBeInstanceOf(AdversarialQualityValidator);
+        });
+
+        test('should apply adversarial augmentation for same LLM via executePhase2', async () => {
+            process.env.PHASE1_PROVIDER = 'anthropic';
+            process.env.PHASE1_MODEL = 'claude-3-sonnet';
+            process.env.PHASE2_PROVIDER = 'anthropic';
+            process.env.PHASE2_MODEL = 'claude-3-sonnet';
+
+            const config = system.configManager.detectConfiguration();
+            expect(config.isSameLLM).toBe(true);
+
+            const phase2Output = await system.executePhase2('phase1 output', 'user input', config);
+
+            expect(phase2Output).toBeDefined();
+            expect(phase2Output.context.context).toBe('adversarial_gemini_simulation');
+        });
+
+        test('should use standard approach for different LLMs via executePhase2', async () => {
+            process.env.PHASE1_PROVIDER = 'anthropic';
+            process.env.PHASE1_MODEL = 'claude-3-sonnet';
+            process.env.PHASE2_PROVIDER = 'google';
+            process.env.PHASE2_MODEL = 'gemini-1.5-pro';
+
+            const config = system.configManager.detectConfiguration();
+            expect(config.isSameLLM).toBe(false);
+
+            const phase2Output = await system.executePhase2('phase1 output', 'user input', config);
+
+            expect(phase2Output.context.context).toBe('standard_adversarial');
+        });
+
+        test('should apply adversarial augmentation for same LLM', async () => {
+            process.env.PHASE1_PROVIDER = 'anthropic';
+            process.env.PHASE1_MODEL = 'claude-3-sonnet';
+            process.env.PHASE2_PROVIDER = 'anthropic';
+            process.env.PHASE2_MODEL = 'claude-3-sonnet';
+
+            const config = system.configManager.detectConfiguration();
+            const phase1Output = await system.executePhase1('test');
+            const phase2Output = await system.executePhase2(phase1Output, 'test', config);
+
+            expect(phase2Output.context.context).toBe('adversarial_gemini_simulation');
+            expect(phase2Output.prompt).toContain('GEMINI-STYLE SIMULATION');
+        });
+
+        test('should use standard approach for different LLMs', async () => {
+            process.env.PHASE1_PROVIDER = 'anthropic';
+            process.env.PHASE1_MODEL = 'claude-3-sonnet';
+            process.env.PHASE2_PROVIDER = 'google';
+            process.env.PHASE2_MODEL = 'gemini-1.5-pro';
+
+            const config = system.configManager.detectConfiguration();
+            const phase1Output = await system.executePhase1('test');
+            const phase2Output = await system.executePhase2(phase1Output, 'test', config);
+
+            expect(phase2Output.context.context).toBe('standard_adversarial');
+        });
+
+        test('should return correct Phase 1 output', async () => {
+            const result = await system.executePhase1('user input');
+            expect(result).toContain('Phase 1 output');
+        });
+
+        test('should return correct Phase 3 output', async () => {
+            const result = await system.executePhase3('phase1', 'phase2', 'user');
+            expect(result).toContain('Phase 3 output');
+        });
+
+        test('should get original phase 2 prompt', () => {
+            const prompt = system.getOriginalPhase2Prompt();
+            expect(prompt).toContain('alternative perspective');
+            expect(prompt).toContain('{phase1Output}');
+            expect(prompt).toContain('{userInput}');
+        });
+
+        test('should call LLM with correct context', async () => {
+            const result = await system.callLLM('test prompt', { test: 'context' });
+            expect(result.prompt).toBe('test prompt');
+            expect(result.context).toEqual({ test: 'context' });
+            expect(result.response).toContain('Mock LLM response');
+        });
+    });
+
+    describe('Legacy Helper Functions', () => {
+        test('detectSameLLM should detect matching models', () => {
+            // detectSameLLM compares first word after split on whitespace
+            // e.g., 'claude sonnet'.split(/\s+/)[0] = 'claude'
+            expect(detectSameLLM('claude sonnet', 'claude opus')).toBe(true);
+            expect(detectSameLLM('Claude 3 Sonnet', 'Claude 3 Opus')).toBe(true);
+            expect(detectSameLLM('gpt 4', 'gpt 4-turbo')).toBe(true);
+            expect(detectSameLLM('gemini pro', 'gemini ultra')).toBe(true);
+        });
+
+        test('detectSameLLM should detect different models', () => {
+            expect(detectSameLLM('claude-3-sonnet', 'gemini-1.5-pro')).toBe(false);
+            expect(detectSameLLM('GPT-4', 'Claude-3')).toBe(false);
+            // No whitespace - compares full string as first word
+            expect(detectSameLLM('gpt-4', 'gpt-4-turbo')).toBe(false);
+        });
+
+        test('getAdversarialStrategy should return correct strategy for claude', () => {
+            const strategy = getAdversarialStrategy('claude-3-sonnet');
+            expect(strategy).toContain('Gemini personality simulation');
+        });
+
+        test('getAdversarialStrategy should return correct strategy for gemini', () => {
+            const strategy = getAdversarialStrategy('gemini-1.5-pro');
+            expect(strategy).toContain('Claude personality simulation');
+        });
+
+        test('getAdversarialStrategy should return correct strategy for chatgpt', () => {
+            const strategy = getAdversarialStrategy('chatgpt-4');
+            expect(strategy).toContain('Alternative model perspective');
+        });
+
+        test('getAdversarialStrategy should return default for unknown model', () => {
+            const strategy = getAdversarialStrategy('unknown-model');
+            expect(strategy).toContain('Generate critical feedback');
+        });
+
+        test('applyAdversarialPrompt should augment prompt with strategy', () => {
+            const result = applyAdversarialPrompt('Test prompt', 'claude-3');
+            expect(result).toContain('Test prompt');
+            expect(result).toContain('[ADVERSARIAL MODE:');
+            expect(result).toContain('Gemini personality simulation');
+        });
+
+        test('SAME_LLM_CONFIG should have all required properties', () => {
+            expect(SAME_LLM_CONFIG.detectSameLLM).toBe(detectSameLLM);
+            expect(SAME_LLM_CONFIG.getAdversarialStrategy).toBe(getAdversarialStrategy);
+            expect(SAME_LLM_CONFIG.applyAdversarialPrompt).toBe(applyAdversarialPrompt);
+            expect(SAME_LLM_CONFIG.enabled).toBe(true);
+        });
+    });
+
+    describe('ConfigurationManager.detectCorporateDeployment', () => {
+        let configManager;
+
+        beforeEach(() => {
+            configManager = new ConfigurationManager();
+            delete process.env.PHASE1_URL;
+            delete process.env.PHASE1_ENDPOINT;
+            delete process.env.PHASE2_URL;
+            delete process.env.PHASE2_ENDPOINT;
+        });
+
+        test('should detect LibreChat deployment', () => {
+            process.env.PHASE1_URL = 'https://librechat.company.com/api';
+            process.env.PHASE2_URL = 'https://librechat.company.com/api';
+
+            const result = configManager.detectCorporateDeployment();
+            expect(result.isCorporate).toBe(true);
+            expect(result.pattern).toBe('librechat');
+            expect(result.requiresAugmentation).toBe(true);
+        });
+
+        test('should detect Azure OpenAI deployment with different URLs', () => {
+            process.env.PHASE1_URL = 'https://azure-openai.company.com/api';
+            process.env.PHASE1_ENDPOINT = 'https://azure-openai.company.com/api';
+            process.env.PHASE2_URL = 'https://different.company.com/api';
+            process.env.PHASE2_ENDPOINT = 'https://different.company.com/api';
+
+            const result = configManager.detectCorporateDeployment();
+            expect(result.isCorporate).toBe(true);
+            expect(result.pattern).toBe('azure-openai');
+            expect(result.requiresAugmentation).toBe(false);
+        });
+
+        test('should detect Azure OpenAI deployment with same URL requiring augmentation', () => {
+            process.env.PHASE1_URL = 'https://azure-openai.company.com/api';
+            process.env.PHASE2_URL = 'https://azure-openai.company.com/api';
+
+            const result = configManager.detectCorporateDeployment();
+            expect(result.isCorporate).toBe(true);
+            expect(result.pattern).toBe('azure-openai');
+            expect(result.requiresAugmentation).toBe(true);
+        });
+
+        test('should detect AWS Bedrock deployment', () => {
+            process.env.PHASE1_ENDPOINT = 'https://aws-bedrock.company.com/api';
+
+            const result = configManager.detectCorporateDeployment();
+            expect(result.isCorporate).toBe(true);
+            expect(result.pattern).toBe('aws-bedrock');
+        });
+
+        test('should return non-corporate for regular deployments', () => {
+            process.env.PHASE1_URL = 'https://api.anthropic.com';
+            process.env.PHASE2_URL = 'https://api.google.com';
+
+            const result = configManager.detectCorporateDeployment();
+            expect(result.isCorporate).toBe(false);
+            expect(result.pattern).toBeNull();
         });
     });
 });
