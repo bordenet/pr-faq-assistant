@@ -112,7 +112,8 @@ function renderProjectCards(projects) {
         p.phases[1]?.completed &&
         p.phases[2]?.completed &&
         p.phases[3]?.completed;
-    const progress = ((p.phase || 1) / WORKFLOW_CONFIG.phaseCount) * 100;
+    const displayPhase = Math.min(p.phase || 1, WORKFLOW_CONFIG.phaseCount);
+    const progress = Math.min(((p.phase || 1) / WORKFLOW_CONFIG.phaseCount) * 100, 100);
     return `
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow cursor-pointer" data-project-id="${p.id}">
                     <div class="p-6">
@@ -136,8 +137,8 @@ function renderProjectCards(projects) {
                         </div>
                         <div class="mb-4">
                             <div class="flex items-center space-x-2 mb-2">
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Phase ${p.phase || 1}/${WORKFLOW_CONFIG.phaseCount}</span>
-                                <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Phase ${displayPhase}/${WORKFLOW_CONFIG.phaseCount}</span>
+                                <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                                     <div class="bg-blue-600 h-2 rounded-full transition-all" style="width: ${progress}%"></div>
                                 </div>
                             </div>
