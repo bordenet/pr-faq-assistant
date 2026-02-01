@@ -50,29 +50,29 @@ Write Amazon-style press releases and FAQs with AI. Three phases: draft, review,
 
 ### Setup
 
-\`\`\`bash
+```bash
 git clone https://github.com/bordenet/pr-faq-assistant.git
 cd pr-faq-assistant
 npm install
-\`\`\`
+```
 
 ### Testing
 
-\`\`\`bash
+```bash
 npm test        # Run all tests
 npm run lint    # Run linting
 npm run lint:fix # Fix lint issues
-\`\`\`
+```
 
 ### Local Development
 
-\`\`\`bash
+```bash
 npm run serve   # Start local server at http://localhost:8000
-\`\`\`
+```
 
 ## Project Structure
 
-\`\`\`
+```
 pr-faq-assistant/
 ├── js/                    # JavaScript modules
 │   ├── app.js            # Main application entry
@@ -85,7 +85,7 @@ pr-faq-assistant/
 │   ├── phase2.md
 │   └── phase3.md
 └── index.html            # Main HTML file
-\`\`\`
+```
 
 ## Part of Genesis Tools
 
