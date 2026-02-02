@@ -95,22 +95,26 @@ describe('generatePhase1Prompt', () => {
 
   it('should include validator requirements', async () => {
     const prompt = await generatePhase1Prompt(sampleFormData);
-    expect(prompt).toContain('6-12 words');
+    expect(prompt).toContain('8-15 words');
     expect(prompt).toContain('Dateline');
-    expect(prompt).toContain('WHO, WHAT, WHEN, WHERE, WHY');
+    expect(prompt).toContain('WHO');
+    expect(prompt).toContain('WHAT');
+    expect(prompt).toContain('WHEN');
+    expect(prompt).toContain('WHERE');
+    expect(prompt).toContain('WHY');
   });
 
   it('should warn against fluff words', async () => {
     const prompt = await generatePhase1Prompt(sampleFormData);
     expect(prompt).toContain('revolutionary');
     expect(prompt).toContain('groundbreaking');
-    expect(prompt).toContain('AVOID');
+    expect(prompt).toContain('BANNED WORDS');
   });
 
   it('should require customer quotes with metrics', async () => {
     const prompt = await generatePhase1Prompt(sampleFormData);
-    expect(prompt).toContain('QUANTITATIVE METRICS');
-    expect(prompt).toContain('3-4 customer quotes');
+    expect(prompt).toContain('quantitative metric');
+    expect(prompt).toContain('3-4 quotes');
   });
 
   it('should include a future release date', async () => {
@@ -157,9 +161,9 @@ describe('generatePhase3Prompt', () => {
     expect(prompt).toContain('Critical review feedback');
   });
 
-  it('should include mandatory checklist', async () => {
+  it('should include verification rubric', async () => {
     const prompt = await generatePhase3Prompt(phase1Output, phase2Output);
-    expect(prompt).toContain('MANDATORY CHECKLIST');
+    expect(prompt).toContain('Verify Against Rubric');
     expect(prompt).toContain('Headline');
     expect(prompt).toContain('Dateline');
   });
