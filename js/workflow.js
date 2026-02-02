@@ -72,7 +72,7 @@ export class Workflow {
         this.project.phase2_output || ''
       );
     default:
-      return '';
+      throw new Error(`Invalid phase: ${this.currentPhase}`);
     }
   }
 
@@ -121,4 +121,20 @@ export function getPhaseMetadata(phaseNumber) {
 export function exportFinalDocument(project) {
   const workflow = new Workflow(project);
   return workflow.exportAsMarkdown();
+}
+
+/**
+ * Generate export filename for a project
+ * @param {Object} project - Project object
+ * @returns {string} Filename with .md extension
+ */
+export function getExportFilename(project) {
+  const title = project.title || project.name || 'pr-faq';
+  // Sanitize filename: remove special chars, replace spaces with hyphens
+  const sanitized = title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .substring(0, 50);
+  return `${sanitized}.md`;
 }
