@@ -141,7 +141,9 @@ export async function advancePhase(projectId) {
   const project = await storage.getProject(projectId);
   if (!project) throw new Error('Project not found');
 
-  if (project.phase < 3) {
+  // Allow advancing up to phase 4 (complete state)
+  // Phase 4 means all 3 phases are done
+  if (project.phase <= 3) {
     project.phase += 1;
     project.updatedAt = new Date().toISOString();
     await storage.saveProject(project);

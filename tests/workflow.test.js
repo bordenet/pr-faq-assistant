@@ -56,6 +56,27 @@ describe('Workflow', () => {
             const w = new Workflow(project);
             expect(w.currentPhase).toBe(1);
         });
+
+        it('should clamp phase 4 to phase 3 for display but mark as complete', () => {
+            project.phase = 4;
+            const w = new Workflow(project);
+            // currentPhase is clamped to 3 for display purposes
+            expect(w.currentPhase).toBe(3);
+            // but isComplete() checks the original project.phase
+            expect(w.isComplete()).toBe(true);
+        });
+
+        it('should clamp phase to 1 when project.phase is 0', () => {
+            project.phase = 0;
+            const w = new Workflow(project);
+            expect(w.currentPhase).toBe(1);
+        });
+
+        it('should clamp phase to 1 when project.phase is negative', () => {
+            project.phase = -1;
+            const w = new Workflow(project);
+            expect(w.currentPhase).toBe(1);
+        });
     });
 
     describe('getCurrentPhase', () => {
@@ -84,9 +105,19 @@ describe('Workflow', () => {
             expect(workflow.isComplete()).toBe(false);
         });
 
-        it('should return true when past last phase', () => {
-            workflow.currentPhase = 4;
+        it('should return true when project.phase is past last phase', () => {
+            // isComplete() checks project.phase, not currentPhase
+            workflow.project.phase = 4;
             expect(workflow.isComplete()).toBe(true);
+        });
+    });
+
+    describe('getCurrentPhase', () => {
+        it('should return last phase when workflow is complete', () => {
+            workflow.currentPhase = 4;
+            const phase = workflow.getCurrentPhase();
+            expect(phase.number).toBe(3);
+            expect(phase.name).toBe('Final Polish');
         });
     });
 
@@ -98,11 +129,18 @@ describe('Workflow', () => {
             expect(project.phase).toBe(2);
         });
 
-        it('should not advance past last phase', () => {
+        it('should advance from phase 3 to phase 4 (complete state)', () => {
             workflow.currentPhase = 3;
             const result = workflow.advancePhase();
+            expect(result).toBe(true);
+            expect(workflow.currentPhase).toBe(4);
+        });
+
+        it('should not advance past phase 4 (complete state)', () => {
+            workflow.currentPhase = 4;
+            const result = workflow.advancePhase();
             expect(result).toBe(false);
-            expect(workflow.currentPhase).toBe(3);
+            expect(workflow.currentPhase).toBe(4);
         });
     });
 

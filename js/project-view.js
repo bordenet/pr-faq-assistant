@@ -5,7 +5,7 @@
  * @module project-view
  */
 
-import { getProject, deleteProject, savePhaseOutput, getExportFilename, getFinalMarkdown } from './projects.js';
+import { getProject, deleteProject, savePhaseOutput, advancePhase as advanceProjectPhase, getExportFilename, getFinalMarkdown } from './projects.js';
 import { escapeHtml, showToast, copyToClipboardAsync, showPromptModal, confirm, showDocumentPreviewModal } from './ui.js';
 import { navigateTo } from './router.js';
 import { Workflow, WORKFLOW_CONFIG } from './workflow.js';
@@ -32,8 +32,7 @@ export async function renderProjectView(projectId) {
 
   const workflow = new Workflow(project);
   const container = document.getElementById('app-container');
-  const isFullyComplete = workflow.currentPhase > WORKFLOW_CONFIG.phaseCount ||
-        (workflow.getPhaseOutput(WORKFLOW_CONFIG.phaseCount) && workflow.currentPhase === WORKFLOW_CONFIG.phaseCount);
+  const isFullyComplete = workflow.isComplete();
 
   container.innerHTML = `
         <div class="mb-6 flex items-center justify-between">
@@ -41,7 +40,7 @@ export async function renderProjectView(projectId) {
                 <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
-                Back to <a href="${PRFAQ_DOCS_URL}" target="_blank" rel="noopener noreferrer" class="hover:underline">PR-FAQs</a>
+                Back to PR-FAQs
             </button>
             ${isFullyComplete ? `
                 <button id="export-final-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
@@ -86,14 +85,17 @@ export async function renderProjectView(projectId) {
  */
 function renderPhaseContent(workflow) {
   const phase = workflow.getCurrentPhase();
+  if (!phase) {
+    console.error('Phase not found for currentPhase:', workflow.currentPhase, 'project.phase:', workflow.project.phase);
+    return `<div class="p-4 text-red-600">Error: Invalid phase configuration. Please refresh or create a new project.</div>`;
+  }
   const hasExistingOutput = workflow.getPhaseOutput(workflow.currentPhase);
   const aiUrl = phase.aiModel === 'Gemini' ? 'https://gemini.google.com' : 'https://claude.ai';
   const aiName = phase.aiModel;
-  const isFullyComplete = workflow.currentPhase === WORKFLOW_CONFIG.phaseCount && hasExistingOutput;
+  const isFullyComplete = workflow.isComplete();
 
-  return `
-        ${isFullyComplete ? `
-        <!-- Phase 3 Complete: Export Call-to-Action -->
+  // Completion banner shown above Phase 3 content when workflow is complete
+  const completionBanner = isFullyComplete ? `
         <div class="mb-6 p-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
             <div class="flex items-center justify-between flex-wrap gap-4">
                 <div>
@@ -126,7 +128,10 @@ function renderPhaseContent(workflow) {
                 </div>
             </details>
         </div>
-        ` : ''}
+  ` : '';
+
+  return `
+        ${completionBanner}
 
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div class="mb-6">
@@ -368,18 +373,21 @@ function setupPhaseContentListeners(project, workflow) {
     await savePhaseOutput(project.id, workflow.currentPhase, output);
     workflow.savePhaseOutput(output);
 
-    // Auto-advance to next phase if not on final phase
-    if (workflow.currentPhase < WORKFLOW_CONFIG.phaseCount) {
-      workflow.advancePhase();
-      project.phase = workflow.currentPhase;
+    // Always advance phase (including from phase 3 to 4 for completion)
+    await advanceProjectPhase(project.id);
+    workflow.advancePhase();
+    project.phase = workflow.currentPhase;
+
+    if (workflow.isComplete()) {
+      // Final phase complete - show export view
+      showToast('PR-FAQ Complete! You can now export your document.', 'success');
+      renderProjectView(project.id);
+    } else {
+      // Move to next phase
       showToast('Response saved! Moving to next phase...', 'success');
       updatePhaseTabStyles(workflow.currentPhase);
       document.getElementById('phase-content').innerHTML = renderPhaseContent(workflow);
       setupPhaseContentListeners(project, workflow);
-    } else {
-      // Final phase - mark complete and show export
-      showToast('PR-FAQ Complete! You can now export your document.', 'success');
-      renderProjectView(project.id);
     }
   });
 

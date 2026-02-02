@@ -12,10 +12,17 @@ export { WORKFLOW_CONFIG };
 export class Workflow {
   constructor(project) {
     this.project = project;
-    this.currentPhase = project.phase || 1;
+    // Clamp phase to valid range (1 to phaseCount)
+    // If phase > phaseCount, show phase 3 (the final phase) with export available
+    const rawPhase = project.phase || 1;
+    this.currentPhase = Math.min(Math.max(1, rawPhase), WORKFLOW_CONFIG.phaseCount);
   }
 
   getCurrentPhase() {
+    // If workflow is complete (phase > phaseCount), return the last phase
+    if (this.currentPhase > WORKFLOW_CONFIG.phaseCount) {
+      return WORKFLOW_CONFIG.phases[WORKFLOW_CONFIG.phaseCount - 1];
+    }
     return WORKFLOW_CONFIG.phases.find(p => p.number === this.currentPhase);
   }
 
@@ -27,11 +34,13 @@ export class Workflow {
   }
 
   isComplete() {
-    return this.currentPhase > WORKFLOW_CONFIG.phaseCount;
+    // Check the original project phase, not the clamped currentPhase
+    return (this.project.phase || 1) > WORKFLOW_CONFIG.phaseCount;
   }
 
   advancePhase() {
-    if (this.currentPhase < WORKFLOW_CONFIG.phaseCount) {
+    // Allow advancing up to phase 4 (complete state)
+    if (this.currentPhase <= WORKFLOW_CONFIG.phaseCount) {
       this.currentPhase++;
       this.project.phase = this.currentPhase;
       return true;

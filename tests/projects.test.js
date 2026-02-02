@@ -138,13 +138,23 @@ describe('Projects Module', () => {
       expect(updated.phase).toBe(2);
     });
 
-    test('should not advance past phase 3', async () => {
+    test('should advance to phase 4 (complete state)', async () => {
       const project = await createProject({ productName: 'Test' });
       await advancePhase(project.id); // 1 -> 2
       await advancePhase(project.id); // 2 -> 3
-      const updated = await advancePhase(project.id); // 3 -> 3
+      const updated = await advancePhase(project.id); // 3 -> 4 (complete)
 
-      expect(updated.phase).toBe(3);
+      expect(updated.phase).toBe(4);
+    });
+
+    test('should not advance past phase 4 (complete state)', async () => {
+      const project = await createProject({ productName: 'Test' });
+      await advancePhase(project.id); // 1 -> 2
+      await advancePhase(project.id); // 2 -> 3
+      await advancePhase(project.id); // 3 -> 4 (complete)
+      const updated = await advancePhase(project.id); // 4 -> 4 (stays complete)
+
+      expect(updated.phase).toBe(4);
     });
 
     test('should throw error for non-existent project', async () => {
