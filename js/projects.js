@@ -103,6 +103,50 @@ export async function deleteProject(id) {
 }
 
 /**
+ * Extract title from PR-FAQ markdown content
+ * Handles: H1 headers, bold headlines after "# PRESS RELEASE", or first bold line
+ * @param {string} markdown - PR-FAQ markdown content
+ * @returns {string} Extracted title or empty string
+ */
+function extractTitleFromMarkdown(markdown) {
+  if (!markdown) return '';
+
+  // First try: H1 header (# Title)
+  const h1Match = markdown.match(/^#\s+(.+)$/m);
+  if (h1Match) {
+    const title = h1Match[1].trim();
+    // Skip generic headers like "PRESS RELEASE" or "Press Release"
+    if (!/^press\s+release$/i.test(title)) {
+      return title;
+    }
+  }
+
+  // Second try: Bold headline after "# PRESS RELEASE" or "## Press Release"
+  // Pattern: **Headline Text**
+  const prMatch = markdown.match(/^#\s*PRESS\s*RELEASE\s*$/im);
+  if (prMatch) {
+    const startIdx = markdown.indexOf(prMatch[0]) + prMatch[0].length;
+    const afterPR = markdown.slice(startIdx).trim();
+    const boldMatch = afterPR.match(/^\*\*(.+?)\*\*/);
+    if (boldMatch) {
+      return boldMatch[1].trim();
+    }
+  }
+
+  // Third try: First bold line in the document
+  const firstBoldMatch = markdown.match(/\*\*(.+?)\*\*/);
+  if (firstBoldMatch) {
+    const title = firstBoldMatch[1].trim();
+    // Only use if it looks like a headline (not too long, not a sentence)
+    if (title.length > 10 && title.length < 150 && !title.endsWith('.')) {
+      return title;
+    }
+  }
+
+  return '';
+}
+
+/**
  * Save phase output for a project
  */
 export async function savePhaseOutput(projectId, phase, output, prompt = '') {
@@ -128,6 +172,14 @@ export async function savePhaseOutput(projectId, phase, output, prompt = '') {
   // Keep legacy field for backward compatibility during migration
   const phaseKey = `phase${phase}_output`;
   project[phaseKey] = output;
+
+  // Phase 3: Extract title from final PR-FAQ and update project title
+  if (phase === 3) {
+    const extractedTitle = extractTitleFromMarkdown(output);
+    if (extractedTitle) {
+      project.title = extractedTitle;
+    }
+  }
 
   project.updatedAt = new Date().toISOString();
   await storage.saveProject(project);

@@ -123,6 +123,51 @@ describe('Projects Module', () => {
       expect(updated.phase1_output).toBe('Phase 1 output');
     });
 
+    test('should extract and update title from phase 3 output with bold headline', async () => {
+      const project = await createProject({ productName: 'Initial Title' });
+      const phase3Output = `# PRESS RELEASE
+
+**CallBox Launches CARI Appointment Scheduler, Reducing Dealership No-Show Rates by 62%**
+
+SEATTLE, WA — February 15, 2026 — CallBox today announced CARI Appointment Scheduler...`;
+
+      const updated = await savePhaseOutput(project.id, 3, phase3Output);
+
+      expect(updated.title).toBe('CallBox Launches CARI Appointment Scheduler, Reducing Dealership No-Show Rates by 62%');
+      expect(updated.phase3_output).toBe(phase3Output);
+    });
+
+    test('should extract and update title from phase 3 output with H1 header', async () => {
+      const project = await createProject({ productName: 'Initial Title' });
+      const phase3Output = `# Revolutionary New Product Launches Today
+
+Press release content here...`;
+
+      const updated = await savePhaseOutput(project.id, 3, phase3Output);
+
+      expect(updated.title).toBe('Revolutionary New Product Launches Today');
+    });
+
+    test('should not update title from phase 1 or 2 output', async () => {
+      const project = await createProject({ productName: 'Original Title' });
+      const phase1Output = `# Some Different Title
+
+Content here...`;
+
+      const updated = await savePhaseOutput(project.id, 1, phase1Output);
+
+      expect(updated.title).toBe('Original Title');
+    });
+
+    test('should keep original title if phase 3 has no extractable title', async () => {
+      const project = await createProject({ productName: 'Original Title' });
+      const phase3Output = 'Just some plain text without any title markers';
+
+      const updated = await savePhaseOutput(project.id, 3, phase3Output);
+
+      expect(updated.title).toBe('Original Title');
+    });
+
     test('should throw error for non-existent project', async () => {
       await expect(savePhaseOutput('non-existent', 1, 'output'))
         .rejects.toThrow('Project not found');
