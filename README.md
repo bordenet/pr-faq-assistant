@@ -102,7 +102,6 @@ Built with [Genesis](https://github.com/bordenet/genesis). Related tools:
 - [One-Pager](https://github.com/bordenet/one-pager)
 - [Power Statement Assistant](https://github.com/bordenet/power-statement-assistant)
 - [PR/FAQ Assistant](https://github.com/bordenet/pr-faq-assistant)
-- [**PR-FAQ Validator**](https://github.com/bordenet/pr-faq-validator) — Score and improve your PR-FAQs
 - [Product Requirements Assistant](https://github.com/bordenet/product-requirements-assistant)
 - [Strategic Proposal](https://github.com/bordenet/strategic-proposal)
 
