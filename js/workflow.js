@@ -34,8 +34,18 @@ export class Workflow {
   }
 
   isComplete() {
-    // Check the original project phase, not the clamped currentPhase
-    return (this.project.phase || 1) > WORKFLOW_CONFIG.phaseCount;
+    // Check if workflow is complete via either:
+    // 1. project.phase > phaseCount (new projects that were properly advanced)
+    // 2. All phases have completed: true (legacy projects)
+    if ((this.project.phase || 1) > WORKFLOW_CONFIG.phaseCount) {
+      return true;
+    }
+    // Fallback: check if all phases are marked as completed
+    const phases = this.project.phases;
+    if (phases) {
+      return WORKFLOW_CONFIG.phases.every(p => phases[p.number]?.completed === true);
+    }
+    return false;
   }
 
   advancePhase() {

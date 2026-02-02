@@ -128,6 +128,27 @@ describe('Workflow class', () => {
       workflow.project.phase = 4;
       expect(workflow.isComplete()).toBe(true);
     });
+
+    it('should return true when all phases are completed (legacy project)', () => {
+      // Legacy project: phase is still 3 but all phases have completed: true
+      workflow.project.phase = 3;
+      workflow.project.phases = {
+        1: { prompt: '', response: 'Phase 1 output', completed: true },
+        2: { prompt: '', response: 'Phase 2 output', completed: true },
+        3: { prompt: '', response: 'Phase 3 output', completed: true }
+      };
+      expect(workflow.isComplete()).toBe(true);
+    });
+
+    it('should return false when not all phases are completed', () => {
+      workflow.project.phase = 3;
+      workflow.project.phases = {
+        1: { prompt: '', response: 'Phase 1 output', completed: true },
+        2: { prompt: '', response: 'Phase 2 output', completed: true },
+        3: { prompt: '', response: '', completed: false }
+      };
+      expect(workflow.isComplete()).toBe(false);
+    });
   });
 
   describe('advancePhase', () => {
