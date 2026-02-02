@@ -34,6 +34,12 @@ Write Amazon-style press releases and FAQs with AI. Three phases: draft, review,
 
 **Phase 3** — Claude takes the draft plus critique and produces a final version.
 
+## Validate Your PR-FAQ
+
+Once you've completed your PR-FAQ, run it through the **[PR-FAQ Validator](https://bordenet.github.io/pr-faq-validator/)** for instant scoring and AI-powered improvement suggestions. The validator checks headline quality, newsworthy hooks, 5 Ws coverage, customer evidence, and professional tone—giving you a 0-100 score with actionable feedback.
+
+→ **[Try the Validator](https://bordenet.github.io/pr-faq-validator/)** | [Source Code](https://github.com/bordenet/pr-faq-validator)
+
 ## Usage
 
 1. Open the app
@@ -96,6 +102,7 @@ Built with [Genesis](https://github.com/bordenet/genesis). Related tools:
 - [One-Pager](https://github.com/bordenet/one-pager)
 - [Power Statement Assistant](https://github.com/bordenet/power-statement-assistant)
 - [PR/FAQ Assistant](https://github.com/bordenet/pr-faq-assistant)
+- [**PR-FAQ Validator**](https://github.com/bordenet/pr-faq-validator) — Score and improve your PR-FAQs
 - [Product Requirements Assistant](https://github.com/bordenet/product-requirements-assistant)
 - [Strategic Proposal](https://github.com/bordenet/strategic-proposal)
 
