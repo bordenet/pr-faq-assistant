@@ -89,7 +89,9 @@ function renderPhaseContent(workflow) {
     console.error('Phase not found for currentPhase:', workflow.currentPhase, 'project.phase:', workflow.project.phase);
     return `<div class="p-4 text-red-600">Error: Invalid phase configuration. Please refresh or create a new project.</div>`;
   }
-  const hasExistingOutput = workflow.getPhaseOutput(workflow.currentPhase);
+  // Use phases object structure (canonical) with fallback to legacy phase${n}_output fields
+  const phaseData = workflow.project.phases?.[workflow.currentPhase] || { prompt: '', response: '', completed: false };
+  const hasExistingOutput = phaseData.response || workflow.getPhaseOutput(workflow.currentPhase);
   const aiUrl = phase.aiModel === 'Gemini' ? 'https://gemini.google.com' : 'https://claude.ai';
   const aiName = phase.aiModel;
   const isFullyComplete = workflow.isComplete();
@@ -231,27 +233,32 @@ function renderPhaseNavigation(workflow, hasExistingOutput) {
 function setupProjectViewListeners(project, workflow) {
   document.getElementById('back-home')?.addEventListener('click', () => navigateTo('home'));
 
-  // Phase tabs - switch between phases
+  // Phase tabs - switch between phases (re-fetch project to ensure fresh data)
   document.querySelectorAll('.phase-tab').forEach(tab => {
     tab.addEventListener('click', async () => {
       const targetPhase = parseInt(tab.dataset.phase);
+
+      // Re-fetch project from storage to get fresh data
+      const freshProject = await getProject(project.id);
 
       // Guard: Can only navigate to a phase if all prior phases are complete
       // Phase 1 is always accessible
       if (targetPhase > 1) {
         const priorPhase = targetPhase - 1;
-        const priorPhaseComplete = project.phases?.[priorPhase]?.completed;
+        const priorPhaseComplete = freshProject.phases?.[priorPhase]?.completed;
         if (!priorPhaseComplete) {
           showToast(`Complete Phase ${priorPhase} before proceeding to Phase ${targetPhase}`, 'warning');
           return;
         }
       }
 
-      workflow.currentPhase = targetPhase;
-      project.phase = targetPhase;
+      freshProject.phase = targetPhase;
+      const freshWorkflow = new Workflow(freshProject);
+      freshWorkflow.currentPhase = targetPhase;
+
       updatePhaseTabStyles(targetPhase);
-      document.getElementById('phase-content').innerHTML = renderPhaseContent(workflow);
-      setupPhaseContentListeners(project, workflow);
+      document.getElementById('phase-content').innerHTML = renderPhaseContent(freshWorkflow);
+      setupPhaseContentListeners(freshProject, freshWorkflow);
     });
   });
 
@@ -370,24 +377,26 @@ function setupPhaseContentListeners(project, workflow) {
       return;
     }
 
-    await savePhaseOutput(project.id, workflow.currentPhase, output);
-    workflow.savePhaseOutput(output);
+    const currentPhase = workflow.currentPhase;
+    await savePhaseOutput(project.id, currentPhase, output);
 
     // Always advance phase (including from phase 3 to 4 for completion)
     await advanceProjectPhase(project.id);
-    workflow.advancePhase();
-    project.phase = workflow.currentPhase;
 
-    if (workflow.isComplete()) {
+    // Re-fetch project from storage to get fresh data with updated phases
+    const freshProject = await getProject(project.id);
+    const freshWorkflow = new Workflow(freshProject);
+
+    if (freshWorkflow.isComplete()) {
       // Final phase complete - show export view
       showToast('PR-FAQ Complete! You can now export your document.', 'success');
       renderProjectView(project.id);
     } else {
-      // Move to next phase
+      // Move to next phase - freshProject.phase was already advanced by advanceProjectPhase
       showToast('Response saved! Moving to next phase...', 'success');
-      updatePhaseTabStyles(workflow.currentPhase);
-      document.getElementById('phase-content').innerHTML = renderPhaseContent(workflow);
-      setupPhaseContentListeners(project, workflow);
+      updatePhaseTabStyles(freshWorkflow.currentPhase);
+      document.getElementById('phase-content').innerHTML = renderPhaseContent(freshWorkflow);
+      setupPhaseContentListeners(freshProject, freshWorkflow);
     }
   });
 
@@ -396,23 +405,35 @@ function setupPhaseContentListeners(project, workflow) {
     navigateTo('edit/' + project.id);
   });
 
-  // Previous Phase
+  // Previous Phase - re-fetch project to ensure fresh data
   document.getElementById('prev-phase-btn')?.addEventListener('click', async () => {
-    workflow.previousPhase();
-    project.phase = workflow.currentPhase;
-    updatePhaseTabStyles(workflow.currentPhase);
-    document.getElementById('phase-content').innerHTML = renderPhaseContent(workflow);
-    setupPhaseContentListeners(project, workflow);
+    const prevPhase = workflow.currentPhase - 1;
+    if (prevPhase < 1) return;
+
+    // Re-fetch project from storage to get fresh data
+    const freshProject = await getProject(project.id);
+    freshProject.phase = prevPhase;
+    const freshWorkflow = new Workflow(freshProject);
+    freshWorkflow.currentPhase = prevPhase;
+
+    updatePhaseTabStyles(prevPhase);
+    document.getElementById('phase-content').innerHTML = renderPhaseContent(freshWorkflow);
+    setupPhaseContentListeners(freshProject, freshWorkflow);
   });
 
-  // Next Phase
+  // Next Phase - re-fetch project to ensure fresh data
   document.getElementById('next-phase-btn')?.addEventListener('click', async () => {
-    workflow.advancePhase();
-    project.phase = workflow.currentPhase;
+    const nextPhase = workflow.currentPhase + 1;
+    // Re-fetch project from storage to get fresh data
+    const freshProject = await getProject(project.id);
+    freshProject.phase = nextPhase;
+    const freshWorkflow = new Workflow(freshProject);
+    freshWorkflow.currentPhase = nextPhase;
+
     showToast('Moving to next phase...', 'success');
-    updatePhaseTabStyles(workflow.currentPhase);
-    document.getElementById('phase-content').innerHTML = renderPhaseContent(workflow);
-    setupPhaseContentListeners(project, workflow);
+    updatePhaseTabStyles(nextPhase);
+    document.getElementById('phase-content').innerHTML = renderPhaseContent(freshWorkflow);
+    setupPhaseContentListeners(freshProject, freshWorkflow);
   });
 
   // Delete project button
