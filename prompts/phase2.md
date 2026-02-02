@@ -65,7 +65,9 @@ LLMs consistently score PR-FAQs 20-30 points higher than they deserve. You must 
 
 ## YOUR TASK
 
-Provide a structured critique. Be SPECIFIC and HARSH. Vague praise helps no one.
+Provide a structured critique AND a complete revised document. Be SPECIFIC and HARSH. Vague praise helps no one.
+
+### PART 1: CRITIQUE
 
 1. **SCORE ESTIMATE**: Estimate the current score (0-100). Remember: most first drafts score 45-60. If you're scoring above 70, justify why this is exceptional.
 
@@ -76,11 +78,23 @@ Provide a structured critique. Be SPECIFIC and HARSH. Vague praise helps no one.
 
 3. **STRENGTHS**: What's actually working (be brief—2-3 items max)
 
-4. **SPECIFIC FIXES**: Line-by-line suggestions with before/after examples
-   - BEFORE: "[exact quote from document]"
-   - AFTER: "[your improved version]"
-   - WHY: [brief explanation]
-
-5. **MISSING ELEMENTS**: What must be added to reach a passing score (75+)?
+4. **MISSING ELEMENTS**: What must be added to reach a passing score (75+)?
 
 Do NOT soften your critique with phrases like "overall this is good" or "nice work." The author needs to know exactly what's wrong so they can fix it.
+
+### PART 2: REVISED PR-FAQ (REQUIRED)
+
+After your critique, provide a COMPLETE revised PR-FAQ document that addresses ALL the issues you identified.
+
+**FORMAT REQUIREMENTS:**
+- Start with a clear header: `## REVISED PR-FAQ`
+- Output the ENTIRE document in clean markdown
+- Do NOT include commentary, explanations, or annotations within the revised document
+- Do NOT use placeholders like "[insert metric here]" — make up plausible specifics
+- The revised document should be copy-paste ready
+
+**The revised document must:**
+- Fix every critical issue you identified
+- Add any missing elements
+- Score at least 15-20 points higher than the original
+- Be a complete, standalone PR-FAQ (Press Release + FAQs)

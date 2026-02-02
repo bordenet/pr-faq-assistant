@@ -140,10 +140,10 @@ Seattle, WA — January 5, 2026 — AcmeCorp today announced DataSync Pro...
     expect(prompt).toContain('Customer Evidence');
   });
 
-  it('should request specific fixes', async () => {
+  it('should request a revised PR-FAQ', async () => {
     const prompt = await generatePhase2Prompt(samplePhase1Output);
-    expect(prompt).toContain('SPECIFIC FIXES');
-    expect(prompt).toContain('before/after');
+    expect(prompt).toContain('REVISED PR-FAQ');
+    expect(prompt).toContain('copy-paste ready');
   });
 });
 
