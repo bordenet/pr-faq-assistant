@@ -108,12 +108,13 @@ function renderPhaseContent(workflow) {
                         <strong>Next steps:</strong> Preview & copy, then validate your document.
                     </p>
                 </div>
-                <div class="flex gap-3 flex-wrap">
+                <div class="flex gap-3 flex-wrap items-center">
                     <button id="export-complete-btn" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-lg">
                         📄 Preview & Copy
                     </button>
-                    <a href="https://bordenet.github.io/pr-faq-validator/" target="_blank" rel="noopener noreferrer" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg">
-                        ✅ Validate & Score
+                    <span class="text-gray-500 dark:text-gray-400">then</span>
+                    <a href="https://bordenet.github.io/pr-faq-validator/" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline font-medium text-lg">
+                        Validate & Score ↗
                     </a>
                 </div>
             </div>
