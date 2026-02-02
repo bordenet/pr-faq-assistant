@@ -94,16 +94,22 @@ export class Workflow {
     // For PR-FAQ, we export only the final phase 3 output
     // which should be the polished, validator-ready document
     const finalOutput = this.getPhaseOutput(3);
-    const attribution = '\n\n---\n\n*Generated with [PR-FAQ Assistant](https://bordenet.github.io/pr-faq-assistant/)*';
+    const footer = `
+
+---
+
+*Generated with [PR-FAQ Assistant](https://bordenet.github.io/pr-faq-assistant/)*
+
+**📋 Ready to iterate?** Validate and improve your PR-FAQ with the [PR-FAQ Validator](https://bordenet.github.io/pr-faq-validator/) — get actionable feedback to strengthen your document.`;
 
     if (finalOutput) {
-      return finalOutput + attribution;
+      return finalOutput + footer;
     }
 
     // Fallback: export phase 1 output if phase 3 not complete
     const phase1Output = this.getPhaseOutput(1);
     if (phase1Output) {
-      return phase1Output + attribution;
+      return phase1Output + footer;
     }
 
     return `# ${this.project.title}\n\nNo PR-FAQ content generated yet.`;

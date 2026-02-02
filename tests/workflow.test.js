@@ -288,6 +288,20 @@ describe('Workflow class', () => {
       const md = workflow.exportAsMarkdown();
       expect(md).toContain('Final content');
     });
+
+    it('should include PR-FAQ Validator advertisement', () => {
+      project.phase3_output = 'Final PR-FAQ content';
+      const md = workflow.exportAsMarkdown();
+      expect(md).toContain('PR-FAQ Validator');
+      expect(md).toContain('https://bordenet.github.io/pr-faq-validator/');
+    });
+
+    it('should include attribution to PR-FAQ Assistant', () => {
+      project.phase3_output = 'Final PR-FAQ content';
+      const md = workflow.exportAsMarkdown();
+      expect(md).toContain('PR-FAQ Assistant');
+      expect(md).toContain('https://bordenet.github.io/pr-faq-assistant/');
+    });
   });
 });
 
