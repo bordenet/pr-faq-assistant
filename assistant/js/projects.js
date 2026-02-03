@@ -187,7 +187,56 @@ export async function savePhaseOutput(projectId, phase, output, prompt = '') {
 }
 
 /**
- * Advance project to next phase
+ * Update project phase data (canonical pattern matching one-pager)
+ * @param {string} projectId - Project ID
+ * @param {number} phase - Phase number (1, 2, or 3)
+ * @param {string} prompt - The prompt used for this phase
+ * @param {string} response - The AI response for this phase
+ * @param {Object} options - Options object
+ * @param {boolean} options.skipAutoAdvance - If true, don't auto-advance to next phase
+ * @returns {Promise<Object>} Updated project
+ */
+export async function updatePhase(projectId, phase, prompt, response, options = {}) {
+  const project = await storage.getProject(projectId);
+  if (!project) throw new Error('Project not found');
+
+  const { skipAutoAdvance = false } = options;
+
+  // Initialize phases if missing (migration for old projects)
+  if (!project.phases) {
+    project.phases = {
+      1: { prompt: '', response: '', completed: false },
+      2: { prompt: '', response: '', completed: false },
+      3: { prompt: '', response: '', completed: false }
+    };
+  }
+
+  project.phases[phase] = {
+    prompt: prompt || '',
+    response: response || '',
+    completed: !!response
+  };
+
+  // Auto-advance to next phase if current phase is completed (unless skipped)
+  if (response && phase < 3 && !skipAutoAdvance) {
+    project.phase = phase + 1;
+  }
+
+  // Phase 3: Extract title from final PR-FAQ and update project title
+  if (phase === 3 && response) {
+    const extractedTitle = extractTitleFromMarkdown(response);
+    if (extractedTitle) {
+      project.title = extractedTitle;
+    }
+  }
+
+  project.updatedAt = new Date().toISOString();
+  await storage.saveProject(project);
+  return project;
+}
+
+/**
+ * Advance project to next phase (legacy - prefer updatePhase)
  */
 export async function advancePhase(projectId) {
   const project = await storage.getProject(projectId);

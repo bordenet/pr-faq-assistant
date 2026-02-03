@@ -5,7 +5,7 @@
  * @module project-view
  */
 
-import { getProject, deleteProject, savePhaseOutput, updateProject, getExportFilename, getFinalMarkdown } from './projects.js';
+import { getProject, deleteProject, updatePhase, updateProject, getExportFilename, getFinalMarkdown } from './projects.js';
 import { escapeHtml, showToast, copyToClipboardAsync, showPromptModal, confirm, showDocumentPreviewModal } from './ui.js';
 import { navigateTo } from './router.js';
 import { Workflow, WORKFLOW_CONFIG } from './workflow.js';
@@ -373,13 +373,13 @@ function setupPhaseContentListeners(project, workflow) {
     });
   }
 
-  // Save Response - auto-advance to next phase
+  // Save Response - auto-advance to next phase (canonical pattern matching one-pager)
   // Use workflow.currentPhase (captured at render time) to prevent double-click issues
   const currentPhaseNumber = workflow.currentPhase;
 
   saveResponseBtn?.addEventListener('click', async () => {
-    const output = responseTextarea?.value?.trim() || '';
-    if (output.length < 10) {
+    const response = responseTextarea?.value?.trim() || '';
+    if (response.length < 10) {
       showToast('Please enter at least 10 characters', 'warning');
       return;
     }
@@ -391,21 +391,19 @@ function setupPhaseContentListeners(project, workflow) {
     }
 
     try {
-      // Re-fetch project to get fresh data for the prompt
+      // Re-fetch project to get fresh data for the prompt (not stale closure)
       const freshProject = await getProject(project.id);
       const currentPrompt = freshProject.phases?.[currentPhaseNumber]?.prompt || '';
 
-      await savePhaseOutput(project.id, currentPhaseNumber, output, currentPrompt);
+      // Use canonical updatePhase - handles both saving AND auto-advance
+      await updatePhase(project.id, currentPhaseNumber, currentPrompt, response);
 
       // Auto-advance to next phase if not on final phase
       if (currentPhaseNumber < WORKFLOW_CONFIG.phaseCount) {
-        const nextPhase = currentPhaseNumber + 1;
-        // Save the new phase to storage (critical for existing completed projects)
-        await updateProject(project.id, { phase: nextPhase });
-
         showToast('Response saved! Moving to next phase...', 'success');
-        // Re-fetch the updated project with new phase
+        // Re-fetch the updated project (updatePhase already advanced the phase)
         const updatedProject = await getProject(project.id);
+        const nextPhase = currentPhaseNumber + 1;
 
         const nextWorkflow = new Workflow(updatedProject);
         nextWorkflow.currentPhase = nextPhase;
@@ -414,7 +412,7 @@ function setupPhaseContentListeners(project, workflow) {
         document.getElementById('phase-content').innerHTML = renderPhaseContent(nextWorkflow);
         setupPhaseContentListeners(updatedProject, nextWorkflow);
       } else {
-        // Phase 3 complete - save phase 4 to storage
+        // Phase 3 complete - set phase to 4 (complete state)
         await updateProject(project.id, { phase: 4 });
         showToast('PR-FAQ Complete! You can now export your document.', 'success');
         renderProjectView(project.id);
