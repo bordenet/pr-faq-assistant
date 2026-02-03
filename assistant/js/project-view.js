@@ -381,26 +381,34 @@ function setupPhaseContentListeners(project, workflow) {
       return;
     }
 
-    const currentPhase = workflow.currentPhase;
-    await savePhaseOutput(project.id, currentPhase, output);
+    try {
+      // Re-fetch project to get fresh data (avoid stale closure)
+      const freshProjectBefore = await getProject(project.id);
+      const currentPhase = freshProjectBefore.phase || 1;
 
-    // Always advance phase (including from phase 3 to 4 for completion)
-    await advanceProjectPhase(project.id);
+      await savePhaseOutput(project.id, currentPhase, output);
 
-    // Re-fetch project from storage to get fresh data with updated phases
-    const freshProject = await getProject(project.id);
-    const freshWorkflow = new Workflow(freshProject);
+      // Always advance phase (including from phase 3 to 4 for completion)
+      await advanceProjectPhase(project.id);
 
-    if (freshWorkflow.isComplete()) {
-      // Final phase complete - show export view
-      showToast('PR-FAQ Complete! You can now export your document.', 'success');
-      renderProjectView(project.id);
-    } else {
-      // Move to next phase - freshProject.phase was already advanced by advanceProjectPhase
-      showToast('Response saved! Moving to next phase...', 'success');
-      updatePhaseTabStyles(freshWorkflow.currentPhase);
-      document.getElementById('phase-content').innerHTML = renderPhaseContent(freshWorkflow);
-      setupPhaseContentListeners(freshProject, freshWorkflow);
+      // Re-fetch project from storage to get fresh data with updated phases
+      const freshProject = await getProject(project.id);
+      const freshWorkflow = new Workflow(freshProject);
+
+      if (freshWorkflow.isComplete()) {
+        // Final phase complete - show export view
+        showToast('PR-FAQ Complete! You can now export your document.', 'success');
+        renderProjectView(project.id);
+      } else {
+        // Move to next phase - freshProject.phase was already advanced by advanceProjectPhase
+        showToast('Response saved! Moving to next phase...', 'success');
+        updatePhaseTabStyles(freshWorkflow.currentPhase);
+        document.getElementById('phase-content').innerHTML = renderPhaseContent(freshWorkflow);
+        setupPhaseContentListeners(freshProject, freshWorkflow);
+      }
+    } catch (error) {
+      console.error('Error saving response:', error);
+      showToast(`Failed to save response: ${error.message}`, 'error');
     }
   });
 
