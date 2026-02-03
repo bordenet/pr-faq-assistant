@@ -12,6 +12,9 @@ cd "${REPO_ROOT}"
 # shellcheck source=lib/common.sh
 source "${SCRIPT_DIR}/lib/common.sh"
 
+# shellcheck source=lib/symlinks.sh
+source "${SCRIPT_DIR}/lib/symlinks.sh"
+
 ################################################################################
 # Configuration
 ################################################################################
@@ -48,41 +51,41 @@ EOF
 
 run_lint() {
     log_step "Running linter"
-    
+
     if [[ "$SKIP_LINT" == "true" ]]; then
         log_warning "Skipping lint (--skip-lint flag)"
         return 0
     fi
-    
+
     if [[ "$VERBOSE" == "true" ]]; then
         npm run lint || { log_error "Linting failed"; return 1; }
     else
         npm run lint >/dev/null 2>&1 || { log_error "Linting failed. Run 'npm run lint' to see errors."; return 1; }
     fi
-    
+
     log_step_done "Linting passed"
 }
 
 run_tests() {
     log_step "Running tests"
-    
+
     if [[ "$SKIP_TESTS" == "true" ]]; then
         log_warning "Skipping tests (--skip-tests flag)"
         return 0
     fi
-    
+
     if [[ "$VERBOSE" == "true" ]]; then
         npm test || { log_error "Tests failed"; return 1; }
     else
         npm test >/dev/null 2>&1 || { log_error "Tests failed. Run 'npm test' to see errors."; return 1; }
     fi
-    
+
     log_step_done "Tests passed"
 }
 
 deploy_to_github() {
     log_step "Deploying to GitHub"
-    
+
     if git diff --quiet && git diff --cached --quiet; then
         log_info "No changes to commit"
     else
@@ -91,7 +94,7 @@ deploy_to_github() {
         else
             git add . >/dev/null 2>&1
         fi
-        
+
         local commit_msg="Deploy: $(date '+%Y-%m-%d %H:%M:%S')"
         if [[ "$VERBOSE" == "true" ]]; then
             git commit -m "$commit_msg" || true
@@ -99,13 +102,13 @@ deploy_to_github() {
             git commit -m "$commit_msg" >/dev/null 2>&1 || true
         fi
     fi
-    
+
     if [[ "$VERBOSE" == "true" ]]; then
         git push origin main || { log_error "Failed to push to GitHub"; return 1; }
     else
         git push origin main >/dev/null 2>&1 || { log_error "Failed to push to GitHub"; return 1; }
     fi
-    
+
     log_step_done "Pushed to GitHub"
 }
 
@@ -113,7 +116,7 @@ verify_deployment() {
     log_step "Verifying deployment"
     log_info "Waiting for GitHub Pages to update..."
     sleep 5
-    
+
     if curl -s -o /dev/null -w "%{http_code}" "$GITHUB_PAGES_URL" | grep -q "200"; then
         log_step_done "Deployment verified"
     else
@@ -135,15 +138,26 @@ main() {
             *) log_error "Unknown option: $1"; exit 1 ;;
         esac
     done
-    
+
     log_header "Deploying $PROJECT_NAME"
     start_timer
-    
+
     run_lint || exit 1
     run_tests || exit 1
+
+    # Replace symlinks with real files for GitHub Pages
+    replace_symlinks_with_real_files || exit 1
+
+    # Deploy (with trap to restore symlinks on failure)
+    trap 'restore_symlinks' EXIT
     deploy_to_github || exit 1
+
+    # Restore symlinks for local development
+    restore_symlinks
+    trap - EXIT
+
     verify_deployment
-    
+
     stop_timer
     echo ""
     log_success "Deployment complete!"
@@ -155,4 +169,3 @@ main() {
 }
 
 main "$@"
-
