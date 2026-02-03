@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   lint:
     name: Lint
@@ -14,6 +18,19 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v6
+
+    - name: Clone assistant-core
+      run: git clone https://github.com/bordenet/assistant-core.git ../assistant-core
+
+    - name: Clone validator-core
+      run: git clone https://github.com/bordenet/validator-core.git ../validator-core
+
+    - name: Replace symlinks with real files
+      run: |
+        rm -rf assistant/js/core
+        cp -r ../assistant-core/src assistant/js/core
+        rm -rf validator/js/core
+        cp -r ../validator-core/src validator/js/core
 
     - name: Set up Node.js
       uses: actions/setup-node@v6
@@ -37,6 +54,19 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v6
+
+    - name: Clone assistant-core
+      run: git clone https://github.com/bordenet/assistant-core.git ../assistant-core
+
+    - name: Clone validator-core
+      run: git clone https://github.com/bordenet/validator-core.git ../validator-core
+
+    - name: Replace symlinks with real files
+      run: |
+        rm -rf assistant/js/core
+        cp -r ../assistant-core/src assistant/js/core
+        rm -rf validator/js/core
+        cp -r ../validator-core/src validator/js/core
 
     - name: Set up Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v6

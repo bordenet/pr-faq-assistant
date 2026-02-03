@@ -1,0 +1,38 @@
+Press Release
+
+Seattle, WA — August 12, 2025 — Today, FakeCo is pleased to announce the availability of pr-faq-validator, a free tool that helps product managers, business stakeholders, and partners assess the overall effectiveness, completeness, and potential impact of an internal PR-FAQ document before it’s circulated for review.
+
+For the uninitiated, a PR-FAQ is an Amazon-invented product planning mechanism in which the product team writes a press release from the perspective of a future launch date — articulating why the product matters — paired with an FAQ section that anticipates stakeholder questions. This forward-looking narrative forces teams to clarify the customer problem, proposed solution, and the product’s differentiating features before a single line of code is written.
+
+The new pr-faq-validator acts as an objective second set of eyes, flagging common pitfalls such as:
+	•	Headlines that bury the real customer value
+	•	Overuse of buzzwords without proof
+	•	FAQ sections that skip the hard questions (“What happens if this fails?”)
+	•	Missing success metrics, customer testimonials, or launch clarity
+
+“Writing a PR-FAQ can be like writing your own wedding vows — you think it’s perfect until someone else reads it,” said Alex Navarro, Senior Principal Product Manager at FakeCo. “pr-faq-validator isn’t here to replace your judgment, but it will save you from that awkward moment when your VP asks, ‘Did you even read this out loud before sending it?’”
+
+“With pr-faq-validator, I can save my colleagues at least an hour or two by passing drafts through this LLM-based tool,” said Jon Williams, Product Manager. “Now, when I do circulate drafts with stakeholders, I have confidence knowing it’s been objectively scored and meets a minimum bar for completeness.”
+
+“Before this tool, my PR-FAQ reviews took so long I was considering growing a beard just to mark the passage of time,” added Priya Shah, Director of Product Innovation at FakeCo. “Now I get pointed, actionable feedback in minutes, and my beard plan is officially on hold.”
+
+pr-faq-validator is available today at no cost, works with standard text-based PR-FAQ files, and requires no signup. Users simply paste in their draft or upload a document, and within seconds receive a report with actionable suggestions for clarity, structure, and impact.
+
+⸻
+
+FAQ
+
+Q: Do we intend to charge for this product in the future?
+A: No. The validator is free and will remain free. We’re not running a “first hit’s free” business model here.
+
+Q: Are six-pager documents in scope?
+A: No — this tool is only good for analyzing internal PR-FAQ documents. For six-pagers, you’re on your own (or you can bribe your teammate with coffee to review it).
+
+Q: Does the tool automatically rewrite my PR-FAQ for me?
+A: No. It gives recommendations and examples, but you’ll still have to do the thinking and wordsmithing yourself.
+
+Q: What file formats are supported?
+A: Plain text, Markdown, and DOCX are supported. PDF support is “on the roadmap” (a.k.a. someone’s thinking about it in a hallway somewhere).
+
+Q: Will it catch “vision inflation” — where the product starts small but grows into an entire metaverse in the PR-FAQ?
+A: It will flag inconsistencies and scope creep in your document. Whether you choose to cut scope or lean into your empire-building dreams is up to you.

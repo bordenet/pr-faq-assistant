@@ -11,8 +11,6 @@ import { navigateTo } from './router.js';
 import { Workflow, WORKFLOW_CONFIG } from './workflow.js';
 import { preloadPromptTemplates } from './prompts.js';
 
-const PRFAQ_DOCS_URL = 'https://github.com/bordenet/Engineering_Culture/blob/main/SDLC/The_PR-FAQ.md';
-
 /**
  * Render the project detail view
  * @module project-view
@@ -87,7 +85,7 @@ function renderPhaseContent(workflow) {
   const phase = workflow.getCurrentPhase();
   if (!phase) {
     console.error('Phase not found for currentPhase:', workflow.currentPhase, 'project.phase:', workflow.project.phase);
-    return `<div class="p-4 text-red-600">Error: Invalid phase configuration. Please refresh or create a new project.</div>`;
+    return '<div class="p-4 text-red-600">Error: Invalid phase configuration. Please refresh or create a new project.</div>';
   }
   // Use phases object structure (canonical) with fallback to legacy phase${n}_output fields
   const phaseData = workflow.project.phases?.[workflow.currentPhase] || { prompt: '', response: '', completed: false };

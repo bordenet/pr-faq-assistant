@@ -1,0 +1,76 @@
+{
+  "customerEvidence": [
+    {
+      "name": "quote-with-percentage",
+      "input": "\"We reduced costs by 40% using DataSync,\" said Jane Doe, VP of Engineering.",
+      "expected": {
+        "minScore": 8,
+        "quotesFound": 1,
+        "metricsFound": true
+      }
+    },
+    {
+      "name": "quote-without-metrics",
+      "input": "\"We love this product,\" said John Smith.",
+      "expected": {
+        "minScore": 3,
+        "quotesFound": 1,
+        "metricsFound": false
+      }
+    },
+    {
+      "name": "multiple-quotes-with-metrics",
+      "input": "\"We saw a 50% reduction in processing time,\" said the CTO. \"Our team saves 10 hours per week,\" added the VP of Operations.",
+      "expected": {
+        "minScore": 10,
+        "quotesFound": 2,
+        "metricsFound": true
+      }
+    },
+    {
+      "name": "no-quotes",
+      "input": "This product is amazing and customers love it.",
+      "expected": {
+        "minScore": 0,
+        "quotesFound": 0,
+        "metricsFound": false
+      }
+    },
+    {
+      "name": "quote-with-multiple-metrics",
+      "input": "\"We achieved a 3x improvement in throughput and reduced latency by 200 milliseconds,\" said the Engineering Lead.",
+      "expected": {
+        "minScore": 10,
+        "quotesFound": 1,
+        "metricsFound": true
+      }
+    },
+    {
+      "name": "quote-with-currency",
+      "input": "\"This solution saved us $2.5 million annually,\" reported the CFO.",
+      "expected": {
+        "minScore": 8,
+        "quotesFound": 1,
+        "metricsFound": true
+      }
+    },
+    {
+      "name": "curly-quotes",
+      "input": "\u201CWe increased customer satisfaction by 35%,\u201D said the Product Manager.",
+      "expected": {
+        "minScore": 8,
+        "quotesFound": 1,
+        "metricsFound": true
+      }
+    },
+    {
+      "name": "short-quote-filtered",
+      "input": "\"Great tool,\" said Bob.",
+      "expected": {
+        "minScore": 0,
+        "quotesFound": 0,
+        "metricsFound": false
+      }
+    }
+  ]
+}
