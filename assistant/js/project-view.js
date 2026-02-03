@@ -374,6 +374,9 @@ function setupPhaseContentListeners(project, workflow) {
   }
 
   // Save Response - auto-advance to next phase
+  // Use workflow.currentPhase (captured at render time) to prevent double-click issues
+  const currentPhaseNumber = workflow.currentPhase;
+
   saveResponseBtn?.addEventListener('click', async () => {
     const output = responseTextarea?.value?.trim() || '';
     if (output.length < 10) {
@@ -381,34 +384,47 @@ function setupPhaseContentListeners(project, workflow) {
       return;
     }
 
+    // Disable button immediately to prevent double-clicks
+    if (saveResponseBtn) {
+      saveResponseBtn.disabled = true;
+      saveResponseBtn.textContent = 'Saving...';
+    }
+
     try {
-      // Re-fetch project to get fresh data (avoid stale closure)
-      const freshProjectBefore = await getProject(project.id);
-      const currentPhase = freshProjectBefore.phase || 1;
-
-      await savePhaseOutput(project.id, currentPhase, output);
-
-      // Always advance phase (including from phase 3 to 4 for completion)
-      await advanceProjectPhase(project.id);
-
-      // Re-fetch project from storage to get fresh data with updated phases
+      // Re-fetch project to get fresh data for the prompt
       const freshProject = await getProject(project.id);
-      const freshWorkflow = new Workflow(freshProject);
+      const currentPrompt = freshProject.phases?.[currentPhaseNumber]?.prompt || '';
 
-      if (freshWorkflow.isComplete()) {
-        // Final phase complete - show export view
+      await savePhaseOutput(project.id, currentPhaseNumber, output, currentPrompt);
+
+      // Auto-advance to next phase if not on final phase
+      if (currentPhaseNumber < WORKFLOW_CONFIG.phaseCount) {
+        showToast('Response saved! Moving to next phase...', 'success');
+        // Re-fetch the updated project
+        const updatedProject = await getProject(project.id);
+        updatedProject.phase = currentPhaseNumber + 1;
+        await advanceProjectPhase(project.id);
+
+        const nextWorkflow = new Workflow(updatedProject);
+        nextWorkflow.currentPhase = currentPhaseNumber + 1;
+
+        updatePhaseTabStyles(currentPhaseNumber + 1);
+        document.getElementById('phase-content').innerHTML = renderPhaseContent(nextWorkflow);
+        setupPhaseContentListeners(updatedProject, nextWorkflow);
+      } else {
+        // Phase 3 complete - show export view
+        await advanceProjectPhase(project.id);
         showToast('PR-FAQ Complete! You can now export your document.', 'success');
         renderProjectView(project.id);
-      } else {
-        // Move to next phase - freshProject.phase was already advanced by advanceProjectPhase
-        showToast('Response saved! Moving to next phase...', 'success');
-        updatePhaseTabStyles(freshWorkflow.currentPhase);
-        document.getElementById('phase-content').innerHTML = renderPhaseContent(freshWorkflow);
-        setupPhaseContentListeners(freshProject, freshWorkflow);
       }
     } catch (error) {
       console.error('Error saving response:', error);
       showToast(`Failed to save response: ${error.message}`, 'error');
+      // Re-enable button on error
+      if (saveResponseBtn) {
+        saveResponseBtn.disabled = false;
+        saveResponseBtn.textContent = 'Save Response';
+      }
     }
   });
 
