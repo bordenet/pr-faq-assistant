@@ -187,7 +187,7 @@ export async function savePhaseOutput(projectId, phase, output, prompt = '') {
 }
 
 /**
- * Update project phase data (canonical pattern matching one-pager)
+ * Update project phase data (canonical pattern matching other assistants)
  * @param {string} projectId - Project ID
  * @param {number} phase - Phase number (1, 2, or 3)
  * @param {string} prompt - The prompt used for this phase
@@ -216,6 +216,10 @@ export async function updatePhase(projectId, phase, prompt, response, options = 
     response: response || '',
     completed: !!response
   };
+
+  // Keep legacy field for backward compatibility
+  const phaseKey = `phase${phase}_output`;
+  project[phaseKey] = response || '';
 
   // Auto-advance to next phase if current phase is completed (unless skipped)
   if (response && phase < 3 && !skipAutoAdvance) {
