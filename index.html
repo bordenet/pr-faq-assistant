@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PR-FAQ Assistant</title>
+    <meta name="description" content="AI-assisted PR-FAQ document generator - Amazon-style press release creation - 100% client-side, privacy-first">
+
+    <!-- Tailwind CSS with Typography plugin -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script>
+        // CRITICAL: Configure Tailwind dark mode AFTER script loads
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+
+    <!-- Fallback prose styles for markdown preview -->
+    <style>
+        .prose h1 { font-size: 2em; font-weight: bold; margin: 0.67em 0; }
+        .prose h2 { font-size: 1.5em; font-weight: bold; margin: 0.83em 0; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.3em; }
+        .prose h3 { font-size: 1.17em; font-weight: bold; margin: 1em 0; }
+        .prose p { margin: 1em 0; }
+        .prose ul, .prose ol { margin: 1em 0; padding-left: 2em; }
+        .prose ul { list-style-type: disc; }
+        .prose ol { list-style-type: decimal; }
+        .prose li { margin: 0.5em 0; }
+        .prose table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+        .prose th, .prose td { border: 1px solid #d1d5db; padding: 0.5em 1em; text-align: left; }
+        .prose th { background-color: #f3f4f6; font-weight: bold; }
+        .dark .prose th { background-color: #374151; }
+        .dark .prose h2 { border-bottom-color: #4b5563; }
+        .dark .prose th, .dark .prose td { border-color: #4b5563; }
+        .prose blockquote { border-left: 4px solid #d1d5db; padding-left: 1em; margin: 1em 0; color: #6b7280; }
+        .prose code { background-color: #f3f4f6; padding: 0.2em 0.4em; border-radius: 0.25em; font-size: 0.875em; }
+        .dark .prose code { background-color: #374151; }
+        .prose pre { background-color: #1f2937; color: #e5e7eb; padding: 1em; border-radius: 0.5em; overflow-x: auto; }
+        .prose pre code { background-color: transparent; padding: 0; }
+    </style>
+
+    <!-- Marked.js for Markdown rendering (local copy to avoid CDN blocking) -->
+    <script src="js/lib/marked.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📰</text></svg>">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <span class="text-4xl">📰</span>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                            PR-FAQ Assistant
+                        </h1>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            100% Client-Side • Privacy-First • <span class="relative group underline decoration-dotted cursor-help">No Server Required<span class="invisible group-hover:visible absolute left-0 top-full mt-1 w-64 p-2 text-xs text-white bg-gray-800 dark:bg-gray-700 rounded shadow-lg z-50">We don't touch your data—it never leaves your browser. Just be thoughtful about which AI you paste prompts into.</span></span>
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- Related Projects Dropdown -->
+                    <div class="relative">
+                        <button type="button" id="related-projects-btn" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Related Projects">
+                            <svg class="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </button>
+                        <div id="related-projects-menu" class="hidden absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                            <div class="p-2">
+                                <div class="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Related Tools</div>
+                                <a href="https://bordenet.github.io/product-requirements-assistant/" class="block px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                    <div class="font-medium text-gray-900 dark:text-white">PRD Assistant</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Create product requirements documents</div>
+                                </a>
+                                <a href="https://bordenet.github.io/architecture-decision-record/" class="block px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                    <div class="font-medium text-gray-900 dark:text-white">ADR Tool</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Manage architecture decision records</div>
+                                </a>
+                                <a href="https://bordenet.github.io/one-pager/" class="block px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                    <div class="font-medium text-gray-900 dark:text-white">One-Pager Assistant</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Create concise one-page documents</div>
+                                </a>
+
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" id="theme-toggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Toggle Dark Mode">
+                        <svg class="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                        </svg>
+                    </button>
+                    <button type="button" id="export-all-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        Export All
+                    </button>
+                    <button type="button" id="import-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                        Import
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Privacy Notice (hidden by default, shown if not dismissed) -->
+        <div id="privacy-notice" class="hidden mb-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <div class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                </svg>
+                <div class="flex-1">
+                    <h3 class="text-sm font-medium text-blue-900 dark:text-blue-200">
+                        🔐 Your Privacy is Protected
+                    </h3>
+                    <p class="mt-1 text-sm text-blue-700 dark:text-blue-300">
+                        All your PR-FAQ projects are stored <strong>locally in your browser</strong> using IndexedDB.
+                        No data is ever sent to any server. You can export your projects as JSON files anytime.
+                    </p>
+                </div>
+                <button type="button" id="close-privacy-notice" class="ml-3 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200" title="Close">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- View Container -->
+        <div id="app-container">
+            <!-- Views will be dynamically loaded here -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-12 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                    <span id="storage-info">Loading storage info...</span>
+                </p>
+                <div class="flex gap-4">
+                    <a href="https://github.com/bordenet/pr-faq-assistant" target="_blank" rel="noopener" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                        GitHub
+                    </a>
+                    <a href="https://bordenet.github.io/product-requirements-assistant/" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                        PRD Assistant
+                    </a>
+                    <a href="https://bordenet.github.io/architecture-decision-record/" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                        ADR Tool
+                    </a>
+                    <a href="https://bordenet.github.io/one-pager/" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                        One-Pager
+                    </a>
+
+                    <a href="#" id="about-link" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                        About
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Hidden file input for import -->
+    <input type="file" id="import-file-input" accept=".json" class="hidden" title="Select JSON file to import">
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-xl">
+            <div class="flex items-center space-x-3">
+                <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="text-lg font-medium text-gray-900 dark:text-white" id="loading-text">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+
+    <!-- AI Mock Mode Toggle (localhost only) -->
+    <div id="aiMockToggle" class="hidden fixed bottom-4 left-4 bg-yellow-100 dark:bg-yellow-900 border-2 border-yellow-400 rounded-lg p-3 shadow-lg z-50">
+        <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="mockModeCheckbox" class="w-4 h-4">
+            <span class="text-sm font-medium text-yellow-900 dark:text-yellow-100">AI Mock Mode</span>
+        </label>
+    </div>
+
+    <!-- JavaScript Modules -->
+    <script type="module" src="js/storage.js"></script>
+    <script type="module" src="js/ui.js"></script>
+    <script type="module" src="js/workflow.js"></script>
+    <script type="module" src="js/prompts.js"></script>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
