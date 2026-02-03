@@ -10,6 +10,7 @@ import { escapeHtml, showToast, copyToClipboardAsync, showPromptModal, confirm, 
 import { navigateTo } from './router.js';
 import { Workflow, WORKFLOW_CONFIG } from './workflow.js';
 import { preloadPromptTemplates } from './prompts.js';
+import { computeWordDiff, renderDiffHtml, getDiffStats } from './diff-view.js';
 
 /**
  * Render the project detail view
@@ -110,9 +111,11 @@ function renderPhaseContent(workflow) {
                     <button id="export-complete-btn" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-lg">
                         📄 Preview & Copy
                     </button>
-                    <span class="text-gray-500 dark:text-gray-400">then</span>
-                    <a href="https://bordenet.github.io/pr-faq-assistant/validator/" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline font-medium text-lg">
-                        Validate & Score ↗
+                    <button id="compare-phases-btn" class="px-4 py-2 border border-purple-600 text-purple-600 dark:border-purple-400 dark:text-purple-400 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors font-medium">
+                        🔄 Compare Phases
+                    </button>
+                    <a href="https://bordenet.github.io/pr-faq-assistant/validator/" target="_blank" rel="noopener noreferrer" class="px-4 py-2 border border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors font-medium">
+                        Full Validation ↗
                     </a>
                 </div>
             </div>
@@ -315,6 +318,20 @@ function setupPhaseContentListeners(project, workflow) {
     }
   });
 
+  // Compare phases button handler (shows diff between Phase 1 and Phase 2)
+  const comparePhasesBtn = document.getElementById('compare-phases-btn');
+  if (comparePhasesBtn) {
+    comparePhasesBtn.addEventListener('click', () => {
+      const phase1Output = workflow.getPhaseOutput(1);
+      const phase2Output = workflow.getPhaseOutput(2);
+      if (!phase1Output || !phase2Output) {
+        showToast('Both Phase 1 and Phase 2 must be completed to compare', 'warning');
+        return;
+      }
+      showDiffModal(phase1Output, phase2Output);
+    });
+  }
+
   /**
    * Enable workflow progression after prompt is copied
    * Called from both main copy button and modal copy button
@@ -477,4 +494,72 @@ function setupPhaseContentListeners(project, workflow) {
       navigateTo('home');
     }
   });
+}
+
+/**
+ * Show diff modal comparing Phase 1 and Phase 2 outputs
+ * @param {string} phase1 - Phase 1 output
+ * @param {string} phase2 - Phase 2 output
+ */
+function showDiffModal(phase1, phase2) {
+  const diff = computeWordDiff(phase1, phase2);
+  const stats = getDiffStats(diff);
+  const diffHtml = renderDiffHtml(diff);
+
+  const modal = document.createElement('div');
+  modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+  modal.innerHTML = `
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+            🔄 Phase Comparison: Draft → Review
+          </h3>
+          <div class="flex gap-4 mt-2 text-sm">
+            <span class="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded">
+              +${stats.additions} added
+            </span>
+            <span class="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded">
+              -${stats.deletions} removed
+            </span>
+            <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded">
+              ${stats.unchanged} unchanged
+            </span>
+          </div>
+        </div>
+        <button id="close-diff-modal-btn" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+          <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="p-4 overflow-y-auto flex-1">
+        <div class="prose prose-sm dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed">
+          ${diffHtml}
+        </div>
+      </div>
+      <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          <span class="bg-green-200 dark:bg-green-900/50 px-1">Green text</span> = added in review |
+          <span class="bg-red-200 dark:bg-red-900/50 px-1 line-through">Red strikethrough</span> = removed from draft
+        </p>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const closeModal = () => modal.remove();
+  modal.querySelector('#close-diff-modal-btn').addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  const handleEscape = (e) => {
+    if (e.key === 'Escape') {
+      closeModal();
+      document.removeEventListener('keydown', handleEscape);
+    }
+  };
+  document.addEventListener('keydown', handleEscape);
 }
