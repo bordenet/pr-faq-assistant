@@ -5,7 +5,7 @@
  * @module project-view
  */
 
-import { getProject, deleteProject, savePhaseOutput, advancePhase as advanceProjectPhase, getExportFilename, getFinalMarkdown } from './projects.js';
+import { getProject, deleteProject, savePhaseOutput, updateProject, getExportFilename, getFinalMarkdown } from './projects.js';
 import { escapeHtml, showToast, copyToClipboardAsync, showPromptModal, confirm, showDocumentPreviewModal } from './ui.js';
 import { navigateTo } from './router.js';
 import { Workflow, WORKFLOW_CONFIG } from './workflow.js';
@@ -399,21 +399,23 @@ function setupPhaseContentListeners(project, workflow) {
 
       // Auto-advance to next phase if not on final phase
       if (currentPhaseNumber < WORKFLOW_CONFIG.phaseCount) {
+        const nextPhase = currentPhaseNumber + 1;
+        // Save the new phase to storage (critical for existing completed projects)
+        await updateProject(project.id, { phase: nextPhase });
+
         showToast('Response saved! Moving to next phase...', 'success');
-        // Re-fetch the updated project
+        // Re-fetch the updated project with new phase
         const updatedProject = await getProject(project.id);
-        updatedProject.phase = currentPhaseNumber + 1;
-        await advanceProjectPhase(project.id);
 
         const nextWorkflow = new Workflow(updatedProject);
-        nextWorkflow.currentPhase = currentPhaseNumber + 1;
+        nextWorkflow.currentPhase = nextPhase;
 
-        updatePhaseTabStyles(currentPhaseNumber + 1);
+        updatePhaseTabStyles(nextPhase);
         document.getElementById('phase-content').innerHTML = renderPhaseContent(nextWorkflow);
         setupPhaseContentListeners(updatedProject, nextWorkflow);
       } else {
-        // Phase 3 complete - show export view
-        await advanceProjectPhase(project.id);
+        // Phase 3 complete - save phase 4 to storage
+        await updateProject(project.id, { phase: 4 });
         showToast('PR-FAQ Complete! You can now export your document.', 'success');
         renderProjectView(project.id);
       }
@@ -433,14 +435,16 @@ function setupPhaseContentListeners(project, workflow) {
     navigateTo('edit/' + project.id);
   });
 
-  // Previous Phase - re-fetch project to ensure fresh data
+  // Previous Phase - save phase to storage and re-render
   document.getElementById('prev-phase-btn')?.addEventListener('click', async () => {
     const prevPhase = workflow.currentPhase - 1;
     if (prevPhase < 1) return;
 
+    // Save the phase to storage (critical for existing completed projects)
+    await updateProject(project.id, { phase: prevPhase });
+
     // Re-fetch project from storage to get fresh data
     const freshProject = await getProject(project.id);
-    freshProject.phase = prevPhase;
     const freshWorkflow = new Workflow(freshProject);
     freshWorkflow.currentPhase = prevPhase;
 
@@ -449,12 +453,15 @@ function setupPhaseContentListeners(project, workflow) {
     setupPhaseContentListeners(freshProject, freshWorkflow);
   });
 
-  // Next Phase - re-fetch project to ensure fresh data
+  // Next Phase - save phase to storage and re-render
   document.getElementById('next-phase-btn')?.addEventListener('click', async () => {
     const nextPhase = workflow.currentPhase + 1;
+
+    // Save the phase to storage
+    await updateProject(project.id, { phase: nextPhase });
+
     // Re-fetch project from storage to get fresh data
     const freshProject = await getProject(project.id);
-    freshProject.phase = nextPhase;
     const freshWorkflow = new Workflow(freshProject);
     freshWorkflow.currentPhase = nextPhase;
 
