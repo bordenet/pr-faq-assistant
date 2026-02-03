@@ -314,7 +314,7 @@ describe('Workflow class', () => {
       project.phase3_output = 'Final PR-FAQ content';
       const md = workflow.exportAsMarkdown();
       expect(md).toContain('PR-FAQ Validator');
-      expect(md).toContain('https://bordenet.github.io/pr-faq-validator/');
+      expect(md).toContain('https://bordenet.github.io/pr-faq-assistant/validator/');
     });
 
     it('should include attribution to PR-FAQ Assistant', () => {
