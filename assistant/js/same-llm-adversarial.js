@@ -287,7 +287,7 @@ ${this.getGeminiPersonalityTemplate()}
 
 ## Your Task
 
-Scrutinize the {{DOCUMENT_TYPE}} document below against the template structure and best practices. Work with the user question-by-question to generate an improved version from your perspective.
+Scrutinize the {{DOCUMENT_TYPE}} document below against the template structure and best practices. Work with the user question-by-question to generate a superior rendition from your perspective.
 
 ## Template Reference
 
