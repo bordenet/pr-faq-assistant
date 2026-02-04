@@ -177,3 +177,79 @@ export function getExportFilename(project) {
     .substring(0, 50);
   return `${sanitized}.md`;
 }
+
+/**
+ * Detect if text appears to be a prompt rather than an AI response.
+ * Prompts have distinctive patterns that AI responses typically don't have.
+ * @param {string} text - The text to check
+ * @returns {{ isPrompt: boolean, reason: string }} Detection result
+ */
+export function detectPromptPaste(text) {
+  if (!text || typeof text !== 'string') {
+    return { isPrompt: false, reason: '' };
+  }
+
+  const trimmed = text.trim();
+  const first500Chars = trimmed.substring(0, 500).toLowerCase();
+
+  // Pattern 1: Starts with "# Phase N:" header (very strong signal)
+  if (/^#\s*phase\s*\d+\s*:/im.test(trimmed)) {
+    return {
+      isPrompt: true,
+      reason: 'This looks like the prompt you copied, not the AI response. Please paste the AI\'s answer instead.'
+    };
+  }
+
+  // Pattern 2: Contains template variables like {{VARIABLE_NAME}}
+  const templateVarMatches = trimmed.match(/\{\{[A-Z_]+\}\}/g);
+  if (templateVarMatches && templateVarMatches.length >= 2) {
+    return {
+      isPrompt: true,
+      reason: 'This contains template placeholders ({{...}}). Please paste the AI response, not the prompt.'
+    };
+  }
+
+  // Pattern 3: Contains instruction phrases typical of prompts (check first 500 chars)
+  const promptPhrases = [
+    'you are an expert',
+    'your task',
+    '## your task',
+    'instructions for',
+    'please analyze the following',
+    'please provide',
+    'generate a',
+    'based on the information provided',
+    'follow this structure',
+    '## output format',
+    '## guidelines',
+    '## review criteria',
+    'forget all previous sessions'
+  ];
+
+  const matchedPhrases = promptPhrases.filter(phrase => first500Chars.includes(phrase));
+  if (matchedPhrases.length >= 2) {
+    return {
+      isPrompt: true,
+      reason: 'This looks like instructions for the AI, not the AI\'s response. Please paste what the AI wrote back to you.'
+    };
+  }
+
+  // Pattern 4: Starts with common prompt headers
+  const promptHeaders = [
+    /^#\s*phase\s*\d+/im,
+    /^#\s*prompt/im,
+    /^#\s*instructions/im,
+    /^\*\*instructions/im
+  ];
+
+  for (const pattern of promptHeaders) {
+    if (pattern.test(trimmed)) {
+      return {
+        isPrompt: true,
+        reason: 'This appears to be a prompt header. Please paste the AI\'s response instead.'
+      };
+    }
+  }
+
+  return { isPrompt: false, reason: '' };
+}

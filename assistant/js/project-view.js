@@ -8,7 +8,7 @@
 import { getProject, deleteProject, updatePhase, updateProject, getExportFilename, getFinalMarkdown } from './projects.js';
 import { escapeHtml, showToast, copyToClipboard, copyToClipboardAsync, showPromptModal, confirm, showDocumentPreviewModal, createActionMenu } from './ui.js';
 import { navigateTo } from './router.js';
-import { Workflow, WORKFLOW_CONFIG, getPhaseMetadata } from './workflow.js';
+import { Workflow, WORKFLOW_CONFIG, getPhaseMetadata, detectPromptPaste } from './workflow.js';
 import { preloadPromptTemplates } from './prompts.js';
 import { computeWordDiff, renderDiffHtml, getDiffStats } from './diff-view.js';
 
@@ -368,6 +368,13 @@ function setupPhaseContentListeners(project, workflow) {
     const response = responseTextarea?.value?.trim() || '';
     if (response.length < 10) {
       showToast('Please enter at least 10 characters', 'warning');
+      return;
+    }
+
+    // Check if user accidentally pasted the prompt instead of the AI response
+    const promptCheck = detectPromptPaste(response);
+    if (promptCheck.isPrompt) {
+      showToast(promptCheck.reason, 'error');
       return;
     }
 
