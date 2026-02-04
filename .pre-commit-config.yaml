@@ -31,9 +31,9 @@ repos:
         pass_filenames: false
         always_run: true
 
-      # Vitest tests with coverage
-      - id: vitest
-        name: vitest
+      # Jest tests with coverage
+      - id: jest
+        name: jest
         entry: npm
         args: ['test']
         language: system
@@ -48,4 +48,3 @@ repos:
     hooks:
       - id: check-json
         files: package.json
-
