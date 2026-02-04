@@ -38,32 +38,82 @@ export function showToast(message, type = 'info', duration = 3000) {
 }
 
 /**
- * Copy text to clipboard
- * @param {string} text - Text to copy
- * @returns {Promise<boolean>} Success status
+ * Copy text to clipboard with async text generation - Safari transient activation safe
+ *
+ * CRITICAL: This function MUST be called synchronously within a user gesture handler.
+ * Safari's transient activation window (~2-3 seconds) is preserved because we call
+ * navigator.clipboard.write() immediately, passing a Promise-wrapped Blob that
+ * resolves later when the async work completes.
+ *
+ * @param {Promise<string>} textPromise - Promise that resolves to text to copy
+ * @returns {Promise<boolean>} Success status (true if copied, false if failed)
  */
-export async function copyToClipboard(text) {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    // Fallback for older browsers
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.opacity = '0';
-    document.body.appendChild(textarea);
-    textarea.select();
+export async function copyToClipboardAsync(textPromise) {
+  // Safari transient activation fix: Call clipboard.write() SYNCHRONOUSLY with Promise-wrapped Blob
+  // The transient activation is evaluated when write() is called, not when Promise resolves
+  if (navigator.clipboard && window.isSecureContext && typeof ClipboardItem !== 'undefined') {
     try {
-      document.execCommand('copy');
+      // Create a Promise that resolves to a Blob - this preserves transient activation
+      const blobPromise = textPromise.then(text => new Blob([text], { type: 'text/plain' }));
+      const item = new ClipboardItem({ 'text/plain': blobPromise });
+      await navigator.clipboard.write([item]);
       return true;
-    } catch (e2) {
-      console.error('Failed to copy:', e2);
+    } catch (err) {
+      console.warn('ClipboardItem with Promise failed, trying execCommand:', err?.message);
+    }
+  }
+
+  // Fallback: Wait for text and use execCommand
+  // This may fail on Safari if transient activation expired, but it's our last resort
+  const text = await textPromise;
+
+  // Legacy execCommand fallback
+  // CRITICAL: Position IN viewport - iOS Safari rejects off-screen elements
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.setAttribute('readonly', '');
+  textarea.setAttribute('contenteditable', 'true');
+  textarea.style.position = 'fixed';
+  textarea.style.left = '0';
+  textarea.style.top = '0';
+  textarea.style.width = '1px';
+  textarea.style.height = '1px';
+  textarea.style.padding = '0';
+  textarea.style.border = 'none';
+  textarea.style.outline = 'none';
+  textarea.style.boxShadow = 'none';
+  textarea.style.background = 'transparent';
+  textarea.style.opacity = '0.01';
+  textarea.style.fontSize = '16px'; // Prevent iOS zoom
+
+  document.body.appendChild(textarea);
+
+  try {
+    textarea.focus();
+    textarea.setSelectionRange(0, text.length);
+    const successful = document.execCommand('copy');
+    if (!successful) {
+      console.error('execCommand copy returned false');
       return false;
-    } finally {
+    }
+    return true;
+  } catch (err) {
+    console.error('Failed to copy to clipboard:', err?.message || 'unknown error');
+    return false;
+  } finally {
+    if (document.body.contains(textarea)) {
       document.body.removeChild(textarea);
     }
   }
+}
+
+/**
+ * Copy text to clipboard - wrapper for copyToClipboardAsync
+ * @param {string} text - Text to copy (must be available synchronously)
+ * @returns {Promise<boolean>} Success status (true if copied, false if failed)
+ */
+export async function copyToClipboard(text) {
+  return copyToClipboardAsync(Promise.resolve(text));
 }
 
 /**

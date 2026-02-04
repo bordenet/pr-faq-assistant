@@ -4,6 +4,7 @@
 
 // UI utilities
 export {
+  createActionMenu,
   formatDate,
   escapeHtml,
   showToast,
@@ -18,4 +19,3 @@ export { createProjectStorage, generateId } from './storage.js';
 
 // Workflow utilities
 export { createWorkflow, createWorkflowConfig } from './workflow.js';
-
