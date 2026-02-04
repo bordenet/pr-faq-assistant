@@ -1,8 +1,9 @@
 /**
- * Hello World Validator - Custom Styles
+ * Validator - Custom Styles
  *
  * Minimal custom styles for the validator.
  * Most styling is done via Tailwind CSS classes.
+ * Color tokens are defined in design-tokens.css.
  */
 
 /* Custom scrollbar for dark mode */
@@ -12,16 +13,16 @@
 }
 
 .dark ::-webkit-scrollbar-track {
-  background: #1e293b;
+  background: var(--scrollbar-track, #1e293b);
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #475569;
+  background: var(--scrollbar-thumb, #475569);
   border-radius: 4px;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+  background: var(--scrollbar-thumb-hover, #64748b);
 }
 
 /* Textarea focus styles */

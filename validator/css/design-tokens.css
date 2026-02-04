@@ -1,0 +1,44 @@
+/**
+ * Design Tokens - Centralized Color Palette
+ *
+ * This file defines CSS custom properties for consistent theming
+ * across all genesis-derived validator apps.
+ *
+ * Color Palette: Tailwind Slate
+ * - Primary: slate-950 (darkest), slate-900, slate-800, slate-700, slate-600, slate-500
+ * - Accent: blue-600 (primary actions), blue-400 (links)
+ * - Semantic: green-600 (success), red-600 (error), amber-600 (warning)
+ */
+
+:root {
+  /* Slate palette - primary UI colors */
+  --color-slate-950: #020617;
+  --color-slate-900: #0f172a;
+  --color-slate-800: #1e293b;
+  --color-slate-700: #334155;
+  --color-slate-600: #475569;
+  --color-slate-500: #64748b;
+  --color-slate-400: #94a3b8;
+  --color-slate-300: #cbd5e1;
+  --color-slate-200: #e2e8f0;
+  --color-slate-100: #f1f5f9;
+  --color-slate-50: #f8fafc;
+
+  /* Blue palette - accent/action colors */
+  --color-blue-700: #1d4ed8;
+  --color-blue-600: #2563eb;
+  --color-blue-500: #3b82f6;
+  --color-blue-400: #60a5fa;
+  --color-blue-300: #93c5fd;
+
+  /* Semantic colors */
+  --color-success: #16a34a;  /* green-600 */
+  --color-error: #dc2626;    /* red-600 */
+  --color-warning: #d97706;  /* amber-600 */
+  --color-info: #2563eb;     /* blue-600 */
+
+  /* Scrollbar colors (dark mode) */
+  --scrollbar-track: var(--color-slate-800);
+  --scrollbar-thumb: var(--color-slate-600);
+  --scrollbar-thumb-hover: var(--color-slate-500);
+}
