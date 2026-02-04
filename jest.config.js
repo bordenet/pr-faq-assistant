@@ -15,6 +15,7 @@ export default {
     '!**/router.js',
     '!**/views.js',
     '!**/project-view.js',
+    '!**/types.js',
     '!**/lib/**',
     '!**/core/**',
     '!**/node_modules/**'
