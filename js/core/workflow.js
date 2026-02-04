@@ -191,3 +191,26 @@ export function createWorkflow(project, config) {
   };
 }
 
+/**
+ * Detect if text appears to be a prompt rather than an AI response.
+ * Simple check: all prompts start with "# Phase N:" header.
+ * @param {string} text - The text to check
+ * @returns {{ isPrompt: boolean, reason: string }} Detection result
+ */
+export function detectPromptPaste(text) {
+  if (!text || typeof text !== 'string') {
+    return { isPrompt: false, reason: '' };
+  }
+
+  const trimmed = text.trim();
+
+  // Check if text starts with "# Phase N:" header (standard prompt format)
+  if (/^#\s*phase\s*\d+/im.test(trimmed)) {
+    return {
+      isPrompt: true,
+      reason: 'This looks like the prompt you copied, not the AI response. Please paste the AI\'s answer instead.'
+    };
+  }
+
+  return { isPrompt: false, reason: '' };
+}
