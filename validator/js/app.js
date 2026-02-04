@@ -355,15 +355,12 @@ function handleCopyLLMPrompt() {
 }
 
 function handleViewLLMPrompt() {
-  const content = editor.value || '';
-  if (!content.trim()) {
-    showToast('Add some content first', 'warning', toastContainer);
+  if (!currentPrompt || currentPrompt.type !== 'LLM Scoring') {
+    showToast('Copy the scoring prompt first', 'warning', toastContainer);
     return;
   }
 
-  const prompt = generateLLMScoringPrompt(content);
-  currentPrompt = { text: prompt, type: 'LLM Scoring' };
-  showPromptModal(prompt, 'LLM Scoring Prompt');
+  showPromptModal(currentPrompt.text, 'LLM Scoring Prompt');
 }
 
 // ============================================================
