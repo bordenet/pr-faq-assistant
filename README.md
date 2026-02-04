@@ -4,7 +4,7 @@ Write Amazon-style press releases and FAQs with AI. Three phases: draft, review,
 
 [![Star this repo](https://img.shields.io/github/stars/bordenet/pr-faq-assistant?style=social)](https://github.com/bordenet/pr-faq-assistant)
 
-**Try it**: [bordenet.github.io/pr-faq-assistant](https://bordenet.github.io/pr-faq-assistant/)
+**Try it**: [Assistant](https://bordenet.github.io/pr-faq-assistant/) · [Validator](https://bordenet.github.io/pr-faq-assistant/validator/)
 
 > **What is a PR/FAQ?** A PR/FAQ (Press Release / Frequently Asked Questions) is Amazon's "Working Backwards" document format. You write a future press release announcing the finished product, then answer anticipated customer and stakeholder questions. This forces clarity on customer benefit before building. See [The PR-FAQ](https://github.com/bordenet/Engineering_Culture/blob/main/SDLC/The_PR-FAQ.md) for background.
 
@@ -38,9 +38,9 @@ Write Amazon-style press releases and FAQs with AI. Three phases: draft, review,
 
 ## Validate Your PR-FAQ
 
-Once you've completed your PR-FAQ, run it through the **[PR-FAQ Validator](https://bordenet.github.io/pr-faq-validator/)** for instant scoring and AI-powered improvement suggestions. The validator checks headline quality, newsworthy hooks, 5 Ws coverage, customer evidence, and professional tone—giving you a 0-100 score with actionable feedback.
+Once you've completed your PR-FAQ, run it through the **[PR-FAQ Validator](https://bordenet.github.io/pr-faq-assistant/validator/)** for instant scoring and AI-powered improvement suggestions. The validator checks headline quality, newsworthy hooks, 5 Ws coverage, customer evidence, and professional tone—giving you a 0-100 score with actionable feedback.
 
-→ **[Try the Validator](https://bordenet.github.io/pr-faq-validator/)** | [Source Code](https://github.com/bordenet/pr-faq-validator)
+→ **[Try the Validator](https://bordenet.github.io/pr-faq-assistant/validator/)**
 
 ## Usage
 
