@@ -37,7 +37,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@jest/globals": "^29.7.0",
-    "@playwright/test": "^1.57.0",
+    "@playwright/test": "^1.58.1",
     "eslint": "^9.39.2",
     "fake-indexeddb": "^6.2.5",
     "globals": "^17.0.0",
