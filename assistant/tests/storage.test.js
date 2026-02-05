@@ -150,7 +150,7 @@ describe('Storage Module', () => {
             const savedProjects = [];
             storage.saveProject = jest.fn((p) => {
                 savedProjects.push(p);
-                return Promise.resolve(true);
+                return Promise.resolve(p);
             });
 
             const importData = {

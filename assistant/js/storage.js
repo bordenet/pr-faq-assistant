@@ -138,15 +138,8 @@ class Storage {
       throw new Error('Invalid import data');
     }
 
-    const tx = this.db.transaction(STORE_NAME, 'readwrite');
-    const store = tx.objectStore(STORE_NAME);
-
     for (const project of data.projects) {
-      await new Promise((resolve, reject) => {
-        const request = store.put(project);
-        request.onsuccess = () => resolve();
-        request.onerror = () => reject(request.error);
-      });
+      await this.saveProject(project);
     }
 
     return data.projects.length;
