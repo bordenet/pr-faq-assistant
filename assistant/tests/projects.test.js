@@ -259,6 +259,8 @@ Content here...`;
   describe('exportAllProjects', () => {
     let mockUrl;
     let mockAnchor;
+    let capturedBlob;
+    let capturedDownloadName;
     let originalCreateObjectURL;
     let originalRevokeObjectURL;
     let originalCreateElement;
@@ -268,18 +270,13 @@ Content here...`;
       document.body.innerHTML = '<div id="toast-container"></div>';
 
       mockUrl = 'blob:mock-url';
-      mockAnchor = { href: '', download: '', click: jest.fn() };
+      capturedBlob = null;
+      capturedDownloadName = null;
 
       originalCreateObjectURL = URL.createObjectURL;
       originalRevokeObjectURL = URL.revokeObjectURL;
+      // Store original createElement before any spying
       originalCreateElement = document.createElement.bind(document);
-
-      URL.createObjectURL = jest.fn(() => mockUrl);
-      URL.revokeObjectURL = jest.fn();
-      document.createElement = jest.fn((tag) => {
-        if (tag === 'a') return mockAnchor;
-        return originalCreateElement(tag);
-      });
     });
 
     afterEach(() => {
@@ -289,6 +286,14 @@ Content here...`;
     });
 
     test('should export projects as JSON file', async () => {
+      mockAnchor = { href: '', download: '', click: jest.fn() };
+      URL.createObjectURL = jest.fn(() => mockUrl);
+      URL.revokeObjectURL = jest.fn();
+      jest.spyOn(document, 'createElement').mockImplementation((tag) => {
+        if (tag === 'a') return mockAnchor;
+        return originalCreateElement(tag);
+      });
+
       await createProject({ productName: 'Export Test' });
       await exportAllProjects();
 
@@ -297,19 +302,127 @@ Content here...`;
       expect(mockAnchor.click).toHaveBeenCalled();
       expect(URL.revokeObjectURL).toHaveBeenCalledWith(mockUrl);
     });
+
+    test('should include all projects in backup with correct format', async () => {
+      URL.createObjectURL = jest.fn((blob) => {
+        capturedBlob = blob;
+        return mockUrl;
+      });
+      URL.revokeObjectURL = jest.fn();
+      mockAnchor = { href: '', download: '', click: jest.fn() };
+      jest.spyOn(document, 'createElement').mockImplementation((tag) => {
+        if (tag === 'a') return mockAnchor;
+        return originalCreateElement(tag);
+      });
+
+      await createProject({ productName: 'Test Project 1' });
+      await createProject({ productName: 'Test Project 2' });
+
+      await exportAllProjects();
+
+      expect(capturedBlob).toBeInstanceOf(Blob);
+
+      // Use FileReader to read the blob content
+      const blobContent = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsText(capturedBlob);
+      });
+
+      const backupData = JSON.parse(blobContent);
+      expect(backupData).toHaveProperty('version');
+      expect(backupData).toHaveProperty('exportDate');
+      expect(backupData).toHaveProperty('projectCount', 2);
+      expect(backupData).toHaveProperty('projects');
+      expect(Array.isArray(backupData.projects)).toBe(true);
+      expect(backupData.projects).toHaveLength(2);
+    });
+
+    test('should include correct filename with date', async () => {
+      URL.createObjectURL = jest.fn(() => mockUrl);
+      URL.revokeObjectURL = jest.fn();
+      mockAnchor = {
+        href: '',
+        set download(value) { capturedDownloadName = value; },
+        get download() { return capturedDownloadName; },
+        click: jest.fn()
+      };
+      jest.spyOn(document, 'createElement').mockImplementation((tag) => {
+        if (tag === 'a') return mockAnchor;
+        return originalCreateElement(tag);
+      });
+
+      await createProject({ productName: 'Test' });
+      await exportAllProjects();
+
+      expect(capturedDownloadName).toMatch(/^pr-faq-export-\d{4}-\d{2}-\d{2}\.json$/);
+    });
   });
 
   describe('importProjects', () => {
-    test('should import projects from JSON file', async () => {
-      const data = {
-        version: '1.0',
-        projects: [{ id: 'test-1', title: 'Imported' }]
-      };
-      const file = new Blob([JSON.stringify(data)], { type: 'application/json' });
-      file.text = async () => JSON.stringify(data);
+    // Helper to create a file-like Blob with text() method
+    function createFileLikeBlob(content) {
+      const jsonString = typeof content === 'string' ? content : JSON.stringify(content);
+      const file = new Blob([jsonString], { type: 'application/json' });
+      file.text = async () => jsonString;
+      return file;
+    }
 
-      const count = await importProjects(file);
-      expect(typeof count).toBe('number');
+    test('should import single project from valid file', async () => {
+      const projectData = {
+        id: 'import-test-1',
+        title: 'Single Import Test',
+        projects: [{ id: 'import-test-1', title: 'Single Import Test', createdAt: new Date().toISOString() }],
+        createdAt: new Date().toISOString()
+      };
+      const file = createFileLikeBlob(projectData);
+
+      const importedCount = await importProjects(file);
+      expect(importedCount).toBe(1);
+    });
+
+    test('should import multiple projects from backup format', async () => {
+      const backup = {
+        version: '1.0',
+        exportDate: new Date().toISOString(),
+        projectCount: 2,
+        projects: [
+          { id: 'backup-1', title: 'Backup Project 1', createdAt: new Date().toISOString() },
+          { id: 'backup-2', title: 'Backup Project 2', createdAt: new Date().toISOString() }
+        ]
+      };
+      const file = createFileLikeBlob(backup);
+
+      const importedCount = await importProjects(file);
+      expect(importedCount).toBe(2);
+    });
+
+    test('should handle empty backup file', async () => {
+      const backup = {
+        version: '1.0',
+        exportDate: new Date().toISOString(),
+        projectCount: 0,
+        projects: []
+      };
+
+      const file = createFileLikeBlob(backup);
+
+      const importedCount = await importProjects(file);
+      expect(importedCount).toBe(0);
+    });
+
+    test('should reject invalid file format', async () => {
+      const invalidContent = { random: 'data' };
+      const file = createFileLikeBlob(invalidContent);
+
+      await expect(importProjects(file)).rejects.toThrow('Invalid import data');
+    });
+
+    test('should reject invalid JSON', async () => {
+      const file = createFileLikeBlob('not valid json');
+
+      await expect(importProjects(file)).rejects.toThrow();
     });
   });
 
