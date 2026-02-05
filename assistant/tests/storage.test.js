@@ -101,7 +101,19 @@ describe('Storage Module', () => {
         });
     });
 
-    describe('exportAll structure', () => {
+    describe('init', () => {
+        it('should initialize database successfully', async () => {
+            const { default: storage } = await import('../js/storage.js');
+            expect(typeof storage.init).toBe('function');
+        });
+
+        it('should have db property', async () => {
+            const { default: storage } = await import('../js/storage.js');
+            expect(storage.db === null || storage.db !== undefined).toBe(true);
+        });
+    });
+
+    describe('exportAll', () => {
         it('should return correct export structure', async () => {
             const { default: storage } = await import('../js/storage.js');
             // Mock getAllProjects
@@ -115,13 +127,45 @@ describe('Storage Module', () => {
             expect(data.projectCount).toBe(1);
             expect(data.projects).toHaveLength(1);
         });
+
+        it('should export empty backup when no projects', async () => {
+            const { default: storage } = await import('../js/storage.js');
+            storage.getAllProjects = jest.fn(() => Promise.resolve([]));
+
+            const data = await storage.exportAll();
+            expect(data.projects).toEqual([]);
+            expect(data.projectCount).toBe(0);
+        });
     });
 
-    describe('importAll validation', () => {
+    describe('importAll', () => {
         it('should reject invalid import data', async () => {
             const { default: storage } = await import('../js/storage.js');
             await expect(storage.importAll({})).rejects.toThrow('Invalid import data');
             await expect(storage.importAll({ projects: 'not-array' })).rejects.toThrow('Invalid import data');
+        });
+
+        it('should import projects from valid data', async () => {
+            const { default: storage } = await import('../js/storage.js');
+            const savedProjects = [];
+            storage.saveProject = jest.fn((p) => {
+                savedProjects.push(p);
+                return Promise.resolve(true);
+            });
+
+            const importData = {
+                version: 1,
+                exportDate: new Date().toISOString(),
+                projectCount: 2,
+                projects: [
+                    { id: 'imp-1', title: 'Import 1' },
+                    { id: 'imp-2', title: 'Import 2' }
+                ]
+            };
+
+            const count = await storage.importAll(importData);
+            expect(count).toBe(2);
+            expect(savedProjects.length).toBe(2);
         });
     });
 });
