@@ -234,4 +234,3 @@ describe('Smoke Test - App Initialization', () => {
     });
   });
 });
-
