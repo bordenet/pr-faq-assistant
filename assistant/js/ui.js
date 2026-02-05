@@ -351,6 +351,9 @@ export function showPromptModal(promptText, title = 'Full Prompt', onCopySuccess
 
 /**
  * Show confirmation dialog
+ * @param {string} message - Message to display (supports newlines)
+ * @param {string} title - Dialog title
+ * @returns {Promise<boolean>} True if confirmed, false if cancelled
  */
 export async function confirm(message, title = 'Confirm') {
   return new Promise((resolve) => {
@@ -359,7 +362,7 @@ export async function confirm(message, title = 'Confirm') {
     modal.innerHTML = `
             <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">${escapeHtml(title)}</h3>
-                <p class="text-gray-600 dark:text-gray-400 mb-6">${escapeHtml(message)}</p>
+                <p class="text-gray-600 dark:text-gray-400 mb-6 whitespace-pre-line">${escapeHtml(message)}</p>
                 <div class="flex justify-end space-x-3">
                     <button id="cancel-btn" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
                         Cancel
@@ -388,6 +391,77 @@ export async function confirm(message, title = 'Confirm') {
       if (e.target === modal) {
         document.body.removeChild(modal);
         resolve(false);
+      }
+    });
+  });
+}
+
+/**
+ * Show confirmation dialog with "Don't remind me again" checkbox
+ * Used for warnings that users can acknowledge once and dismiss permanently
+ * @param {string} message - Message to display (supports newlines)
+ * @param {string} title - Dialog title
+ * @param {Object} options - Configuration options
+ * @param {string} [options.confirmText='Continue'] - Text for confirm button
+ * @param {string} [options.cancelText='Cancel'] - Text for cancel button
+ * @param {string} [options.checkboxLabel="Don't remind me again"] - Checkbox label
+ * @returns {Promise<{confirmed: boolean, remember: boolean}>} Result object
+ */
+export async function confirmWithRemember(message, title = 'Confirm', options = {}) {
+  const {
+    confirmText = 'Continue',
+    cancelText = 'Cancel',
+    checkboxLabel = 'Don\'t remind me again'
+  } = options;
+
+  return new Promise((resolve) => {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    modal.innerHTML = `
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">${escapeHtml(title)}</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-4 whitespace-pre-line">${escapeHtml(message)}</p>
+                <label class="flex items-center gap-2 mb-6 cursor-pointer text-sm text-gray-600 dark:text-gray-400">
+                    <input type="checkbox" id="remember-checkbox" class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                    <span>${escapeHtml(checkboxLabel)}</span>
+                </label>
+                <div class="flex justify-end space-x-3">
+                    <button id="cancel-btn" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                        ${escapeHtml(cancelText)}
+                    </button>
+                    <button id="confirm-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        ${escapeHtml(confirmText)}
+                    </button>
+                </div>
+            </div>
+        `;
+
+    document.body.appendChild(modal);
+
+    // Close on Escape key - define early so we can remove it in getResult
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        getResult(false);
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+
+    const getResult = (confirmed) => {
+      // Always remove the Escape handler when closing
+      document.removeEventListener('keydown', handleEscape);
+      const checkbox = modal.querySelector('#remember-checkbox');
+      const remember = checkbox?.checked || false;
+      document.body.removeChild(modal);
+      resolve({ confirmed, remember });
+    };
+
+    modal.querySelector('#cancel-btn').addEventListener('click', () => getResult(false));
+    modal.querySelector('#confirm-btn').addEventListener('click', () => getResult(true));
+
+    // Close on backdrop click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        getResult(false);
       }
     });
   });
