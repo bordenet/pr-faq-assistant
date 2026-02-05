@@ -11,7 +11,7 @@ import { navigateTo } from './router.js';
 import { Workflow, WORKFLOW_CONFIG, getPhaseMetadata, detectPromptPaste } from './workflow.js';
 import { preloadPromptTemplates } from './prompts.js';
 import { computeWordDiff, renderDiffHtml, getDiffStats } from './diff-view.js';
-import { validatePRFAQ, getScoreColor, getScoreLabel } from './validator-inline.js';
+import { validateDocument, getScoreColor, getScoreLabel } from './validator-inline.js';
 
 /**
  * Render the project detail view
@@ -100,7 +100,7 @@ function renderPhaseContent(workflow) {
   let completionBanner = '';
   if (isFullyComplete) {
     const prfaqContent = phaseData?.response || '';
-    const validationResult = validatePRFAQ(prfaqContent);
+    const validationResult = validateDocument(prfaqContent);
     const scoreColor = getScoreColor(validationResult.totalScore);
     const scoreLabel = getScoreLabel(validationResult.totalScore);
 
@@ -117,7 +117,7 @@ function renderPhaseContent(workflow) {
             <div class="flex items-center justify-between flex-wrap gap-4">
                 <div>
                     <h4 class="text-lg font-semibold text-green-800 dark:text-green-300 flex items-center">
-                        <span class="mr-2">🎉</span> Your PR-FAQ is Complete!
+                        <span class="mr-2">🎉</span> Your Press Release Document is Complete!
                     </h4>
                     <p class="text-green-700 dark:text-green-400 mt-1">
                         <strong>Next steps:</strong> Preview & copy, then validate your document.
@@ -137,7 +137,7 @@ function renderPhaseContent(workflow) {
             <div class="mt-4 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                 <div class="flex items-center justify-between mb-3">
                     <h5 class="font-semibold text-gray-900 dark:text-white flex items-center">
-                        📊 PR-FAQ Quality Score
+                        📊 Document Quality Rating
                     </h5>
                     <div class="flex items-center gap-2">
                         <span class="text-3xl font-bold text-${scoreColor}-600 dark:text-${scoreColor}-400">${validationResult.totalScore}</span>

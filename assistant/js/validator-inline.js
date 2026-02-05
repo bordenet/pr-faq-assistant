@@ -138,7 +138,7 @@ function scoreEvidence(text) {
   return { score: Math.min(15, score), maxScore: 15, issues };
 }
 
-export function validatePRFAQ(text) {
+export function validateDocument(text) {
   if (!text || typeof text !== 'string' || text.trim().length < 50) {
     return {
       totalScore: 0,
