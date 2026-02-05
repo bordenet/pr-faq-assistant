@@ -6,11 +6,12 @@
  */
 
 import { getProject, deleteProject, updatePhase, updateProject, getExportFilename, getFinalMarkdown } from './projects.js';
-import { escapeHtml, showToast, copyToClipboard, copyToClipboardAsync, showPromptModal, confirm, showDocumentPreviewModal, createActionMenu } from './ui.js';
+import { escapeHtml, showToast, copyToClipboard, copyToClipboardAsync, showPromptModal, confirm, confirmWithRemember, showDocumentPreviewModal, createActionMenu } from './ui.js';
 import { navigateTo } from './router.js';
 import { Workflow, WORKFLOW_CONFIG, getPhaseMetadata, detectPromptPaste } from './workflow.js';
 import { preloadPromptTemplates } from './prompts.js';
 import { computeWordDiff, renderDiffHtml, getDiffStats } from './diff-view.js';
+import { validatePRFAQ, getScoreColor, getScoreLabel } from './validator-inline.js';
 
 /**
  * Render the project detail view
@@ -96,7 +97,22 @@ function renderPhaseContent(workflow) {
   const isFullyComplete = workflow.isComplete();
 
   // Completion banner shown above Phase 3 content when workflow is complete
-  const completionBanner = isFullyComplete ? `
+  let completionBanner = '';
+  if (isFullyComplete) {
+    const prfaqContent = phaseData?.response || '';
+    const validationResult = validatePRFAQ(prfaqContent);
+    const scoreColor = getScoreColor(validationResult.totalScore);
+    const scoreLabel = getScoreLabel(validationResult.totalScore);
+
+    // Collect all issues for display
+    const allIssues = [
+      ...validationResult.structure.issues,
+      ...validationResult.content.issues,
+      ...validationResult.professional.issues,
+      ...validationResult.evidence.issues
+    ];
+
+    completionBanner = `
         <div class="mb-6 p-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
             <div class="flex items-center justify-between flex-wrap gap-4">
                 <div>
@@ -111,14 +127,61 @@ function renderPhaseContent(workflow) {
                     <button id="export-complete-btn" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-lg">
                         📄 Preview & Copy
                     </button>
-                    <button id="compare-phases-btn" class="px-4 py-2 border border-purple-600 text-purple-600 dark:border-purple-400 dark:text-purple-400 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors font-medium">
-                        🔄 Compare Phases
-                    </button>
-                    <a href="https://bordenet.github.io/pr-faq-assistant/validator/" target="_blank" rel="noopener noreferrer" class="px-4 py-2 border border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors font-medium">
-                        Full Validation ↗
+                    <a href="../validator/" target="_blank" rel="noopener noreferrer" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg">
+                        📋 Full Validation ↗
                     </a>
                 </div>
             </div>
+
+            <!-- Inline Quality Score -->
+            <div class="mt-4 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between mb-3">
+                    <h5 class="font-semibold text-gray-900 dark:text-white flex items-center">
+                        📊 PR-FAQ Quality Score
+                    </h5>
+                    <div class="flex items-center gap-2">
+                        <span class="text-3xl font-bold text-${scoreColor}-600 dark:text-${scoreColor}-400">${validationResult.totalScore}</span>
+                        <span class="text-gray-500 dark:text-gray-400">/100</span>
+                        <span class="px-2 py-1 text-xs font-medium rounded-full bg-${scoreColor}-100 dark:bg-${scoreColor}-900/30 text-${scoreColor}-700 dark:text-${scoreColor}-300">${scoreLabel}</span>
+                    </div>
+                </div>
+
+                <!-- Score Breakdown -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                    <div class="p-2 rounded bg-gray-50 dark:bg-gray-700/50">
+                        <div class="text-gray-500 dark:text-gray-400 text-xs">Structure</div>
+                        <div class="font-semibold text-gray-900 dark:text-white">${validationResult.structure.score}/${validationResult.structure.maxScore}</div>
+                    </div>
+                    <div class="p-2 rounded bg-gray-50 dark:bg-gray-700/50">
+                        <div class="text-gray-500 dark:text-gray-400 text-xs">Content</div>
+                        <div class="font-semibold text-gray-900 dark:text-white">${validationResult.content.score}/${validationResult.content.maxScore}</div>
+                    </div>
+                    <div class="p-2 rounded bg-gray-50 dark:bg-gray-700/50">
+                        <div class="text-gray-500 dark:text-gray-400 text-xs">Professional</div>
+                        <div class="font-semibold text-gray-900 dark:text-white">${validationResult.professional.score}/${validationResult.professional.maxScore}</div>
+                    </div>
+                    <div class="p-2 rounded bg-gray-50 dark:bg-gray-700/50">
+                        <div class="text-gray-500 dark:text-gray-400 text-xs">Evidence</div>
+                        <div class="font-semibold text-gray-900 dark:text-white">${validationResult.evidence.score}/${validationResult.evidence.maxScore}</div>
+                    </div>
+                </div>
+
+                ${allIssues.length > 0 && validationResult.totalScore < 70 ? `
+                <!-- Improvement Suggestions -->
+                <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+                    <details>
+                        <summary class="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer hover:text-gray-900 dark:hover:text-white">
+                            💡 ${allIssues.length} suggestion${allIssues.length > 1 ? 's' : ''} to improve your score
+                        </summary>
+                        <ul class="mt-2 text-xs text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
+                            ${allIssues.slice(0, 5).map(issue => `<li>${escapeHtml(issue)}</li>`).join('')}
+                            ${allIssues.length > 5 ? `<li class="text-gray-400 dark:text-gray-500">...and ${allIssues.length - 5} more</li>` : ''}
+                        </ul>
+                    </details>
+                </div>
+                ` : ''}
+            </div>
+
             <!-- Expandable Help Section -->
             <details class="mt-4">
                 <summary class="text-sm text-green-700 dark:text-green-400 cursor-pointer hover:text-green-800 dark:hover:text-green-300">
@@ -129,7 +192,7 @@ function renderPhaseContent(workflow) {
                         <li>Click <strong>"Preview & Copy"</strong> to see your formatted document</li>
                         <li>Click <strong>"Copy Formatted Text"</strong> in the preview</li>
                         <li>Open <strong>Microsoft Word</strong> or <strong>Google Docs</strong> and paste</li>
-                        <li>Use <strong><a href="https://bordenet.github.io/pr-faq-assistant/validator/" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">PR-FAQ Validator</a></strong> to score and improve your document</li>
+                        <li>Use <strong><a href="../validator/" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">PR-FAQ Validator</a></strong> to score and improve your document</li>
                     </ol>
                     <p class="mt-3 text-gray-500 dark:text-gray-400 text-xs">
                         💡 The validator provides instant feedback and AI-powered suggestions for improvement.
@@ -137,7 +200,8 @@ function renderPhaseContent(workflow) {
                 </div>
             </details>
         </div>
-  ` : '';
+    `;
+  }
 
   return `
         ${completionBanner}
@@ -337,7 +401,32 @@ function setupPhaseContentListeners(project, workflow) {
 
   // Copy Prompt - enables the Open AI button and textarea
   // CRITICAL: Safari transient activation fix - call copyToClipboardAsync synchronously
-  document.getElementById('copy-prompt-btn')?.addEventListener('click', () => {
+  document.getElementById('copy-prompt-btn')?.addEventListener('click', async () => {
+    // Check if warning was previously acknowledged
+    const warningAcknowledged = localStorage.getItem('external-ai-warning-acknowledged');
+
+    if (!warningAcknowledged) {
+      const result = await confirmWithRemember(
+        'You are about to copy a prompt that may contain proprietary data.\n\n' +
+                '• This prompt will be pasted into an external AI service (Claude/Gemini)\n' +
+                '• Data sent to these services is processed on third-party servers\n' +
+                '• For sensitive documents, use an internal tool like LibreGPT instead\n\n' +
+                'Do you want to continue?',
+        'External AI Warning',
+        { confirmText: 'Copy Prompt', cancelText: 'Cancel' }
+      );
+
+      if (!result.confirmed) {
+        showToast('Copy cancelled', 'info');
+        return;
+      }
+
+      // Remember the choice permanently if checkbox was checked
+      if (result.remember) {
+        localStorage.setItem('external-ai-warning-acknowledged', 'true');
+      }
+    }
+
     const promptPromise = workflow.generatePrompt();
 
     copyToClipboardAsync(promptPromise)
