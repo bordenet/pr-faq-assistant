@@ -152,4 +152,3 @@ export function createProjectStorage(dbName, version = 1) {
     generateId: () => generateId()
   };
 }
-

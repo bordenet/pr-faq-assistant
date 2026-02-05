@@ -4,6 +4,7 @@
 
 // UI utilities
 export {
+  createActionMenu,
   formatDate,
   escapeHtml,
   showToast,
