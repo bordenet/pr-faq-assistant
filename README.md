@@ -101,6 +101,10 @@ pr-faq-assistant/
 
 Built with [Genesis](https://github.com/bordenet/genesis). Related tools:
 
+- [Acceptance Criteria Assistant](https://github.com/bordenet/acceptance-criteria-assistant)
+- [Architecture Decision Record](https://github.com/bordenet/architecture-decision-record)
+- [Business Justification Assistant](https://github.com/bordenet/business-justification-assistant)
+- [JD Assistant](https://github.com/bordenet/jd-assistant)
 - [One-Pager](https://github.com/bordenet/one-pager)
 - [Power Statement Assistant](https://github.com/bordenet/power-statement-assistant)
 - [PR/FAQ Assistant](https://github.com/bordenet/pr-faq-assistant)
