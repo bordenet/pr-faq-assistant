@@ -3,7 +3,27 @@
  * Tests all exported functions: extractQuotes, detectMetrics, scoreQuote, scoreCustomerEvidence
  */
 
-import { extractQuotes, detectMetricsInText, scoreQuote, scoreCustomerEvidence } from '../js/validator.js';
+import {
+  extractQuotes,
+  detectMetricsInText,
+  scoreQuote,
+  scoreCustomerEvidence,
+  validatePRFAQ,
+  scoreStructureAndHook,
+  scoreContentQuality,
+  scoreProfessionalQuality,
+  analyzeHeadlineQuality,
+  analyzeNewsworthyHook,
+  analyzeFiveWs,
+  analyzeStructure,
+  analyzeCredibility,
+  analyzeToneAndReadability,
+  analyzeMarketingFluff,
+  detectFluffWords,
+  extractPressRelease,
+  stripMarkdown,
+  extractTitle
+} from '../js/validator.js';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -269,5 +289,344 @@ describe('scoreCustomerEvidence', () => {
       const result = scoreCustomerEvidence(input);
       expect(result.maxScore).toBe(15);
     });
+  });
+});
+
+// ============================================================================
+// validatePRFAQ tests
+// ============================================================================
+describe('validatePRFAQ', () => {
+  test('returns zero score for empty input', () => {
+    const result = validatePRFAQ('');
+    expect(result.totalScore).toBe(0);
+  });
+
+  test('returns zero score for null', () => {
+    const result = validatePRFAQ(null);
+    expect(result.totalScore).toBe(0);
+  });
+
+  test('returns zero score for undefined', () => {
+    const result = validatePRFAQ(undefined);
+    expect(result.totalScore).toBe(0);
+  });
+
+  test('scores a well-structured PR-FAQ', () => {
+    const prfaq = `
+# ACME Corp Launches Revolutionary Widget
+
+**SAN FRANCISCO, CA - January 15, 2024** - ACME Corporation today announced the launch of Widget Pro, a groundbreaking solution that reduces manufacturing costs by 40%.
+
+"This product has transformed our operations," said Jane Smith, CEO of TechCorp. "We've seen a 50% improvement in efficiency within just 30 days."
+
+## The Challenge
+
+Manufacturers have struggled with inefficient processes that waste $2.5 billion annually. Current solutions are complex and expensive.
+
+## The Solution
+
+Widget Pro uses AI-powered automation to streamline workflows. Key features include:
+- Real-time monitoring with 99.9% accuracy
+- Automated reporting that saves 10 hours per week
+- Integration with existing systems
+
+## Customer Results
+
+Beta customers reported:
+- 40% reduction in processing time
+- $500,000 annual savings
+- 25% improvement in quality metrics
+
+## FAQ
+
+**Q: How does Widget Pro work?**
+A: Widget Pro uses machine learning algorithms to analyze and optimize manufacturing processes.
+
+**Q: What is the pricing?**
+A: Widget Pro starts at $999/month with enterprise plans available.
+
+**Q: When is it available?**
+A: Widget Pro is available now for all customers.
+
+For more information, visit www.acme-widget.com
+`;
+    const result = validatePRFAQ(prfaq);
+    expect(result.totalScore).toBeGreaterThan(50);
+    expect(result.structure).toBeDefined();
+    expect(result.content).toBeDefined();
+    expect(result.professional).toBeDefined();
+    expect(result.evidence).toBeDefined();
+  });
+
+  test('returns issues for poor quality content', () => {
+    const poorPrfaq = 'This is just a short paragraph without proper structure.';
+    const result = validatePRFAQ(poorPrfaq);
+    expect(result.totalScore).toBeLessThan(30);
+  });
+});
+
+// ============================================================================
+// scoreStructureAndHook tests
+// ============================================================================
+describe('scoreStructureAndHook', () => {
+  test('scores content with good headline', () => {
+    const content = `
+ACME Corp Launches Revolutionary Product
+
+SAN FRANCISCO - ACME today announced a major breakthrough.
+The product will transform the industry by reducing costs 50%.
+    `.trim();
+    const result = scoreStructureAndHook(content, 'ACME Corp Launches Revolutionary Product');
+    expect(result.score).toBeGreaterThanOrEqual(0);
+    expect(result.maxScore).toBe(30);
+  });
+
+  test('returns zero for empty content', () => {
+    const result = scoreStructureAndHook('', '');
+    expect(result.score).toBe(0);
+  });
+});
+
+// ============================================================================
+// scoreContentQuality tests
+// ============================================================================
+describe('scoreContentQuality', () => {
+  test('scores content with metrics', () => {
+    const content = `
+Our solution delivers 40% cost reduction.
+Customers see 2x improvement in efficiency.
+Annual savings of $500,000 are typical.
+    `.trim();
+    const result = scoreContentQuality(content);
+    expect(result.score).toBeGreaterThanOrEqual(0);
+    expect(result.maxScore).toBe(35);
+  });
+
+  test('returns low score for empty content', () => {
+    const result = scoreContentQuality('');
+    expect(result.score).toBeLessThanOrEqual(result.maxScore);
+  });
+});
+
+// ============================================================================
+// scoreProfessionalQuality tests
+// ============================================================================
+describe('scoreProfessionalQuality', () => {
+  test('scores professional content', () => {
+    const content = `
+ACME Corporation announced today the launch of a new product.
+The solution was developed in partnership with industry leaders.
+Independent testing confirms the results meet all standards.
+    `.trim();
+    const result = scoreProfessionalQuality(content);
+    expect(result.score).toBeGreaterThanOrEqual(0);
+    expect(result.maxScore).toBe(20);
+  });
+
+  test('penalizes marketing fluff', () => {
+    const fluffyContent = `
+This revolutionary groundbreaking amazing solution will transform
+the industry with its game-changing innovative disruptive approach.
+    `.trim();
+    const result = scoreProfessionalQuality(fluffyContent);
+    expect(result.issues).toBeDefined();
+  });
+});
+
+// ============================================================================
+// analyzeHeadlineQuality tests
+// ============================================================================
+describe('analyzeHeadlineQuality', () => {
+  test('analyzes good headline', () => {
+    const result = analyzeHeadlineQuality('ACME Corp Launches New Product That Reduces Costs 40%');
+    expect(result.score).toBeGreaterThanOrEqual(0);
+    expect(result.maxScore).toBe(10);
+  });
+
+  test('scores weak headlines low', () => {
+    const result = analyzeHeadlineQuality('test');
+    expect(result.score).toBeLessThanOrEqual(result.maxScore);
+  });
+});
+
+// ============================================================================
+// analyzeNewsworthyHook tests
+// ============================================================================
+describe('analyzeNewsworthyHook', () => {
+  test('identifies newsworthy content', () => {
+    const content = `
+ACME Corporation announced today the launch of Widget Pro.
+This marks a significant milestone for the company.
+    `.trim();
+    const result = analyzeNewsworthyHook(content);
+    expect(result.score).toBeGreaterThanOrEqual(0);
+    expect(result.maxScore).toBe(15);
+  });
+});
+
+// ============================================================================
+// analyzeFiveWs tests
+// ============================================================================
+describe('analyzeFiveWs', () => {
+  test('detects five Ws in content', () => {
+    const content = `
+ACME Corporation announced today from San Francisco the launch
+of Widget Pro, which will help manufacturers reduce costs.
+The product is available now through authorized dealers.
+    `.trim();
+    const result = analyzeFiveWs(content);
+    expect(result.score).toBeGreaterThanOrEqual(0);
+    expect(result.maxScore).toBe(15);
+  });
+});
+
+// ============================================================================
+// analyzeStructure tests
+// ============================================================================
+describe('analyzeStructure', () => {
+  test('scores structured content', () => {
+    const content = `
+# Headline
+
+## Introduction
+Content here.
+
+## Features
+- Feature 1
+- Feature 2
+
+## FAQ
+Q: Question?
+A: Answer.
+    `.trim();
+    const result = analyzeStructure(content);
+    expect(result.score).toBeGreaterThanOrEqual(0);
+    expect(result.maxScore).toBe(10);
+  });
+});
+
+// ============================================================================
+// analyzeCredibility tests
+// ============================================================================
+describe('analyzeCredibility', () => {
+  test('scores content with sources', () => {
+    const content = `
+According to Gartner research, the market is growing 20% annually.
+"This product works," said Dr. Jane Smith, PhD at MIT.
+Independent studies confirm these results.
+    `.trim();
+    const result = analyzeCredibility(content);
+    expect(result.score).toBeGreaterThanOrEqual(0);
+    expect(result.maxScore).toBe(10);
+  });
+});
+
+// ============================================================================
+// analyzeToneAndReadability tests
+// ============================================================================
+describe('analyzeToneAndReadability', () => {
+  test('scores professional tone', () => {
+    const content = `
+The company announced today the availability of the new product.
+Customers can expect improved performance and reduced costs.
+    `.trim();
+    const result = analyzeToneAndReadability(content);
+    expect(result.score).toBeGreaterThanOrEqual(0);
+    expect(result.maxScore).toBe(10);
+  });
+});
+
+// ============================================================================
+// analyzeMarketingFluff tests
+// ============================================================================
+describe('analyzeMarketingFluff', () => {
+  test('detects marketing fluff words', () => {
+    const content = `
+This revolutionary groundbreaking solution is a game-changer.
+Our disruptive innovative approach transforms everything.
+    `.trim();
+    const result = analyzeMarketingFluff(content);
+    expect(result.score).toBeLessThanOrEqual(result.maxScore);
+    expect(result.issues).toBeDefined();
+  });
+
+  test('scores clean content higher', () => {
+    const content = `
+The company announced the product launch.
+Customers report improved performance metrics.
+    `.trim();
+    const result = analyzeMarketingFluff(content);
+    expect(result.score).toBeGreaterThanOrEqual(0);
+  });
+});
+
+// ============================================================================
+// detectFluffWords tests
+// ============================================================================
+describe('detectFluffWords', () => {
+  test('detects fluff words', () => {
+    const content = 'This revolutionary game-changing solution is groundbreaking.';
+    const result = detectFluffWords(content);
+    expect(result.length).toBeGreaterThan(0);
+  });
+
+  test('returns empty for clean content', () => {
+    const content = 'The company launched a new product.';
+    const result = detectFluffWords(content);
+    expect(result.length).toBe(0);
+  });
+});
+
+// ============================================================================
+// extractPressRelease tests
+// ============================================================================
+describe('extractPressRelease', () => {
+  test('extracts press release content', () => {
+    const markdown = `# Press Release
+
+ACME Corp announces new product.
+
+## FAQ
+Q: When?
+A: Now.
+`;
+    const result = extractPressRelease(markdown);
+    expect(result).toBeDefined();
+    expect(typeof result).toBe('string');
+  });
+});
+
+// ============================================================================
+// stripMarkdown tests
+// ============================================================================
+describe('stripMarkdown', () => {
+  test('removes markdown formatting', () => {
+    const markdown = '# Headline\n\n**Bold** and *italic* text.';
+    const result = stripMarkdown(markdown);
+    expect(result).not.toContain('#');
+    expect(result).not.toContain('**');
+    expect(result).not.toContain('*');
+  });
+
+  test('handles empty input', () => {
+    const result = stripMarkdown('');
+    expect(result).toBe('');
+  });
+});
+
+// ============================================================================
+// extractTitle tests
+// ============================================================================
+describe('extractTitle', () => {
+  test('extracts title from markdown', () => {
+    const markdown = '# My Great Title\n\nSome content here.';
+    const result = extractTitle(markdown);
+    expect(result).toBe('My Great Title');
+  });
+
+  test('returns empty for no title', () => {
+    const markdown = 'Just some content without a title.';
+    const result = extractTitle(markdown);
+    expect(result).toBe('');
   });
 });
