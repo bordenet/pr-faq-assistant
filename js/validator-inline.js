@@ -10,6 +10,11 @@
  * 4. Evidence (15 pts) - Customer evidence
  */
 
+import { getSlopPenalty, calculateSlopScore } from './slop-detection.js';
+
+// Re-export for direct access
+export { calculateSlopScore };
+
 const STRUCTURE_PATTERNS = {
   headline: /^#+\s*.+/m,
   sections: /^#+\s*(problem|solution|benefit|feature|faq|quote|customer)/gim,
@@ -154,9 +159,30 @@ export function validateDocument(text) {
   const professional = scoreProfessional(text);
   const evidence = scoreEvidence(text);
 
+  // AI slop detection
+  const slopPenalty = getSlopPenalty(text);
+  let slopDeduction = 0;
+  const slopIssues = [];
+
+  if (slopPenalty.penalty > 0) {
+    slopDeduction = Math.min(5, Math.floor(slopPenalty.penalty * 0.6));
+    if (slopPenalty.issues.length > 0) {
+      slopIssues.push(...slopPenalty.issues.slice(0, 2));
+    }
+  }
+
+  const totalScore = Math.max(0,
+    structure.score + content.score + professional.score + evidence.score - slopDeduction
+  );
+
   return {
-    totalScore: structure.score + content.score + professional.score + evidence.score,
-    structure, content, professional, evidence
+    totalScore,
+    structure, content, professional, evidence,
+    slopDetection: {
+      ...slopPenalty,
+      deduction: slopDeduction,
+      issues: slopIssues
+    }
   };
 }
 

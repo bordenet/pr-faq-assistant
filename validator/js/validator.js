@@ -903,14 +903,13 @@ export function analyzeMarketingFluff(content) {
 
   result.score = Math.max(0, result.score);
 
-  // Enhanced: Apply comprehensive AI slop detection penalty
+  // Apply slop penalty (aligned with inline validator)
   const slopPenalty = getSlopPenalty(content);
   if (slopPenalty.penalty > 0) {
-    // Apply additional penalty for AI slop patterns (max 3 points)
-    const additionalPenalty = Math.min(3, Math.floor(slopPenalty.penalty / 2));
-    result.score = Math.max(0, result.score - additionalPenalty);
+    const slopDeduction = Math.min(5, Math.floor(slopPenalty.penalty * 0.6));
+    result.score = Math.max(0, result.score - slopDeduction);
     if (slopPenalty.issues.length > 0) {
-      result.issues.push(...slopPenalty.issues.slice(0, 2)); // Add top 2 slop issues
+      result.issues.push(...slopPenalty.issues.slice(0, 2));
     }
   }
   result.slopDetection = slopPenalty;
