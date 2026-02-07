@@ -3,7 +3,7 @@ import {
   handleStorageError,
   handleValidationError,
   ERROR_MESSAGES
-} from '../js/error-handler.js';
+} from '../../shared/js/error-handler.js';
 
 describe('Error Handler Module', () => {
   test('should have predefined error messages', () => {

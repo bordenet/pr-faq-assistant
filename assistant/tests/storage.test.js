@@ -50,7 +50,7 @@ global.navigator = {
 describe('Storage Module', () => {
     describe('Storage class structure', () => {
         it('should export a default storage instance', async () => {
-            const { default: storage } = await import('../js/storage.js');
+            const { default: storage } = await import('../../shared/js/storage.js');
             expect(storage).toBeDefined();
             expect(typeof storage.init).toBe('function');
             expect(typeof storage.getAllProjects).toBe('function');
@@ -68,7 +68,7 @@ describe('Storage Module', () => {
 
         beforeEach(async () => {
             jest.resetModules();
-            const module = await import('../js/storage.js');
+            const module = await import('../../shared/js/storage.js');
             storage = module.default;
         });
 
@@ -87,7 +87,7 @@ describe('Storage Module', () => {
 
     describe('getStorageInfo', () => {
         it('should return storage estimate when available or null', async () => {
-            const { default: storage } = await import('../js/storage.js');
+            const { default: storage } = await import('../../shared/js/storage.js');
             const info = await storage.getStorageInfo();
             // In test environment, navigator.storage may not be available
             // The function returns null when estimate is not available
@@ -103,19 +103,19 @@ describe('Storage Module', () => {
 
     describe('init', () => {
         it('should initialize database successfully', async () => {
-            const { default: storage } = await import('../js/storage.js');
+            const { default: storage } = await import('../../shared/js/storage.js');
             expect(typeof storage.init).toBe('function');
         });
 
         it('should have db property', async () => {
-            const { default: storage } = await import('../js/storage.js');
+            const { default: storage } = await import('../../shared/js/storage.js');
             expect(storage.db === null || storage.db !== undefined).toBe(true);
         });
     });
 
     describe('exportAll', () => {
         it('should return correct export structure', async () => {
-            const { default: storage } = await import('../js/storage.js');
+            const { default: storage } = await import('../../shared/js/storage.js');
             // Mock getAllProjects
             storage.getAllProjects = jest.fn(() => Promise.resolve([
                 { id: '1', title: 'Test' }
@@ -129,7 +129,7 @@ describe('Storage Module', () => {
         });
 
         it('should export empty backup when no projects', async () => {
-            const { default: storage } = await import('../js/storage.js');
+            const { default: storage } = await import('../../shared/js/storage.js');
             storage.getAllProjects = jest.fn(() => Promise.resolve([]));
 
             const data = await storage.exportAll();
@@ -140,13 +140,13 @@ describe('Storage Module', () => {
 
     describe('importAll', () => {
         it('should reject invalid import data', async () => {
-            const { default: storage } = await import('../js/storage.js');
+            const { default: storage } = await import('../../shared/js/storage.js');
             await expect(storage.importAll({})).rejects.toThrow('Invalid import data');
             await expect(storage.importAll({ projects: 'not-array' })).rejects.toThrow('Invalid import data');
         });
 
         it('should import projects from valid data', async () => {
-            const { default: storage } = await import('../js/storage.js');
+            const { default: storage } = await import('../../shared/js/storage.js');
             const savedProjects = [];
             storage.saveProject = jest.fn((p) => {
                 savedProjects.push(p);

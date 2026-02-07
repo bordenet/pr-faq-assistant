@@ -5,9 +5,9 @@
  * Uses jsdom for DOM testing with real implementations.
  */
 
-import { renderProjectView } from '../js/project-view.js';
-import { createProject, deleteProject, getAllProjects } from '../js/projects.js';
-import storage from '../js/storage.js';
+import { renderProjectView } from '../../shared/js/project-view.js';
+import { createProject, deleteProject, getAllProjects } from '../../shared/js/projects.js';
+import storage from '../../shared/js/storage.js';
 
 describe('Project View Module', () => {
   beforeEach(async () => {

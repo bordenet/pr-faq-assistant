@@ -10,6 +10,7 @@ import { formatDate, escapeHtml, confirm, showToast, showDocumentPreviewModal } 
 import { navigateTo } from './router.js';
 import { WORKFLOW_CONFIG, Workflow } from './workflow.js';
 import { getAllTemplates, getTemplate } from './document-specific-templates.js';
+import { validateDocument, getScoreColor, getScoreLabel } from './validator-inline.js';
 
 const PRFAQ_DOCS_URL = 'https://github.com/bordenet/Engineering_Culture/blob/main/SDLC/The_PR-FAQ.md';
 
@@ -113,8 +114,24 @@ function renderProjectCards(projects) {
         p.phases[1]?.completed &&
         p.phases[2]?.completed &&
         p.phases[3]?.completed;
-    const displayPhase = Math.min(p.phase || 1, WORKFLOW_CONFIG.phaseCount);
-    const progress = Math.min(((p.phase || 1) / WORKFLOW_CONFIG.phaseCount) * 100, 100);
+
+    // Count COMPLETED phases (not current phase)
+    const completedPhases = p.phases
+        ? [1, 2, 3].filter(phase => p.phases[phase]?.completed).length
+        : 0;
+    const progressPercent = Math.round((completedPhases / WORKFLOW_CONFIG.phaseCount) * 100);
+
+    // Calculate score for completed projects
+    let scoreData = null;
+    if (isComplete && p.phases?.[3]?.response) {
+      const validation = validateDocument(p.phases[3].response);
+      scoreData = {
+        score: validation.totalScore,
+        color: getScoreColor(validation.totalScore),
+        label: getScoreLabel(validation.totalScore)
+      };
+    }
+
     return `
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow cursor-pointer" data-project-id="${p.id}">
                     <div class="p-6">
@@ -136,23 +153,31 @@ function renderProjectCards(projects) {
                                 </button>
                             </div>
                         </div>
-                        <div class="mb-4">
-                            <div class="flex items-center space-x-2 mb-2">
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Phase ${displayPhase}/${WORKFLOW_CONFIG.phaseCount}</span>
-                                <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
-                                    <div class="bg-blue-600 h-2 rounded-full transition-all" style="width: ${progress}%"></div>
-                                </div>
+                        ${scoreData ? `
+                        <!-- Completed: Show quality score -->
+                        <div class="mb-3">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Quality Score</span>
+                                <span class="text-xs font-medium text-${scoreData.color}-600 dark:text-${scoreData.color}-400">${scoreData.score}% · ${scoreData.label}</span>
                             </div>
-                            <div class="flex space-x-1">
-                                ${[1, 2, 3].map(phase => `
-                                    <div class="flex-1 h-1 rounded ${p.phases && p.phases[phase] && p.phases[phase].completed ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}"></div>
-                                `).join('')}
+                            <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                                <div class="bg-${scoreData.color}-500 h-1.5 rounded-full" style="width: ${scoreData.score}%"></div>
                             </div>
                         </div>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">${escapeHtml(p.formData?.problem || '')}</p>
-                        <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                            <span>Updated ${formatDate(p.updatedAt)}</span>
-                            <span>${p.phases ? Object.values(p.phases).filter(ph => ph.completed).length : 0}/${WORKFLOW_CONFIG.phaseCount} complete</span>
+                        ` : `
+                        <!-- In Progress: Show completed phases as segments -->
+                        <div class="flex items-center space-x-2 mb-3">
+                            <div class="flex space-x-1 flex-1">
+                                ${[1, 2, 3].map(phase => `
+                                    <div class="flex-1 h-1.5 rounded ${p.phases && p.phases[phase]?.completed ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}"></div>
+                                `).join('')}
+                            </div>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">${completedPhases}/3</span>
+                        </div>
+                        `}
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">${escapeHtml(p.formData?.problem || '')}</p>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                            Updated ${formatDate(p.updatedAt)}
                         </div>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import { initMockMode, setMockMode, isMockMode, getMockResponse } from '../js/ai-mock.js';
+import { initMockMode, setMockMode, isMockMode, getMockResponse } from '../../shared/js/ai-mock.js';
 
 describe('AI Mock Module', () => {
   beforeEach(() => {

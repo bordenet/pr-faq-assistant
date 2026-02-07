@@ -13,9 +13,9 @@ import {
   sanitizeFilename,
   getExportFilename,
   getFinalMarkdown
-} from '../js/projects.js';
-import storage from '../js/storage.js';
-import { Workflow } from '../js/workflow.js';
+} from '../../shared/js/projects.js';
+import storage from '../../shared/js/storage.js';
+import { Workflow } from '../../shared/js/workflow.js';
 
 describe('Projects Module', () => {
   beforeEach(async () => {

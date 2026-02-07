@@ -4,7 +4,7 @@
  * Tests the word-level diff algorithm and HTML rendering.
  */
 
-import { computeWordDiff, renderDiffHtml, getDiffStats } from '../js/diff-view.js';
+import { computeWordDiff, renderDiffHtml, getDiffStats } from '../../shared/js/diff-view.js';
 
 describe('computeWordDiff', () => {
   test('should return empty array for empty inputs', () => {

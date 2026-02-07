@@ -13,7 +13,7 @@ import {
     getAdversarialStrategy,
     applyAdversarialPrompt,
     SAME_LLM_CONFIG
-} from '../js/same-llm-adversarial.js';
+} from '../../shared/js/same-llm-adversarial.js';
 
 describe('Same-LLM Adversarial Configuration Tests', () => {
     let configManager;

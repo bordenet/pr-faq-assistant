@@ -47,27 +47,27 @@ describe('Smoke Test - App Initialization', () => {
 
   describe('Module Imports', () => {
     test('storage.js can be imported without errors', async () => {
-      await expect(import('../js/storage.js')).resolves.toBeDefined();
+      await expect(import('../../shared/js/storage.js')).resolves.toBeDefined();
     });
 
     test('workflow.js can be imported without errors', async () => {
-      await expect(import('../js/workflow.js')).resolves.toBeDefined();
+      await expect(import('../../shared/js/workflow.js')).resolves.toBeDefined();
     });
 
     test('ui.js can be imported without errors', async () => {
-      await expect(import('../js/ui.js')).resolves.toBeDefined();
+      await expect(import('../../shared/js/ui.js')).resolves.toBeDefined();
     });
 
     test('router.js can be imported without errors', async () => {
-      await expect(import('../js/router.js')).resolves.toBeDefined();
+      await expect(import('../../shared/js/router.js')).resolves.toBeDefined();
     });
 
     test('projects.js can be imported without errors', async () => {
-      await expect(import('../js/projects.js')).resolves.toBeDefined();
+      await expect(import('../../shared/js/projects.js')).resolves.toBeDefined();
     });
 
     test('ai-mock.js can be imported without errors', async () => {
-      await expect(import('../js/ai-mock.js')).resolves.toBeDefined();
+      await expect(import('../../shared/js/ai-mock.js')).resolves.toBeDefined();
     });
   });
 
@@ -84,47 +84,47 @@ describe('Smoke Test - App Initialization', () => {
    */
   describe('Export Consistency - ui.js exports match project-view.js imports', () => {
     test('ui.js exports escapeHtml', async () => {
-      const ui = await import('../js/ui.js');
+      const ui = await import('../../shared/js/ui.js');
       expect(typeof ui.escapeHtml).toBe('function');
     });
 
     test('ui.js exports showToast', async () => {
-      const ui = await import('../js/ui.js');
+      const ui = await import('../../shared/js/ui.js');
       expect(typeof ui.showToast).toBe('function');
     });
 
     test('ui.js exports copyToClipboard', async () => {
-      const ui = await import('../js/ui.js');
+      const ui = await import('../../shared/js/ui.js');
       expect(typeof ui.copyToClipboard).toBe('function');
     });
 
     test('ui.js exports copyToClipboardAsync', async () => {
-      const ui = await import('../js/ui.js');
+      const ui = await import('../../shared/js/ui.js');
       expect(typeof ui.copyToClipboardAsync).toBe('function');
     });
 
     test('ui.js exports showPromptModal', async () => {
-      const ui = await import('../js/ui.js');
+      const ui = await import('../../shared/js/ui.js');
       expect(typeof ui.showPromptModal).toBe('function');
     });
 
     test('ui.js exports confirm', async () => {
-      const ui = await import('../js/ui.js');
+      const ui = await import('../../shared/js/ui.js');
       expect(typeof ui.confirm).toBe('function');
     });
 
     test('ui.js exports confirmWithRemember', async () => {
-      const ui = await import('../js/ui.js');
+      const ui = await import('../../shared/js/ui.js');
       expect(typeof ui.confirmWithRemember).toBe('function');
     });
 
     test('ui.js exports showDocumentPreviewModal', async () => {
-      const ui = await import('../js/ui.js');
+      const ui = await import('../../shared/js/ui.js');
       expect(typeof ui.showDocumentPreviewModal).toBe('function');
     });
 
     test('ui.js exports createActionMenu', async () => {
-      const ui = await import('../js/ui.js');
+      const ui = await import('../../shared/js/ui.js');
       expect(typeof ui.createActionMenu).toBe('function');
     });
   });
@@ -132,34 +132,34 @@ describe('Smoke Test - App Initialization', () => {
   describe('Export Consistency - validator-inline.js exports match project-view.js imports', () => {
     // All projects must use validateDocument (generic name for shared library)
     test('validator-inline.js exports validateDocument', async () => {
-      const validator = await import('../js/validator-inline.js');
+      const validator = await import('../../shared/js/validator-inline.js');
       expect(typeof validator.validateDocument).toBe('function');
     });
 
     test('validator-inline.js exports getScoreColor', async () => {
-      const validator = await import('../js/validator-inline.js');
+      const validator = await import('../../shared/js/validator-inline.js');
       expect(typeof validator.getScoreColor).toBe('function');
     });
 
     test('validator-inline.js exports getScoreLabel', async () => {
-      const validator = await import('../js/validator-inline.js');
+      const validator = await import('../../shared/js/validator-inline.js');
       expect(typeof validator.getScoreLabel).toBe('function');
     });
   });
 
   describe('Export Consistency - diff-view.js exports match project-view.js imports', () => {
     test('diff-view.js exports computeWordDiff', async () => {
-      const diffView = await import('../js/diff-view.js');
+      const diffView = await import('../../shared/js/diff-view.js');
       expect(typeof diffView.computeWordDiff).toBe('function');
     });
 
     test('diff-view.js exports renderDiffHtml', async () => {
-      const diffView = await import('../js/diff-view.js');
+      const diffView = await import('../../shared/js/diff-view.js');
       expect(typeof diffView.renderDiffHtml).toBe('function');
     });
 
     test('diff-view.js exports getDiffStats', async () => {
-      const diffView = await import('../js/diff-view.js');
+      const diffView = await import('../../shared/js/diff-view.js');
       expect(typeof diffView.getDiffStats).toBe('function');
     });
   });

@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, afterEach, jest } from '@jest/globals';
-import { showToast, showLoading, hideLoading, confirm, confirmWithRemember, formatDate, formatBytes, escapeHtml, copyToClipboard, copyToClipboardAsync, showPromptModal, showDocumentPreviewModal } from '../js/ui.js';
+import { showToast, showLoading, hideLoading, confirm, confirmWithRemember, formatDate, formatBytes, escapeHtml, copyToClipboard, copyToClipboardAsync, showPromptModal, showDocumentPreviewModal } from '../../shared/js/ui.js';
 
 describe('UI Module', () => {
     beforeEach(() => {

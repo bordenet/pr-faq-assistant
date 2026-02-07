@@ -10,7 +10,7 @@ import {
   generatePhase2Prompt,
   generatePhase3Prompt,
   getPhaseMetadata
-} from '../js/prompts.js';
+} from '../../shared/js/prompts.js';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 

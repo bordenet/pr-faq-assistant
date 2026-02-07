@@ -1,6 +1,6 @@
-import { initRouter, navigateTo, getCurrentRoute, updateStorageInfo } from '../js/router.js';
-import storage from '../js/storage.js';
-import { createProject, deleteProject, getAllProjects } from '../js/projects.js';
+import { initRouter, navigateTo, getCurrentRoute, updateStorageInfo } from '../../shared/js/router.js';
+import storage from '../../shared/js/storage.js';
+import { createProject, deleteProject, getAllProjects } from '../../shared/js/projects.js';
 
 describe('Router Module', () => {
   beforeEach(async () => {

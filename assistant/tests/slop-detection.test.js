@@ -16,7 +16,7 @@ import {
   BUZZWORDS,
   FILLER_PHRASES,
   HEDGE_PATTERNS
-} from '../js/slop-detection.js';
+} from '../../shared/js/slop-detection.js';
 
 // ============================================================================
 // detectEmDashes tests
