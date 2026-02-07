@@ -208,7 +208,7 @@ export function renderNewProjectForm() {
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                     Choose a Template
                 </label>
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3" id="template-selector">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3" id="template-selector">
                     ${getAllTemplates().map(t => `
                         <button type="button"
                             class="template-btn p-3 border-2 rounded-lg text-center transition-all hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 ${t.id === 'blank' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-600'}"
