@@ -49,48 +49,6 @@ export const DOCUMENT_TEMPLATES = {
     benefits: '- [Benefit 1 with specific outcome]\n- [Benefit 2 with specific outcome]\n- [Benefit 3 with specific outcome]',
     metrics: '[X]% faster, $[Y] saved, [Z]x improvement',
     location: 'Seattle, WA'
-  },
-  fundingRound: {
-    id: 'fundingRound',
-    name: 'Funding Round',
-    icon: '💵',
-    description: 'Investment announcement',
-    productName: 'Series [A/B/C] Funding',
-    companyName: '[Company]',
-    targetCustomer: 'Investors, partners, and customers in [industry]',
-    problem: 'The [industry] market is experiencing [growth/challenge], creating opportunity for [solution type].',
-    solution: '[Company] is solving this with [approach]. This funding will accelerate [specific initiatives].',
-    benefits: '- Expand [market/region]\n- Scale [team/infrastructure]\n- Launch [new capabilities]',
-    metrics: '$[X]M raised, [Y]x valuation, [Z] customers',
-    location: 'Seattle, WA'
-  },
-  companyMilestone: {
-    id: 'companyMilestone',
-    name: 'Company Milestone',
-    icon: '🎉',
-    description: 'Celebrate achievement',
-    productName: '[Milestone Achievement]',
-    companyName: '[Company]',
-    targetCustomer: 'Customers, partners, and stakeholders',
-    problem: '[Context about the journey and challenges overcome]',
-    solution: 'Through [strategy/approach], we achieved [milestone].',
-    benefits: '- [What this means for customers]\n- [What this means for the industry]\n- [What comes next]',
-    metrics: '[X] customers, $[Y] revenue, [Z]% growth',
-    location: 'Seattle, WA'
-  },
-  crisisResponse: {
-    id: 'crisisResponse',
-    name: 'Crisis Response',
-    icon: '🚨',
-    description: 'Address issue transparently',
-    productName: '[Issue/Incident] Resolution',
-    companyName: '[Company]',
-    targetCustomer: 'Affected customers and stakeholders',
-    problem: 'On [date], [what happened]. [X] customers were affected for [duration].',
-    solution: 'We immediately [actions taken]. Root cause was [explanation]. We have [prevention measures].',
-    benefits: '- [Compensation/remediation offered]\n- [Prevention measures implemented]\n- [Commitment to transparency]',
-    metrics: '[X]% restored within [time], [Y] support tickets resolved',
-    location: 'Seattle, WA'
   }
 };
 
