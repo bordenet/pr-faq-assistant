@@ -1,6 +1,14 @@
 /**
  * Document-Specific Templates for PR-FAQ
- * Pre-filled content for common PR-FAQ use cases
+ *
+ * These are PRESETS of the same canonical Amazon PR-FAQ structure, not different templates.
+ * All PR-FAQs follow the same format: 1-page Press Release + multi-page FAQ.
+ * The presets differ in WHO the "customer" is and what FAQ questions are emphasized.
+ *
+ * Based on authentic Amazon "Working Backwards" methodology:
+ * - Bryar & Carr "Working Backwards" book
+ * - SVPG, Commoncog, and ex-Amazonian sources
+ *
  * @module document-specific-templates
  */
 
@@ -38,9 +46,9 @@ export const DOCUMENT_TEMPLATES = {
   },
   productLaunch: {
     id: 'productLaunch',
-    name: 'Product Launch',
+    name: 'Customer Product',
     icon: '🆕',
-    description: 'Announce new product/feature',
+    description: 'New product or major feature for external customers',
     productName: '[Product Name] [Version]',
     companyName: '[Company]',
     targetCustomer: '[Target audience - be specific about role, industry, company size]',
@@ -48,6 +56,34 @@ export const DOCUMENT_TEMPLATES = {
     solution: '[Product] solves this by [approach]. Customers simply [action] to get [result].',
     benefits: '- [Benefit 1 with specific outcome]\n- [Benefit 2 with specific outcome]\n- [Benefit 3 with specific outcome]',
     metrics: '[X]% faster, $[Y] saved, [Z]x improvement',
+    location: 'Seattle, WA'
+  },
+  internalPlatform: {
+    id: 'internalPlatform',
+    name: 'Internal Platform',
+    icon: '🔧',
+    description: 'Internal tool or platform for engineering/ops teams',
+    productName: '[Platform Name]',
+    companyName: '[Company]',
+    targetCustomer: '[Internal teams - e.g., "backend engineers", "DevOps teams", "data scientists"]',
+    problem: 'Internal teams currently spend [X hours/week] on [manual process]. This leads to [reliability issues/slow deployments/inconsistent practices].',
+    solution: '[Platform] provides [capability] that [automates/standardizes/simplifies] [process]. Teams can [action] without [previous friction].',
+    benefits: '- Reduces [process] time from [X] to [Y]\n- Improves [reliability metric] by [Z]%\n- Eliminates [manual step/toil]',
+    metrics: '[X]% reduction in deployment time, [Y]% fewer incidents, [Z] hours/week saved per team',
+    location: 'Seattle, WA'
+  },
+  processImprovement: {
+    id: 'processImprovement',
+    name: 'Process Initiative',
+    icon: '⚙️',
+    description: 'Major operational or process improvement',
+    productName: '[Initiative Name]',
+    companyName: '[Company]',
+    targetCustomer: '[Affected teams/roles - e.g., "engineering managers", "all product teams", "support staff"]',
+    problem: 'Currently, [process] requires [X steps/hours/people]. This causes [delays/errors/frustration] and costs [time/money/quality].',
+    solution: '[Initiative] changes [process] by [approach]. Teams will [new workflow] instead of [old workflow].',
+    benefits: '- Reduces cycle time from [X] to [Y]\n- Improves [quality metric] by [Z]%\n- Frees up [N hours/week] for higher-value work',
+    metrics: '[X]% faster cycle time, [Y]% reduction in defects, [Z] hours/week reclaimed',
     location: 'Seattle, WA'
   }
 };
