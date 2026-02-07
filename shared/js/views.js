@@ -118,8 +118,8 @@ function renderProjectCards(projects) {
 
     // Count COMPLETED phases (not current phase)
     const completedPhases = p.phases
-        ? [1, 2, 3].filter(phase => p.phases[phase]?.completed).length
-        : 0;
+      ? [1, 2, 3].filter(phase => p.phases[phase]?.completed).length
+      : 0;
     const progressPercent = Math.round((completedPhases / WORKFLOW_CONFIG.phaseCount) * 100);
 
     // Calculate score for completed projects
