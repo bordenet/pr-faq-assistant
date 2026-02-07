@@ -97,12 +97,25 @@ Do NOT soften your critique with phrases like "overall this is good" or "nice wo
 
 After your critique, provide a COMPLETE revised PR-FAQ document that addresses ALL the issues you identified.
 
-**FORMAT REQUIREMENTS:**
-- Start with a clear header: `## REVISED PR-FAQ`
-- Output the ENTIRE document in clean markdown
-- Do NOT include commentary, explanations, or annotations within the revised document
-- Do NOT use placeholders like "[insert metric here]" — make up plausible specifics
-- The revised document should be copy-paste ready
+<output_rules>
+CRITICAL - Your critique AND revised PR-FAQ must be copy-paste ready:
+- Start IMMEDIATELY with "## SCORE ESTIMATE:" (no preamble like "Here's my review...")
+- After critique sections, start revised PR-FAQ with "## REVISED PR-FAQ" header
+- End after the Internal FAQ (no sign-off like "Let me know if...")
+- NO markdown code fences (```markdown) wrapping the output
+- NO explanations of what you did or why outside designated sections
+- The user will paste your ENTIRE response directly into the tool
+</output_rules>
+
+### Required Critique Sections
+
+| Section | Content | Format |
+|---------|---------|--------|
+| ## SCORE ESTIMATE | Current score 0-100 with justification | Paragraph |
+| ## CRITICAL ISSUES | Biggest problems with exact quotes | Numbered list |
+| ## STRENGTHS | What's working (2-3 items max) | Bullet list |
+| ## MISSING ELEMENTS | What must be added for 75+ | Bullet list |
+| ## REVISED PR-FAQ | Complete revised document | Full PR-FAQ |
 
 **The revised document must:**
 - Fix every critical issue you identified

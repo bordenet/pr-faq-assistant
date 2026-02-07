@@ -1117,6 +1117,11 @@ export function validatePRFAQ(markdown) {
     content,
     professional,
     evidence,
+    // Dimension mappings for app.js compatibility
+    dimension1: structure,
+    dimension2: content,
+    dimension3: professional,
+    dimension4: evidence,
     issues: allIssues,
     strengths: allStrengths,
     fluffWords: professional.fluffWords || [],

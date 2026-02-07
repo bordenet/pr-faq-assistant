@@ -82,20 +82,30 @@ Before outputting, mentally score your document:
 
 ## OUTPUT FORMAT
 
-**CRITICAL: Copy-Paste Ready Output Only**
+**Copy-Paste Ready Output Only**
 
-Your response MUST be:
-1. **Clean markdown only** — No code fences wrapping the document
-2. **No preamble** — Do NOT start with "Here's...", "Sure...", "I've created..."
-3. **No commentary** — Do NOT explain what you did or why
-4. **No sign-off** — Do NOT end with "Let me know if...", "Would you like me to...", "Feel free to..."
-5. **Start immediately** — Begin with the headline
+<output_rules>
+CRITICAL - Your final PR-FAQ must be copy-paste ready:
+- Start IMMEDIATELY with the headline (no preamble like "Here's the final PR-FAQ...")
+- End after the Internal FAQ (no sign-off like "Let me know if...")
+- NO markdown code fences (```markdown) wrapping the output
+- No commentary — Do NOT explain what you did or why
+- The user will paste your ENTIRE response directly into the tool
+</output_rules>
 
-The user will copy your ENTIRE response and paste it directly into the tool. Any extra text breaks this workflow.
+### Required Sections (in order)
 
-**Include in this order:**
-1. Press Release (headline, dateline, body, 2 quotes, availability, boilerplate)
-2. External FAQ (5-7 questions)
-3. Internal FAQ (5-7 questions with MANDATORY hard questions)
+| Section | Content | Format |
+|---------|---------|--------|
+| Headline | 8-15 words: action verb + mechanism + metric | H1 header |
+| Dateline | CITY, ST — Month Day, Year — | Paragraph |
+| Opening paragraph | 5 Ws + measurable outcome + customer pain/relief | Paragraph |
+| Body paragraphs | 2-3 paragraphs: mechanism, benefits, differentiation | Paragraphs |
+| Executive quote | Vision with quantitative metric | Blockquote |
+| Customer quote | Before vs After with specific metrics | Blockquote |
+| Price and Availability | Who, where, how much | Paragraph |
+| About [Company] | Company boilerplate | Paragraph |
+| External FAQ | 5-7 customer questions | H2 + Q&A format |
+| Internal FAQ | 5-7 MANDATORY hard questions (Risk, Reversibility, Opportunity Cost) | H2 + Q&A format |
 
 **BEGIN WITH THE HEADLINE NOW:**

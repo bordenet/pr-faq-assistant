@@ -37,10 +37,7 @@ A PR-FAQ is not a marketing document. It is a **logic test**:
 ❌ BAD: "Acme Announces Exciting New Data Solution" (no metric, no mechanism, fluff word)
 ❌ BAD: "DataSync Cuts Migration Time by 75%" (no mechanism — HOW?)
 
-**Dateline (5 pts)** — EXACT format required:
-```
-CITY, ST — Month Day, Year —
-```
+**Dateline (5 pts)** — EXACT format required: `CITY, ST — Month Day, Year —`
 Example: `SEATTLE, WA — February 15, 2026 —`
 
 **Opening Hook (10 pts)** — First paragraph MUST:
@@ -150,15 +147,28 @@ Generate a complete PR-FAQ document with:
 
 ## OUTPUT FORMAT
 
-**CRITICAL: Copy-Paste Ready Output Only**
+<output_rules>
+CRITICAL - Your PR-FAQ must be COPY-PASTE READY:
+- Start IMMEDIATELY with the headline (no preamble like "Here's the PR-FAQ...")
+- End after the Internal FAQ (no sign-off like "Let me know if...")
+- NO markdown code fences (```markdown) wrapping the output
+- NO explanations of what you did or why
+- The user will paste your ENTIRE response directly into the tool
+</output_rules>
 
-Your response MUST be:
-1. **Clean markdown only** — No code fences wrapping the document
-2. **No preamble** — Do NOT start with "Here's...", "Sure...", "I've created..."
-3. **No commentary** — Do NOT explain what you did or why
-4. **No sign-off** — Do NOT end with "Let me know if...", "Would you like me to...", "Feel free to..."
-5. **Start immediately** — Begin with the headline
+### Required Sections (in order)
 
-The user will copy your ENTIRE response and paste it directly into the tool. Any extra text breaks this workflow.
+| Section | Content | Format |
+|---------|---------|--------|
+| Headline | 8-15 words: action verb + mechanism + metric | H1 header |
+| Dateline | CITY, ST — Month Day, Year — | Paragraph |
+| Opening paragraph | 5 Ws + measurable outcome + customer pain/relief | Paragraph |
+| Body paragraphs | 2-3 paragraphs: mechanism, benefits, differentiation | Paragraphs |
+| Executive quote | Vision with quantitative metric | Blockquote |
+| Customer quote | Before vs After with specific metrics | Blockquote |
+| Price and Availability | Who, where, how much | Paragraph |
+| About [Company] | Company boilerplate | Paragraph |
+| External FAQ | 5-7 customer questions | H2 + Q&A format |
+| Internal FAQ | 5-7 hard questions (Risk, Reversibility, Opportunity Cost) | H2 + Q&A format |
 
 **BEGIN WITH THE HEADLINE NOW:**
