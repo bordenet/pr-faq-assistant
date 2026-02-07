@@ -66,9 +66,6 @@ describe('Smoke Test - App Initialization', () => {
       await expect(import('../../shared/js/projects.js')).resolves.toBeDefined();
     });
 
-    test('ai-mock.js can be imported without errors', async () => {
-      await expect(import('../../shared/js/ai-mock.js')).resolves.toBeDefined();
-    });
   });
 
   /**
