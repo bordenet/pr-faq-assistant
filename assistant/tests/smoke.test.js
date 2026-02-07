@@ -30,8 +30,6 @@ describe('Smoke Test - App Initialization', () => {
       <div id="related-projects-btn"></div>
       <div id="related-projects-menu"></div>
       <button id="close-privacy-notice"></button>
-      <div id="mockModeCheckbox"></div>
-      <div id="aiMockToggle"></div>
       <button id="about-link"></button>
     `;
 
@@ -216,14 +214,6 @@ describe('Smoke Test - App Initialization', () => {
 
     test('close-privacy-notice exists', () => {
       expect(document.getElementById('close-privacy-notice')).not.toBeNull();
-    });
-
-    test('mockModeCheckbox exists', () => {
-      expect(document.getElementById('mockModeCheckbox')).not.toBeNull();
-    });
-
-    test('aiMockToggle exists', () => {
-      expect(document.getElementById('aiMockToggle')).not.toBeNull();
     });
 
     test('about-link exists', () => {

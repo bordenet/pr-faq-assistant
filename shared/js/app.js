@@ -18,7 +18,6 @@ import storage from './storage.js';
 import { showToast, showLoading, hideLoading } from './ui.js';
 import { initRouter, updateStorageInfo } from './router.js';
 import { exportAllProjects, importProjects } from './projects.js';
-import { initMockMode, setMockMode } from './ai-mock.js';
 
 /**
  * Initialize the application
@@ -33,7 +32,6 @@ async function init() {
     setupThemeToggle();
     setupRelatedProjects();
     setupPrivacyNotice();
-    initMockMode();
 
     // Initialize router (handles initial route render)
     initRouter();
@@ -69,15 +67,6 @@ function setupEventListeners() {
   document.getElementById('close-privacy-notice')?.addEventListener('click', () => {
     document.getElementById('privacy-notice')?.classList.add('hidden');
     localStorage.setItem('privacy-notice-dismissed', 'true');
-  });
-
-  // AI Mock mode toggle
-  document.getElementById('mockModeCheckbox')?.addEventListener('change', (e) => {
-    setMockMode(e.target.checked);
-    showToast(
-      e.target.checked ? 'AI Mock Mode enabled' : 'AI Mock Mode disabled',
-      'info'
-    );
   });
 
   // About link
