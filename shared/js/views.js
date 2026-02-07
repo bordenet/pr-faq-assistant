@@ -166,12 +166,16 @@ function renderProjectCards(projects) {
                             </div>
                         </div>
                         ` : `
-                        <!-- In Progress: Show completed phases as segments -->
+                        <!-- In Progress: Show phase progress as segments (green=done, blue=current, gray=future) -->
                         <div class="flex items-center space-x-2 mb-3">
                             <div class="flex space-x-1 flex-1">
-                                ${[1, 2, 3].map(phase => `
-                                    <div class="flex-1 h-1.5 rounded ${p.phases && p.phases[phase]?.completed ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}"></div>
-                                `).join('')}
+                                ${[1, 2, 3].map(phase => {
+    const isCompleted = p.phases && p.phases[phase]?.completed;
+    const currentPhase = p.phase || p.currentPhase || 1;
+    const isCurrent = phase === currentPhase && !isCompleted;
+    const colorClass = isCompleted ? 'bg-green-500' : isCurrent ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600';
+    return `<div class="flex-1 h-1.5 rounded ${colorClass}"></div>`;
+  }).join('')}
                             </div>
                             <span class="text-xs text-gray-500 dark:text-gray-400">${completedPhases}/3</span>
                         </div>
