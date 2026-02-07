@@ -138,14 +138,14 @@ export function scoreQuote(metrics, metricTypes) {
 }
 
 /**
- * Score customer evidence dimension (15 pts max)
+ * Score customer evidence dimension (10 pts max - updated from 15)
  * @param {string} content - PR-FAQ content
  * @returns {{score: number, maxScore: number, quotes: number, quotesWithMetrics: number, issues: string[], strengths: string[]}}
  */
 export function scoreCustomerEvidence(content) {
   const result = {
     score: 0,
-    maxScore: 15,
+    maxScore: 10,
     quotes: 0,
     quotesWithMetrics: 0,
     issues: [],
@@ -180,26 +180,26 @@ export function scoreCustomerEvidence(content) {
 
   result.quotesWithMetrics = quotesWithMetrics;
 
-  // Base score: 3 points (~20% of 15)
-  const baseScore = 3;
+  // Base score: 2 points (~20% of 10)
+  const baseScore = 2;
 
-  // Metric bonus: up to 9 points based on quote quality
+  // Metric bonus: up to 6 points based on quote quality
   let metricBonus = 0;
   if (quotes.length > 0) {
     const avgQuoteScore = totalQuoteScore / quotes.length;
-    metricBonus = Math.round((avgQuoteScore * 9) / 10);
+    metricBonus = Math.round((avgQuoteScore * 6) / 10);
   }
 
-  // Coverage bonus: up to 3 points for multiple quotes with metrics
+  // Coverage bonus: up to 2 points for multiple quotes with metrics
   let coverageBonus = 0;
   if (quotesWithMetrics > 0) {
     coverageBonus = 1;
     if (quotesWithMetrics > 1) {
-      coverageBonus = 3;
+      coverageBonus = 2;
     }
   }
 
-  result.score = Math.min(baseScore + metricBonus + coverageBonus, 15);
+  result.score = Math.min(baseScore + metricBonus + coverageBonus, 10);
 
   // Add feedback
   if (quotesWithMetrics === 0) {
@@ -208,11 +208,13 @@ export function scoreCustomerEvidence(content) {
     result.strengths.push(`${quotesWithMetrics} quote(s) include specific metrics`);
   }
 
-  if (quotes.length > 4) {
-    result.issues.push('Consider reducing quotes - 3-4 focused testimonials work best');
+  if (quotes.length > 2) {
+    result.issues.push('Consider reducing to 2 quotes: 1 Executive Vision + 1 Customer Relief');
+  } else if (quotes.length === 2) {
+    result.strengths.push('Follows 2-quote standard (Executive Vision + Customer Relief)');
   }
 
-  if (result.score >= 12) {
+  if (result.score >= 8) {
     result.strengths.push('Strong customer evidence with quantitative backing');
   }
 
@@ -428,7 +430,7 @@ export function analyzeReleaseDate(content) {
 }
 
 /**
- * Score Structure & Hook dimension (30 pts max)
+ * Score Structure & Hook dimension (20 pts max - updated from 30)
  * @param {string} content - Full content
  * @param {string} title - Headline/title
  * @returns {{score: number, maxScore: number, issues: string[], strengths: string[], breakdown: Object}}
@@ -438,9 +440,13 @@ export function scoreStructureAndHook(content, title) {
   const hook = analyzeNewsworthyHook(content);
   const releaseDate = analyzeReleaseDate(content);
 
+  // Raw score from sub-functions (max 30), scale to 20 pts
+  const rawScore = headline.score + hook.score + releaseDate.score;
+  const scaledScore = Math.round((rawScore * 20) / 30);
+
   return {
-    score: headline.score + hook.score + releaseDate.score,
-    maxScore: 30,
+    score: scaledScore,
+    maxScore: 20,
     issues: [...headline.issues, ...hook.issues, ...releaseDate.issues],
     strengths: [...headline.strengths, ...hook.strengths, ...releaseDate.strengths],
     breakdown: {
@@ -676,7 +682,7 @@ export function analyzeCredibility(content) {
 }
 
 /**
- * Score Content Quality dimension (35 pts max)
+ * Score Content Quality dimension (20 pts max - updated from 35)
  * @param {string} content - Full content
  * @returns {{score: number, maxScore: number, issues: string[], strengths: string[], breakdown: Object}}
  */
@@ -685,9 +691,13 @@ export function scoreContentQuality(content) {
   const structure = analyzeStructure(content);
   const credibility = analyzeCredibility(content);
 
+  // Raw score from sub-functions (max 35), scale to 20 pts
+  const rawScore = fiveWs.score + structure.score + credibility.score;
+  const scaledScore = Math.round((rawScore * 20) / 35);
+
   return {
-    score: fiveWs.score + structure.score + credibility.score,
-    maxScore: 35,
+    score: scaledScore,
+    maxScore: 20,
     issues: [...fiveWs.issues, ...structure.issues, ...credibility.issues],
     strengths: [...fiveWs.strengths, ...structure.strengths, ...credibility.strengths],
     breakdown: {
@@ -955,7 +965,7 @@ export function detectFluffWords(content) {
 }
 
 /**
- * Score Professional Quality dimension (20 pts max)
+ * Score Professional Quality dimension (15 pts max - updated from 20)
  * @param {string} content - Full content
  * @returns {{score: number, maxScore: number, issues: string[], strengths: string[], fluffWords: Array, breakdown: Object}}
  */
@@ -963,9 +973,13 @@ export function scoreProfessionalQuality(content) {
   const tone = analyzeToneAndReadability(content);
   const fluff = analyzeMarketingFluff(content);
 
+  // Raw score from sub-functions (max 20), scale to 15 pts
+  const rawScore = tone.score + fluff.score;
+  const scaledScore = Math.round((rawScore * 15) / 20);
+
   return {
-    score: tone.score + fluff.score,
-    maxScore: 20,
+    score: scaledScore,
+    maxScore: 15,
     issues: [...tone.issues, ...fluff.issues],
     strengths: [...tone.strengths, ...fluff.strengths],
     fluffWords: fluff.fluffWords,
@@ -974,6 +988,199 @@ export function scoreProfessionalQuality(content) {
       fluff,
     },
   };
+}
+
+/**
+ * Extract FAQ sections from markdown
+ * @param {string} markdown - Raw markdown content
+ * @returns {{externalFAQ: string, internalFAQ: string}} FAQ sections
+ */
+export function extractFAQs(markdown) {
+  const result = { externalFAQ: '', internalFAQ: '' };
+
+  // Look for External FAQ section
+  const externalMatch = markdown.match(/^##\s*(?:External\s+)?FAQ\s*$/im);
+  if (externalMatch) {
+    const startIdx = markdown.indexOf(externalMatch[0]) + externalMatch[0].length;
+    let content = markdown.slice(startIdx);
+
+    // Stop at Internal FAQ if present
+    const internalMatch = content.match(/^##\s*Internal\s+FAQ\s*$/im);
+    if (internalMatch) {
+      result.externalFAQ = content.slice(0, content.indexOf(internalMatch[0])).trim();
+      result.internalFAQ = content.slice(content.indexOf(internalMatch[0]) + internalMatch[0].length).trim();
+    } else {
+      result.externalFAQ = content.trim();
+    }
+  }
+
+  // Also try to find Internal FAQ if not already found
+  if (!result.internalFAQ) {
+    const internalMatch = markdown.match(/^##\s*Internal\s+FAQ\s*$/im);
+    if (internalMatch) {
+      result.internalFAQ = markdown.slice(markdown.indexOf(internalMatch[0]) + internalMatch[0].length).trim();
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Extract individual FAQ questions from FAQ section text
+ * @param {string} faqContent - FAQ section content
+ * @returns {Array<{question: string, answer: string}>} Parsed Q&A pairs
+ */
+export function parseFAQQuestions(faqContent) {
+  const questions = [];
+  if (!faqContent) return questions;
+
+  // Pattern: **Q: ...** or ### Q: ... or Q: ... followed by A: ...
+  const patterns = [
+    /\*\*Q:\s*([^*]+)\*\*\s*(?:\n+)?\s*(?:\*\*)?A:\s*([^*\n]+(?:\n(?!\*\*Q:|\n###|\nQ:)[^\n]*)*)/gi,
+    /###\s*Q:\s*(.+?)\n+\s*A:\s*(.+?)(?=\n###|\n\*\*Q:|\n\nQ:|$)/gis,
+    /^Q:\s*(.+?)\n+A:\s*(.+?)(?=\nQ:|$)/gim,
+  ];
+
+  for (const pattern of patterns) {
+    let match;
+    while ((match = pattern.exec(faqContent)) !== null) {
+      questions.push({
+        question: match[1].trim(),
+        answer: match[2].trim(),
+      });
+    }
+    if (questions.length > 0) break;
+  }
+
+  // Fallback: look for any questions (lines ending with ?)
+  if (questions.length === 0) {
+    const lines = faqContent.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (line.endsWith('?') && line.length > 10) {
+        questions.push({
+          question: line.replace(/^\*\*|\*\*$/g, '').replace(/^#+\s*/, ''),
+          answer: lines[i + 1] ? lines[i + 1].trim() : '',
+        });
+      }
+    }
+  }
+
+  return questions;
+}
+
+/**
+ * Check if FAQ contains mandatory hard questions
+ * @param {Array<{question: string, answer: string}>} questions - Parsed FAQ questions
+ * @returns {{hasRisk: boolean, hasReversibility: boolean, hasOpportunityCost: boolean, hardQuestionCount: number}}
+ */
+export function checkHardQuestions(questions) {
+  const result = {
+    hasRisk: false,
+    hasReversibility: false,
+    hasOpportunityCost: false,
+    hardQuestionCount: 0,
+  };
+
+  const riskPatterns = [/risk/i, /fail/i, /wrong/i, /worst case/i, /challenge/i, /obstacle/i, /concern/i];
+  const reversibilityPatterns = [/revers/i, /one.?way/i, /two.?way/i, /undo/i, /roll.?back/i, /door/i, /commitment/i];
+  const opportunityCostPatterns = [/opportunity cost/i, /instead/i, /alternative/i, /trade.?off/i, /give up/i, /priorit/i];
+
+  for (const q of questions) {
+    const text = q.question + ' ' + q.answer;
+
+    if (riskPatterns.some(p => p.test(text))) {
+      result.hasRisk = true;
+    }
+    if (reversibilityPatterns.some(p => p.test(text))) {
+      result.hasReversibility = true;
+    }
+    if (opportunityCostPatterns.some(p => p.test(text))) {
+      result.hasOpportunityCost = true;
+    }
+  }
+
+  result.hardQuestionCount = (result.hasRisk ? 1 : 0) + (result.hasReversibility ? 1 : 0) + (result.hasOpportunityCost ? 1 : 0);
+  return result;
+}
+
+/**
+ * Score FAQ Quality dimension (35 pts max - NEW)
+ * This is the "Working Backwards" test - FAQs are where the idea gets stress-tested
+ * @param {string} markdown - Raw markdown content
+ * @returns {{score: number, maxScore: number, issues: string[], strengths: string[], externalCount: number, internalCount: number, hardQuestions: Object}}
+ */
+export function scoreFAQQuality(markdown) {
+  const result = {
+    score: 0,
+    maxScore: 35,
+    issues: [],
+    strengths: [],
+    externalCount: 0,
+    internalCount: 0,
+    hardQuestions: null,
+    softballPenalty: false,
+  };
+
+  const faqs = extractFAQs(markdown);
+  const externalQuestions = parseFAQQuestions(faqs.externalFAQ);
+  const internalQuestions = parseFAQQuestions(faqs.internalFAQ);
+
+  result.externalCount = externalQuestions.length;
+  result.internalCount = internalQuestions.length;
+
+  // External FAQ scoring (10 pts max)
+  // 5-7 customer-focused questions expected
+  if (externalQuestions.length >= 5) {
+    result.score += 10;
+    result.strengths.push(`External FAQ has ${externalQuestions.length} customer questions`);
+  } else if (externalQuestions.length >= 3) {
+    result.score += 6;
+    result.issues.push(`External FAQ has only ${externalQuestions.length} questions (5-7 recommended)`);
+  } else if (externalQuestions.length > 0) {
+    result.score += 3;
+    result.issues.push(`External FAQ is sparse (${externalQuestions.length} questions, need 5-7)`);
+  } else {
+    result.issues.push('Missing External FAQ section');
+  }
+
+  // Internal FAQ presence (10 pts max)
+  if (internalQuestions.length >= 5) {
+    result.score += 10;
+    result.strengths.push(`Internal FAQ has ${internalQuestions.length} questions`);
+  } else if (internalQuestions.length >= 3) {
+    result.score += 6;
+    result.issues.push(`Internal FAQ has only ${internalQuestions.length} questions (5-7 recommended)`);
+  } else if (internalQuestions.length > 0) {
+    result.score += 3;
+    result.issues.push(`Internal FAQ is sparse (${internalQuestions.length} questions, need 5-7)`);
+  } else {
+    result.issues.push('Missing Internal FAQ section - this is where the idea gets stress-tested');
+  }
+
+  // Internal FAQ rigor - mandatory hard questions (15 pts max)
+  result.hardQuestions = checkHardQuestions(internalQuestions);
+
+  if (result.hardQuestions.hardQuestionCount === 3) {
+    result.score += 15;
+    result.strengths.push('Internal FAQ covers Risk, Reversibility, and Opportunity Cost');
+  } else if (result.hardQuestions.hardQuestionCount === 2) {
+    result.score += 10;
+    const missing = [];
+    if (!result.hardQuestions.hasRisk) missing.push('Risk');
+    if (!result.hardQuestions.hasReversibility) missing.push('Reversibility');
+    if (!result.hardQuestions.hasOpportunityCost) missing.push('Opportunity Cost');
+    result.issues.push(`Internal FAQ missing hard question: ${missing.join(', ')}`);
+  } else if (result.hardQuestions.hardQuestionCount === 1) {
+    result.score += 5;
+    result.issues.push('Internal FAQ needs more hard questions (Risk, Reversibility, Opportunity Cost)');
+    result.softballPenalty = true;
+  } else {
+    result.issues.push('Internal FAQ contains only "softball" questions - must address Risk, Reversibility, Opportunity Cost');
+    result.softballPenalty = true;
+  }
+
+  return result;
 }
 
 /**
@@ -1064,6 +1271,7 @@ export function extractTitle(markdown) {
 
 /**
  * Main validation entry point
+ * Updated scoring: Structure (20), Content (20), Professional (15), Evidence (10), FAQ Quality (35)
  * @param {string} markdown - Raw PR-FAQ markdown content
  * @returns {Object} Complete validation result
  */
@@ -1072,10 +1280,11 @@ export function validatePRFAQ(markdown) {
     return {
       totalScore: 0,
       maxScore: 100,
-      structure: { score: 0, maxScore: 30, issues: ['No content to analyze'], strengths: [] },
-      content: { score: 0, maxScore: 35, issues: ['No content to analyze'], strengths: [] },
-      professional: { score: 0, maxScore: 20, issues: ['No content to analyze'], strengths: [] },
-      evidence: { score: 0, maxScore: 15, issues: ['No content to analyze'], strengths: [] },
+      structure: { score: 0, maxScore: 20, issues: ['No content to analyze'], strengths: [] },
+      content: { score: 0, maxScore: 20, issues: ['No content to analyze'], strengths: [] },
+      professional: { score: 0, maxScore: 15, issues: ['No content to analyze'], strengths: [] },
+      evidence: { score: 0, maxScore: 10, issues: ['No content to analyze'], strengths: [] },
+      faqQuality: { score: 0, maxScore: 35, issues: ['No content to analyze'], strengths: [] },
       issues: ['No content to analyze'],
       strengths: [],
       fluffWords: [],
@@ -1091,9 +1300,19 @@ export function validatePRFAQ(markdown) {
   const content = scoreContentQuality(plainText);
   const professional = scoreProfessionalQuality(plainText);
   const evidence = scoreCustomerEvidence(plainText);
+  const faqQuality = scoreFAQQuality(markdown); // Use raw markdown to find FAQ sections
 
   // Calculate total score
-  const totalScore = structure.score + content.score + professional.score + evidence.score;
+  let totalScore = structure.score + content.score + professional.score + evidence.score + faqQuality.score;
+
+  // FAQ PENALTY: If Internal FAQ is missing or contains only "softball" questions, cap at 50
+  let penaltyApplied = false;
+  if (faqQuality.softballPenalty || faqQuality.internalCount === 0) {
+    if (totalScore > 50) {
+      totalScore = 50;
+      penaltyApplied = true;
+    }
+  }
 
   // Combine all issues and strengths (deduplicated)
   const allIssues = [...new Set([
@@ -1101,13 +1320,20 @@ export function validatePRFAQ(markdown) {
     ...content.issues,
     ...professional.issues,
     ...evidence.issues,
+    ...faqQuality.issues,
   ])];
+
+  // Add penalty warning if applied
+  if (penaltyApplied) {
+    allIssues.unshift('⚠️ SCORE CAPPED AT 50: Internal FAQ is missing or contains only softball questions');
+  }
 
   const allStrengths = [...new Set([
     ...structure.strengths,
     ...content.strengths,
     ...professional.strengths,
     ...evidence.strengths,
+    ...faqQuality.strengths,
   ])];
 
   return {
@@ -1117,8 +1343,10 @@ export function validatePRFAQ(markdown) {
     content,
     professional,
     evidence,
+    faqQuality,
     issues: allIssues,
     strengths: allStrengths,
     fluffWords: professional.fluffWords || [],
+    penaltyApplied,
   };
 }
