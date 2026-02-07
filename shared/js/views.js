@@ -11,6 +11,7 @@ import { navigateTo } from './router.js';
 import { WORKFLOW_CONFIG, Workflow } from './workflow.js';
 import { getAllTemplates, getTemplate } from './document-specific-templates.js';
 import { validateDocument, getScoreColor, getScoreLabel } from './validator-inline.js';
+import { showImportModal } from './import-document.js';
 
 const PRFAQ_DOCS_URL = 'https://github.com/bordenet/Engineering_Culture/blob/main/SDLC/The_PR-FAQ.md';
 
@@ -213,6 +214,14 @@ export function renderNewProjectForm() {
                             <span class="text-xs text-gray-500 dark:text-gray-400">${t.description}</span>
                         </button>
                     `).join('')}
+                    <!-- Import Existing Document tile -->
+                    <button type="button"
+                        id="import-doc-btn"
+                        class="p-3 border-2 border-dashed rounded-lg text-center transition-all hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 border-gray-300 dark:border-gray-600">
+                        <span class="text-2xl block mb-1">📥</span>
+                        <span class="text-sm font-medium text-gray-900 dark:text-white block">Import</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Paste from Word/Docs</span>
+                    </button>
                 </div>
             </div>
 
@@ -231,6 +240,12 @@ export function renderNewProjectForm() {
 
   document.getElementById('new-project-form')?.addEventListener('submit', handleNewProject);
   document.getElementById('cancel-btn')?.addEventListener('click', () => navigateTo('home'));
+
+  // Import document button handler
+  document.getElementById('import-doc-btn')?.addEventListener('click', () => {
+    showImportModal();
+  });
+
   setupTemplateListeners();
 }
 

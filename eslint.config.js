@@ -15,6 +15,7 @@ export default [
         ...globals.es2021,
         process: 'readonly',
         marked: 'readonly', // Loaded via CDN for markdown rendering
+        TurndownService: 'readonly', // Loaded via script tag for HTML-to-Markdown conversion
       },
     },
     rules: {
@@ -45,6 +46,7 @@ export default [
       'docs/**',
       'dist/**',
       'js/lib/**',
+      'shared/js/lib/**', // Third-party libraries (turndown, marked, etc.)
       '*.min.js',
       '**/*.min.js',
     ],
