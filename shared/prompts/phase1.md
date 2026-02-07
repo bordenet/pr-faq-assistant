@@ -1,34 +1,41 @@
 # Phase 1: Initial PR-FAQ Draft Generation
 
-You are an expert at writing Amazon-style PR-FAQ documents. Your goal is to generate a document that scores 75+ on the pr-faq-validator tool on the FIRST attempt.
+You are an expert at writing Amazon-style PR-FAQ documents. This is a **thinking tool**, not just a writing task. Your goal is to clarify product strategy and expose flawed assumptions—if the logic doesn't hold, say so.
 
-## SCORING CALIBRATION — READ THIS FIRST
+## THE "WORKING BACKWARDS" MINDSET
 
-**Most AI-generated PR-FAQs score 45-60.** To beat that, you must be ruthlessly specific and avoid every common pitfall.
+A PR-FAQ is not a marketing document. It is a **logic test**:
+- The Press Release defines the customer value proposition
+- The External FAQ anticipates customer objections
+- The Internal FAQ is where the idea gets "punched in the face" — risks, costs, and hard truths
+
+**If the metrics in the PR are achieved, does the business case in the Internal FAQ actually close?** If not, the document fails regardless of how polished it looks.
+
+## SCORING CALIBRATION
 
 **SCORE DISTRIBUTION (pr-faq-validator):**
-- **40-55**: Weak. Vague claims, generic quotes, missing structure. This is where lazy drafts land.
-- **56-65**: Below average. Has structure but quotes lack real metrics or content is fluffy.
-- **66-72**: Average. Covers basics but quotes sound similar or evidence is thin.
-- **73-79**: Above average. This is your MINIMUM target. Requires specific metrics everywhere.
+- **40-55**: Weak. Missing FAQs, vague claims, no mechanism explanation.
+- **56-65**: Below average. Has structure but Internal FAQ is "softball" questions.
+- **66-72**: Average. Covers basics but lacks competitive differentiation or risk awareness.
+- **73-79**: Above average. Solid PR + rigorous Internal FAQ. This is your MINIMUM target.
 - **80-85**: Strong. Would pass VP review. Requires exceptional specificity and zero fluff.
-- **86+**: Exceptional. Top 5%. Don't aim here on first draft—aim for 75-80.
+- **86+**: Exceptional. Top 5%. Requires genuine strategic insight.
 
-**YOUR GOAL: Score 75+ by being SPECIFIC, not clever.**
+**YOUR GOAL: Clarify the product strategy. Score 75+ by being RIGOROUS, not clever.**
 
 ## CRITICAL REQUIREMENTS
 
-### Structure & Hook (30 points)
+### Structure & Hook (25 points)
 
-**Headline (10 pts)** — MUST include:
+**Headline (10 pts)** — MUST pair Customer Benefit with Mechanism:
 - Strong action verb (Launches, Announces, Unveils, Introduces)
 - 8-15 words (not shorter, not longer)
-- Specific metric or outcome (not vague benefit)
-- Company/product name
+- Format: "[Company] solves [Pain] by [Mechanism], resulting in [Metric]"
+- Company/product name clearly stated
 
-✅ GOOD: "Acme Launches DataSync, Cutting Enterprise Data Migration Time by 75%"
-❌ BAD: "Acme Announces Exciting New Data Solution" (no metric, fluff word)
-❌ BAD: "DataSync Launches" (too short, no outcome)
+✅ GOOD: "Acme Launches DataSync, Using Edge-Caching to Cut Data Migration Time by 75%"
+❌ BAD: "Acme Announces Exciting New Data Solution" (no metric, no mechanism, fluff word)
+❌ BAD: "DataSync Cuts Migration Time by 75%" (no mechanism — HOW?)
 
 **Dateline (5 pts)** — EXACT format required:
 ```
@@ -36,9 +43,10 @@ CITY, ST — Month Day, Year —
 ```
 Example: `SEATTLE, WA — February 15, 2026 —`
 
-**Opening Hook (15 pts)** — First paragraph MUST:
+**Opening Hook (10 pts)** — First paragraph MUST:
 - Answer WHO (company), WHAT (product/action), WHEN (date), WHERE (market), WHY (problem solved)
 - Include a measurable outcome in the first sentence
+- Describe the customer's "Before" state with empathy (the pain), then the "After" (the relief)
 - Avoid ALL marketing fluff
 
 ### Content Quality (35 points)
@@ -71,7 +79,12 @@ Example: `SEATTLE, WA — February 15, 2026 —`
 - Concrete mechanisms (how, not just what)
 - Third-party or customer attribution for claims
 
-### Customer Evidence (15 points) — THIS IS WHERE MOST DRAFTS FAIL
+### Customer Evidence (10 points)
+
+**Include exactly TWO quotes** (not 3-4 — that's blog post territory):
+
+1. **The Visionary** — A {{COMPANY_NAME}} executive explaining why this matters for the long-term roadmap
+2. **The Relieved Customer** — A {{TARGET_CUSTOMER}} focusing on "Before vs. After" with specific metrics
 
 **Requirements for EACH quote:**
 1. Named person with title and company
@@ -79,21 +92,18 @@ Example: `SEATTLE, WA — February 15, 2026 —`
 3. Specific context (what they measured, over what period)
 4. NO emotional fluff (excited, love, thrilled, pleased)
 
-**Quote scoring:**
-- 0 metrics = 0 points for that quote
-- 1 vague metric ("significant improvement") = 2 points
-- 1 specific metric ("reduced by 40%") = 5 points
-- 2+ specific metrics with context = 8-10 points
+✅ GOOD CUSTOMER QUOTE:
+> "Before DataSync, migrating data across our 12 regional offices took 6 hours and required a dedicated engineer. Now it's 90 minutes, automated. We've processed 2.3 million records with zero data loss." — Sarah Chen, VP of IT, Meridian Healthcare
 
-✅ GOOD QUOTE:
-> "After deploying DataSync across our 12 regional offices, data migration time dropped from 6 hours to 90 minutes—a 75% reduction. We've processed 2.3 million records with zero data loss." — Sarah Chen, VP of IT, Meridian Healthcare
+✅ GOOD EXECUTIVE QUOTE:
+> "DataSync represents our commitment to eliminating the 'data tax' that enterprises pay every time they scale. We're targeting the $4.2B data migration market." — James Liu, CEO, Acme Corp
 
 ❌ BAD QUOTE:
-> "We're thrilled with DataSync. It's been a game-changer for our team and we couldn't be happier with the results." — John Smith, Manager, Tech Corp
+> "We're thrilled with DataSync. It's been a game-changer for our team." — John Smith, Manager, Tech Corp
 
-**Include exactly 3-4 quotes.** More than 4 = dock points. Fewer than 3 = dock points.
+### FAQ Quality (10 points) — THE REAL "WORKING BACKWARDS" TEST
 
-**Quotes must sound like DIFFERENT people.** If all quotes have the same structure or voice, dock points.
+The FAQs are where the idea gets stress-tested. They are NOT an afterthought.
 
 ## INPUT DATA
 
@@ -101,9 +111,13 @@ Example: `SEATTLE, WA — February 15, 2026 —`
 **Company Name**: {{COMPANY_NAME}}
 **Target Customer**: {{TARGET_CUSTOMER}}
 **Problem Being Solved**: {{PROBLEM}}
+**The Alternative**: {{THE_ALTERNATIVE}} *(What do customers do today? Manual process? Competitor?)*
 **Solution/How It Works**: {{SOLUTION}}
 **Key Benefits**: {{BENEFITS}}
 **Metrics/Results**: {{METRICS}}
+**Price and Availability**: {{PRICE_AND_AVAILABILITY}} *(Launch date, pricing, regional availability)*
+**Executive Vision**: {{EXECUTIVE_VISION}} *(High-level "Why" from company perspective)*
+**Internal Risks**: {{INTERNAL_RISKS}} *(Biggest reason this might fail)*
 **Location**: {{LOCATION}}
 
 ## OUTPUT FORMAT
@@ -111,17 +125,40 @@ Example: `SEATTLE, WA — February 15, 2026 —`
 Generate a complete PR-FAQ document with:
 
 1. **Press Release**
-   - Headline (8-15 words, action verb, metric)
+   - Headline (8-15 words, action verb + mechanism + metric)
    - Dateline (CITY, ST — Month Day, Year —)
-   - Opening paragraph (5 Ws + measurable outcome)
-   - 2-3 body paragraphs (mechanism, benefits, availability)
-   - 3-4 customer quotes (each with quantitative metrics)
+   - Opening paragraph (5 Ws + measurable outcome + customer pain/relief)
+   - 2-3 body paragraphs (mechanism, benefits, competitive differentiation)
+   - Price and Availability paragraph (who can get it, where, for how much)
+   - Exactly 2 quotes (1 Executive Vision, 1 Customer Relief)
    - "About [Company]" boilerplate
 
 2. **External FAQ** (5-7 questions customers would ask)
    - Pricing, availability, compatibility, support, migration
+   - Must include: "How is this different from [Alternative]?"
 
-3. **Internal FAQ** (5-7 questions stakeholders would ask)
-   - Business model, competitive positioning, risks, dependencies
+3. **Internal FAQ** (5-7 questions) — THE HARD QUESTIONS
+   **MUST include these three:**
+   - **Risk**: "What is the most likely reason this fails?"
+   - **Reversibility**: "Is this a One-Way Door (hard to undo) or Two-Way Door (easy to pivot)?"
+   - **Opportunity Cost**: "What are we NOT doing if we build this?"
 
-**Output clean markdown only. No commentary. Start with the headline.**
+   **Also address:**
+   - Unit economics / pricing logic
+   - Why we didn't use [Competitor/Existing Tool]
+   - Technical dependencies or blockers
+
+## OUTPUT FORMAT
+
+**CRITICAL: Copy-Paste Ready Output Only**
+
+Your response MUST be:
+1. **Clean markdown only** — No code fences wrapping the document
+2. **No preamble** — Do NOT start with "Here's...", "Sure...", "I've created..."
+3. **No commentary** — Do NOT explain what you did or why
+4. **No sign-off** — Do NOT end with "Let me know if...", "Would you like me to...", "Feel free to..."
+5. **Start immediately** — Begin with the headline
+
+The user will copy your ENTIRE response and paste it directly into the tool. Any extra text breaks this workflow.
+
+**BEGIN WITH THE HEADLINE NOW:**

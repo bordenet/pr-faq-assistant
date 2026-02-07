@@ -52,67 +52,84 @@ You are calibrated WRONG. LLMs consistently score PR-FAQs 20-30 points higher th
 
 ## Scoring Rubric (100 points total)
 
-### Structure & Hook (30 points)
+**CRITICAL: This is a "Working Backwards" document. The FAQs are equally important as the Press Release.**
 
-**Headline (10 pts)**
+### Structure & Hook (20 points)
+
+**Headline (8 pts)**
 - Uses strong action verb (Launches, Announces, Unveils): 2 pts
 - 8-15 words in length: 2 pts
-- Includes specific outcome or metric: 3 pts
-- Names product/company clearly: 2 pts
-- Avoids marketing fluff: 1 pt
+- Includes MECHANISM (how, not just what): 2 pts
+- Includes specific metric: 2 pts
 
-**Newsworthy Opening (15 pts)**
-- Opens with dateline (CITY, Date): 3 pts
-- First sentence includes measurable outcome: 4 pts
-- Clearly identifies company and action: 3 pts
-- Addresses clear problem or improvement: 3 pts
+**Newsworthy Opening (8 pts)**
+- Opens with dateline (CITY, Date): 2 pts
+- First sentence includes measurable outcome: 2 pts
+- Describes customer pain with empathy, then relief: 2 pts
 - Avoids marketing fluff in hook: 2 pts
 
-**Release Date (5 pts)**
-- Includes specific date in opening: 3 pts
-- Follows standard press release format: 2 pts
+**Price & Availability (4 pts)**
+- Includes specific launch date: 2 pts
+- Includes pricing or availability info: 2 pts
 
-### Content Quality (35 points)
+### Content Quality (20 points)
 
-**5 Ws Coverage (15 pts)**
-- WHO: Company clearly identified: 3 pts
-- WHAT: Product/action clearly described: 3 pts
-- WHEN: Timing/availability stated: 3 pts
-- WHERE: Market/geography mentioned: 3 pts
-- WHY: Customer benefit explained: 3 pts
+**5 Ws Coverage (10 pts)**
+- WHO: Company clearly identified: 2 pts
+- WHAT: Product/action clearly described: 2 pts
+- WHEN: Timing/availability stated: 2 pts
+- WHERE: Market/geography mentioned: 2 pts
+- WHY: Customer benefit explained: 2 pts
 
-**Credibility (10 pts)**
-- Includes supporting details and context: 4 pts
-- Claims backed by data or evidence: 4 pts
-- Avoids vague, unsubstantiated claims: 2 pts
+**Mechanism Clarity (5 pts)**
+- Explains HOW the product works, not just WHAT it does: 3 pts
+- Specific technical or process change described: 2 pts
 
-**Structure (10 pts)**
-- Logical flow with transitions: 4 pts
-- Appropriate length (1 page when printed): 3 pts
-- Company boilerplate included: 3 pts
+**Competitive Differentiation (5 pts)**
+- Identifies the current alternative (what customers do today): 3 pts
+- Explains why current alternative is insufficient: 2 pts
 
-### Professional Quality (20 points)
+### Professional Quality (15 points)
 
-**Tone & Readability (10 pts)**
-- Written for general audience, not engineers: 3 pts
-- Uses active voice: 3 pts
+**Tone & Readability (8 pts)**
+- Written for general audience, not engineers: 2 pts
+- Uses active voice: 2 pts
 - Avoids unnecessary jargon: 2 pts
 - Sentences are clear and concise: 2 pts
 
-**Fluff Avoidance (10 pts)**
+**Fluff Avoidance (7 pts)**
 - No "revolutionary", "game-changing", etc.: 3 pts
 - No "excited to announce": 2 pts
-- Specific rather than vague claims: 3 pts
 - Professional, journalistic tone: 2 pts
 
-### Customer Evidence (15 points)
+### Customer Evidence (10 points)
 
-**Quote Quality (15 pts)**
-- 2-4 customer quotes included: 3 pts
-- Each quote contains specific metrics: 4 pts
-- Metrics include percentages, time, cost, or scale: 4 pts
+**Quote Quality (10 pts)**
+- Exactly 2 quotes (1 Executive Vision, 1 Customer Relief): 3 pts
+- Each quote contains specific metrics: 3 pts
 - Quotes attributed to named individuals with titles: 2 pts
-- Quotes provide substantive insight, not just praise: 2 pts
+- Quotes sound like different people with different purposes: 2 pts
+
+### FAQ Quality (35 points) — THE "WORKING BACKWARDS" TEST
+
+**External FAQ (10 pts)**
+- 5-7 customer-facing questions present: 3 pts
+- Addresses pricing and availability: 2 pts
+- Addresses compatibility/migration: 2 pts
+- Includes "How is this different from [Alternative]?": 3 pts
+
+**Internal FAQ Presence (10 pts)**
+- 5-7 stakeholder questions present: 3 pts
+- Addresses business model/unit economics: 3 pts
+- Addresses technical dependencies: 2 pts
+- Addresses competitive positioning: 2 pts
+
+**Internal FAQ Rigor (15 pts) — MANDATORY HARD QUESTIONS**
+- Includes RISK question ("What is the most likely reason this fails?"): 5 pts
+- Includes REVERSIBILITY ("Is this a One-Way Door or Two-Way Door?"): 5 pts
+- Includes OPPORTUNITY COST ("What are we NOT doing if we build this?"): 5 pts
+
+**FAQ PENALTY:** If Internal FAQ is missing or contains only "softball" questions (no Risk, Reversibility, or Opportunity Cost), cap the maximum total score at 50/100.
 
 ---
 
@@ -129,20 +146,26 @@ ${markdown}
 Provide a detailed evaluation with:
 
 1. **SCORES** - Score each dimension and sub-dimension. Format as:
-   - Structure & Hook: X/30
-     - Headline: X/10
-     - Newsworthy Opening: X/15
-     - Release Date: X/5
-   - Content Quality: X/35
-     - 5 Ws Coverage: X/15
-     - Credibility: X/10
-     - Structure: X/10
-   - Professional Quality: X/20
-     - Tone & Readability: X/10
-     - Fluff Avoidance: X/10
-   - Customer Evidence: X/15
-     - Quote Quality: X/15
+   - Structure & Hook: X/20
+     - Headline: X/8
+     - Newsworthy Opening: X/8
+     - Price & Availability: X/4
+   - Content Quality: X/20
+     - 5 Ws Coverage: X/10
+     - Mechanism Clarity: X/5
+     - Competitive Differentiation: X/5
+   - Professional Quality: X/15
+     - Tone & Readability: X/8
+     - Fluff Avoidance: X/7
+   - Customer Evidence: X/10
+     - Quote Quality: X/10
+   - FAQ Quality: X/35 — **THE "WORKING BACKWARDS" TEST**
+     - External FAQ: X/10
+     - Internal FAQ Presence: X/10
+     - Internal FAQ Rigor: X/15
    - **TOTAL: X/100**
+
+   **FAQ PENALTY CHECK:** If Internal FAQ is missing Risk, Reversibility, OR Opportunity Cost questions, cap total at 50.
 
 2. **JUSTIFICATION** - For each dimension, explain:
    - What earned points
@@ -173,17 +196,20 @@ Your target distribution: 60% of documents should score 55-72. Only 10% should s
 export function generateCritiquePrompt(markdown, validationResult) {
   const weakDimensions = [];
 
-  if (validationResult.structure && validationResult.structure.score / 30 < 0.6) {
-    weakDimensions.push(`- Structure & Hook: ${validationResult.structure.score}/30`);
+  if (validationResult.structure && validationResult.structure.score / 20 < 0.6) {
+    weakDimensions.push(`- Structure & Hook: ${validationResult.structure.score}/20`);
   }
-  if (validationResult.content && validationResult.content.score / 35 < 0.6) {
-    weakDimensions.push(`- Content Quality: ${validationResult.content.score}/35`);
+  if (validationResult.content && validationResult.content.score / 20 < 0.6) {
+    weakDimensions.push(`- Content Quality: ${validationResult.content.score}/20`);
   }
-  if (validationResult.professional && validationResult.professional.score / 20 < 0.6) {
-    weakDimensions.push(`- Professional Quality: ${validationResult.professional.score}/20`);
+  if (validationResult.professional && validationResult.professional.score / 15 < 0.6) {
+    weakDimensions.push(`- Professional Quality: ${validationResult.professional.score}/15`);
   }
-  if (validationResult.evidence && validationResult.evidence.score / 15 < 0.6) {
-    weakDimensions.push(`- Customer Evidence: ${validationResult.evidence.score}/15`);
+  if (validationResult.evidence && validationResult.evidence.score / 10 < 0.6) {
+    weakDimensions.push(`- Customer Evidence: ${validationResult.evidence.score}/10`);
+  }
+  if (validationResult.faq && validationResult.faq.score / 35 < 0.6) {
+    weakDimensions.push(`- FAQ Quality: ${validationResult.faq.score}/35 — THE "WORKING BACKWARDS" TEST`);
   }
 
   const issuesList = validationResult.issues?.length > 0

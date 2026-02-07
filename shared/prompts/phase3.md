@@ -40,30 +40,38 @@ Go through each issue in the review. For each one:
 
 ### STEP 2: Verify Against Rubric
 
-**Structure & Hook (30 pts)**
-- [ ] Headline: 8-15 words, action verb, SPECIFIC metric (not vague outcome)
+**Structure & Hook (25 pts)**
+- [ ] Headline: 8-15 words, action verb + MECHANISM + SPECIFIC metric
 - [ ] Dateline: "CITY, ST — Month Day, Year —" exact format
 - [ ] First paragraph: WHO, WHAT, WHEN, WHERE, WHY + measurable outcome
-- [ ] Newsworthy hook (why now? what changed?)
+- [ ] Customer pain described with empathy, then relief with specifics
 
-**Content Quality (35 pts)**
+**Content Quality (25 pts)**
 - [ ] 5 Ws covered with SPECIFICS (company size, exact dates, target market)
-- [ ] Mechanism explained (HOW it works, not just WHAT it does)
-- [ ] Credibility established (beta customers, pilot data, third-party validation)
-- [ ] Inverted pyramid (most important first)
+- [ ] MECHANISM explained (HOW it works, not just WHAT it does)
+- [ ] Competitive differentiation clear (why not use [Alternative]?)
+- [ ] Price and Availability paragraph present
 
-**Professional Tone (20 pts)**
+**Professional Tone (15 pts)**
 - [ ] ZERO banned words: revolutionary, groundbreaking, cutting-edge, excited, thrilled, pleased, proud, seamless, comprehensive, robust, innovative, transformative, game-changing, passionate, delighted
 - [ ] Active voice dominant
 - [ ] Sentences under 25 words average
 - [ ] No "we believe" or "we're excited" constructions
 
-**Customer Evidence (15 pts)**
-- [ ] Exactly 3-4 quotes (not more, not fewer)
+**Customer Evidence (10 pts)**
+- [ ] Exactly 2 quotes (1 Executive Vision, 1 Customer Relief) — NOT 3-4
 - [ ] EVERY quote has at least one quantitative metric
 - [ ] NO emotional fluff in quotes (excited, love, thrilled, pleased, proud)
-- [ ] Quotes sound like different people (vary structure, length, focus)
-- [ ] Each quote has: Name, Title, Company, and specific metric with context
+- [ ] Quotes sound like different people with different purposes
+
+**FAQ Quality (25 pts) — THE "WORKING BACKWARDS" TEST**
+- [ ] External FAQ: 5-7 questions, includes "How is this different from [Alternative]?"
+- [ ] Internal FAQ: 5-7 questions with MANDATORY hard questions:
+  - **Risk**: "What is the most likely reason this fails?"
+  - **Reversibility**: "Is this a One-Way Door or Two-Way Door?"
+  - **Opportunity Cost**: "What are we NOT doing if we build this?"
+- [ ] Internal FAQ addresses unit economics / pricing logic
+- [ ] NO "softball" questions (only easy wins with no hard truths)
 
 ### STEP 3: Self-Score Before Submitting
 
@@ -74,10 +82,20 @@ Before outputting, mentally score your document:
 
 ## OUTPUT FORMAT
 
-**Output the FINAL PR-FAQ document only.**
-- Clean markdown
-- No commentary, no explanations, no "here's the revised version"
-- Start directly with the headline
-- Include: Press Release, External FAQ (5-7), Internal FAQ (5-7)
+**CRITICAL: Copy-Paste Ready Output Only**
 
-**Begin with the headline now:**
+Your response MUST be:
+1. **Clean markdown only** — No code fences wrapping the document
+2. **No preamble** — Do NOT start with "Here's...", "Sure...", "I've created..."
+3. **No commentary** — Do NOT explain what you did or why
+4. **No sign-off** — Do NOT end with "Let me know if...", "Would you like me to...", "Feel free to..."
+5. **Start immediately** — Begin with the headline
+
+The user will copy your ENTIRE response and paste it directly into the tool. Any extra text breaks this workflow.
+
+**Include in this order:**
+1. Press Release (headline, dateline, body, 2 quotes, availability, boilerplate)
+2. External FAQ (5-7 questions)
+3. Internal FAQ (5-7 questions with MANDATORY hard questions)
+
+**BEGIN WITH THE HEADLINE NOW:**

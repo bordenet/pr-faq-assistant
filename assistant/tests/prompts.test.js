@@ -114,7 +114,7 @@ describe('generatePhase1Prompt', () => {
   it('should require customer quotes with metrics', async () => {
     const prompt = await generatePhase1Prompt(sampleFormData);
     expect(prompt).toContain('quantitative metric');
-    expect(prompt).toContain('3-4 quotes');
+    expect(prompt).toContain('TWO quotes'); // Changed from 3-4 per adversarial review
   });
 
   it('should include a future release date', async () => {
@@ -170,7 +170,7 @@ describe('generatePhase3Prompt', () => {
 
   it('should request final document only', async () => {
     const prompt = await generatePhase3Prompt(phase1Output, phase2Output);
-    expect(prompt).toContain('FINAL PR-FAQ document only');
+    expect(prompt).toContain('Copy-Paste Ready Output'); // Updated per adversarial review
     expect(prompt).toContain('No commentary');
   });
 });

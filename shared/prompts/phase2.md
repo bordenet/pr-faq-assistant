@@ -32,32 +32,43 @@ LLMs consistently score PR-FAQs 20-30 points higher than they deserve. You must 
 - "Almost" meeting criteria = 0 points for that item
 - If you have to justify why something "kind of" counts, it doesn't count
 
-## SCORING CRITERIA
+## SCORING CRITERIA (Aligned with Validator)
 
-### Structure & Hook (30 points)
-- [ ] Headline: 8-15 words? Strong action verb? Specific metric? (not vague outcomes)
+### Structure & Hook (25 points)
+- [ ] Headline: 8-15 words? Action verb + MECHANISM + metric? (not just outcome)
 - [ ] Dateline: City, state abbreviation, date present?
 - [ ] Opening: Answers WHO, WHAT, WHEN, WHERE, WHY in first paragraph?
-- [ ] Newsworthy hook with timeliness and measurable outcome?
+- [ ] Customer pain described with empathy, then relief with specifics?
 
-### Content Quality (35 points)
+### Content Quality (25 points)
 - [ ] Inverted pyramid structure (most important first)?
 - [ ] All 5 Ws clearly covered with SPECIFICS, not generalities?
-- [ ] Concrete mechanism explained (HOW it works, not just WHAT it does)?
-- [ ] Credibility established with verifiable claims?
+- [ ] Concrete MECHANISM explained (HOW it works, not just WHAT it does)?
+- [ ] Competitive differentiation clear (why not use [Alternative])?
+- [ ] Price and Availability paragraph present?
 
-### Professional Tone (20 points)
+### Professional Tone (15 points)
 - [ ] ZERO marketing fluff words? (revolutionary, groundbreaking, exciting, seamless, robust, etc.)
 - [ ] Factual, direct language throughout?
 - [ ] Good readability (sentences under 25 words)?
 - [ ] Active voice dominant?
 
-### Customer Evidence (15 points)
-- [ ] 3-4 customer quotes present (not more, not fewer)?
+### Customer Evidence (10 points)
+- [ ] Exactly 2 quotes (1 Executive Vision, 1 Customer Relief)?
 - [ ] EVERY quote has QUANTITATIVE metrics? (%, $, hours, ratios)
 - [ ] ZERO emotional fluff in quotes? (excited, thrilled, pleased, love)
-- [ ] Diverse metric types across quotes? (percentages, absolutes, ratios)
-- [ ] Quotes sound like different people, not the same voice?
+- [ ] Quotes sound like different people with different purposes?
+
+### FAQ Quality (25 points) — THE "WORKING BACKWARDS" TEST
+- [ ] External FAQ present with 5-7 questions?
+- [ ] External FAQ includes "How is this different from [Alternative]?"
+- [ ] Internal FAQ present with 5-7 questions?
+- [ ] Internal FAQ includes RISK question ("What is the most likely reason this fails?")?
+- [ ] Internal FAQ includes REVERSIBILITY ("One-Way Door or Two-Way Door?")?
+- [ ] Internal FAQ includes OPPORTUNITY COST ("What are we NOT doing?")?
+- [ ] Internal FAQ addresses unit economics / pricing logic?
+
+**FAQ PENALTY:** If Internal FAQ is missing or contains only "softball" questions, cap the total score at 50.
 
 ## DOCUMENT TO REVIEW
 
