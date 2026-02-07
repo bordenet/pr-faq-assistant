@@ -158,7 +158,7 @@ function renderProjectCards(projects) {
                         <!-- Completed: Show quality score -->
                         <div class="mb-3">
                             <div class="flex items-center justify-between mb-1">
-                                <span class="text-xs text-gray-500 dark:text-gray-400">Quality Score</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">Quality Score</span>
                                 <span class="text-xs font-medium text-${scoreData.color}-600 dark:text-${scoreData.color}-400">${scoreData.score}% · ${scoreData.label}</span>
                             </div>
                             <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
@@ -177,11 +177,11 @@ function renderProjectCards(projects) {
     return `<div class="flex-1 h-1.5 rounded ${colorClass}"></div>`;
   }).join('')}
                             </div>
-                            <span class="text-xs text-gray-500 dark:text-gray-400">${completedPhases}/3</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">${completedPhases}/3</span>
                         </div>
                         `}
                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">${escapeHtml(p.formData?.problem || '')}</p>
-                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                        <div class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
                             Updated ${formatDate(p.updatedAt)}
                         </div>
                     </div>
@@ -211,20 +211,20 @@ export function renderNewProjectForm() {
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3" id="template-selector">
                     ${getAllTemplates().map(t => `
                         <button type="button"
-                            class="template-btn p-3 border-2 rounded-lg text-center transition-all hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 ${t.id === 'blank' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-600'}"
+                            class="template-btn p-2 border-2 rounded-lg text-center transition-all hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 ${t.id === 'blank' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-600'}"
                             data-template-id="${t.id}">
-                            <span class="text-2xl block mb-1">${t.icon}</span>
-                            <span class="text-sm font-medium text-gray-900 dark:text-white block">${t.name}</span>
-                            <span class="text-xs text-gray-500 dark:text-gray-400">${t.description}</span>
+                            <span class="text-lg block mb-0.5">${t.icon}</span>
+                            <span class="text-xs font-medium text-gray-900 dark:text-white block line-clamp-1">${t.name}</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">${t.description}</span>
                         </button>
                     `).join('')}
                     <!-- Import Existing Document tile -->
                     <button type="button"
                         id="import-doc-btn"
-                        class="p-3 border-2 border-dashed rounded-lg text-center transition-all hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 border-gray-300 dark:border-gray-600">
-                        <span class="text-2xl block mb-1">📥</span>
-                        <span class="text-sm font-medium text-gray-900 dark:text-white block">Import</span>
-                        <span class="text-xs text-gray-500 dark:text-gray-400">Paste from Word/Docs</span>
+                        class="p-2 border-2 border-dashed rounded-lg text-center transition-all hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 border-gray-300 dark:border-gray-600">
+                        <span class="text-lg block mb-0.5">📥</span>
+                        <span class="text-xs font-medium text-gray-900 dark:text-white block line-clamp-1">Import</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">Paste from Word/Docs</span>
                     </button>
                 </div>
             </div>
