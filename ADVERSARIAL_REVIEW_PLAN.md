@@ -3,7 +3,7 @@
 **Created:** 2026-02-08
 **Updated:** 2026-02-08
 **Purpose:** Recovery document for Gemini-assisted adversarial review process
-**Status:** ✅ COMPLETE - pr-faq-assistant, business-justification-assistant, jd-assistant, one-pager, acceptance-criteria-assistant | Next: TBD
+**Status:** ✅ COMPLETE - pr-faq-assistant, business-justification-assistant, jd-assistant, one-pager, acceptance-criteria-assistant, architecture-decision-record | Next: power-statement-assistant
 
 ---
 
@@ -29,6 +29,10 @@ We are systematically reviewing all 9 Genesis tools for **5-component alignment*
 | 3 | jd-assistant | ✅ COMPLETE | `Gemini_Response.md` |
 | 4 | one-pager | ✅ COMPLETE | `Gemini_Response.md` |
 | 5 | acceptance-criteria-assistant | ✅ COMPLETE | `Gemini_Response.md` |
+| 6 | architecture-decision-record | ✅ COMPLETE | `Gemini_Response.md` |
+| 7 | power-statement-assistant | ⏳ NEXT | - |
+| 8 | product-requirements-assistant | ⏳ QUEUED | - |
+| 9 | strategic-proposal | ⏳ QUEUED | - |
 
 ---
 
@@ -407,6 +411,50 @@ Added 6 new adversarial robustness patterns to README.md (commit `30eb0e6`):
 
 ### Tests
 All 488 tests pass.
+
+---
+
+## architecture-decision-record Findings (2026-02-08)
+
+### Gemini Findings Verification
+
+| Finding | Gemini Claim | Verdict | Action |
+|---------|--------------|---------|--------|
+| 1. Vague Language Incentivization | "complexity"/"overhead" in negative pattern rewards banned terms | ✅ REAL | Removed from negative, added VAGUE_CONSEQUENCE_TERMS |
+| 2. 3+ Consequence Count | Validator only checks presence, not count | ❌ FALSE | Lines 467-480 DO check `posCount >= 3 && negCount >= 3` |
+| 3. Rigid Review Timing | Only 30/60/90 days | ⚠️ PARTIAL | Expanded pattern to catch any N days/weeks/months |
+| 4. Vague Decision Mimicry | No detection of banned vague phrases | ✅ REAL | Added VAGUE_DECISION_PATTERNS with -5 pts penalty |
+| 5. Subsequent ADR False Positive | "triggers decision" too loose | ⚠️ PARTIAL | Tightened to require topic after trigger |
+
+### Fixes Implemented
+
+**validator.js changes (commit `96e772f`):**
+1. Vague consequence terms: Removed "complexity"/"overhead" from `CONSEQUENCES_PATTERNS.negative`, added `VAGUE_CONSEQUENCE_TERMS` with -3 pts penalty
+2. Vague decision detection: Added `VAGUE_DECISION_PATTERNS` for banned phrases like "strategic approach", "architectural intervention" with -5 pts penalty
+3. Action verb detection: Added pattern for required verbs (use, adopt, implement, migrate, split, combine, establish, enforce) with +2 pts bonus
+4. Review timing: Expanded pattern to catch "45 days", "2 weeks", "quarterly review"
+5. Subsequent ADR: Tightened pattern to require specific topic after "triggers decision"
+
+### Sibling Repo Analysis
+
+| Pattern | Generalizable? | Sibling Action |
+|---------|----------------|----------------|
+| Vague consequence terms | ⚠️ Partial | "complexity"/"overhead" bans could apply to other tools |
+| Vague decision detection | ❌ No | ADR-specific (decisions are unique to ADRs) |
+| Action verb requirement | ❌ No | ADR-specific (decisions require action verbs) |
+| Review timing | ❌ No | ADR-specific (most docs don't have review commitments) |
+
+### README.md Updates
+
+Added 5 new adversarial robustness patterns to README.md (commit `e936c4d`):
+- Vague decision detection ("strategic approach" banned)
+- Vague consequence penalty ("complexity"/"overhead" banned)
+- Action verb requirement
+- Tightened subsequent ADR pattern
+- Expanded review timing pattern
+
+### Tests
+All 472 tests pass.
 
 ---
 
