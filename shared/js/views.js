@@ -10,7 +10,7 @@ import { formatDate, escapeHtml, confirm, showToast, showDocumentPreviewModal } 
 import { navigateTo } from './router.js';
 import { WORKFLOW_CONFIG, Workflow } from './workflow.js';
 import { getAllTemplates, getTemplate } from './document-specific-templates.js';
-import { validateDocument, getScoreColor, getScoreLabel } from './validator-inline.js';
+import { validateDocument, getScoreColor, getScoreLabel } from '../../validator/js/validator.js';
 import { showImportModal } from './import-document.js';
 
 const PRFAQ_DOCS_URL = 'https://github.com/bordenet/Engineering_Culture/blob/main/SDLC/The_PR-FAQ.md';

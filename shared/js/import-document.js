@@ -4,7 +4,7 @@
  * Handles importing existing PR-FAQs from Word/Google Docs via paste
  */
 
-import { validateDocument, getScoreColor, getScoreLabel } from './validator-inline.js';
+import { validateDocument, getScoreColor, getScoreLabel } from '../../validator/js/validator.js';
 import { createProject } from './projects.js';
 import { navigateTo } from './router.js';
 import { showToast } from './ui.js';
