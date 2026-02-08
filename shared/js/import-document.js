@@ -13,6 +13,59 @@ const DOC_TYPE = 'PR-FAQ';
 const DOC_TYPE_SHORT = 'PR-FAQ';
 const MINIMUM_VIABLE_SCORE = 30;
 
+/**
+ * Extract title from markdown using multiple strategies
+ * Tries: H1 header, H2 header, first bold text, first non-empty line
+ * @param {string} markdown - Markdown content
+ * @returns {string|null} Extracted title or null
+ */
+function extractTitleFromMarkdown(markdown) {
+  if (!markdown) return null;
+
+  // Strategy 1: H1 header (# Title)
+  const h1Match = markdown.match(/^#\s+(.+?)(?:\n|$)/m);
+  if (h1Match) {
+    const title = h1Match[1].replace(new RegExp(`^${DOC_TYPE}:\\s*`, 'i'), '').trim();
+    if (title && title.length > 0) return title;
+  }
+
+  // Strategy 2: H2 header (## Title) - sometimes docs start with H2
+  const h2Match = markdown.match(/^##\s+(.+?)(?:\n|$)/m);
+  if (h2Match) {
+    const title = h2Match[1].trim();
+    if (title && title.length > 0 && title.length <= 100) return title;
+  }
+
+  // Strategy 3: First bold text (**Title** or __Title__)
+  const boldMatch = markdown.match(/^\*\*(.+?)\*\*|^__(.+?)__/m);
+  if (boldMatch) {
+    const title = (boldMatch[1] || boldMatch[2]).trim();
+    if (title && title.length > 0 && title.length <= 100) return title;
+  }
+
+  // Strategy 4: First non-empty, non-horizontal-rule line (truncated)
+  const lines = markdown.split('\n');
+  for (const line of lines) {
+    const trimmed = line.trim();
+    // Skip empty lines, horizontal rules, and very short lines
+    if (!trimmed || /^[-=*]{3,}$/.test(trimmed) || trimmed.length < 5) continue;
+    // Remove markdown formatting for cleaner title
+    const cleaned = trimmed
+      .replace(/^#+\s*/, '')  // Remove heading markers
+      .replace(/\*\*/g, '')    // Remove bold
+      .replace(/__/g, '')      // Remove underline bold
+      .replace(/\*/g, '')      // Remove italic
+      .replace(/_/g, ' ')      // Replace underscores with spaces
+      .trim();
+    if (cleaned.length > 0) {
+      // Truncate to reasonable title length
+      return cleaned.length > 80 ? cleaned.substring(0, 77) + '...' : cleaned;
+    }
+  }
+
+  return null;
+}
+
 const LLM_CLEANUP_PROMPT = `You are a documentation assistant. Convert this pasted ${DOC_TYPE} content into clean, well-structured Markdown.
 
 **Rules:**
@@ -134,15 +187,14 @@ export function showImportModal() {
     try {
       const markdown = previewArea.value;
       if (!markdown.trim()) { showToast('No content to save', 'error'); return; }
-      const titleMatch = markdown.match(/^#\s+(.+?)(?:\n|$)/m);
-      const title = titleMatch ? titleMatch[1].replace(/^PR-FAQ:\s*/i, '').trim() : `Imported ${DOC_TYPE_SHORT}`;
+      const title = extractTitleFromMarkdown(markdown) || `Imported ${DOC_TYPE_SHORT}`;
       const project = await createProject({ title, problems: `(Imported from existing ${DOC_TYPE_SHORT})`, context: `(Imported from existing ${DOC_TYPE_SHORT})` });
       if (!project || !project.id) { showToast('Failed to create project', 'error'); return; }
       const { updateProject } = await import('./projects.js');
-      await updateProject(project.id, { phases: { ...project.phases, 1: { ...project.phases[1], response: markdown, completed: false, startedAt: new Date().toISOString() } }, importedContent: markdown });
+      await updateProject(project.id, { phases: { ...project.phases, 1: { ...project.phases[1], response: markdown, completed: false, startedAt: new Date().toISOString() } }, importedContent: markdown, isImported: true });
       closeModal();
       showToast(`${DOC_TYPE_SHORT} imported! Review and refine in Phase 1.`, 'success');
-      navigateTo('project', project.id);
+      navigateTo('project/' + project.id);
     } finally { isSaving = false; saveBtn.disabled = false; saveBtn.textContent = 'Save & Continue to Phase 1'; }
   });
   pasteArea.focus();
