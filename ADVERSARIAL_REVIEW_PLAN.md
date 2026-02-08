@@ -271,3 +271,86 @@ For each Gemini finding, ask:
 3. **What's the point impact?** Prioritize high-impact fixes (15+ pts)
 4. **Is this gameable?** Keyword-only detection is always vulnerable
 
+---
+
+## ⚠️ CRITICAL: README.md Feedback Loop
+
+### The Compounding Value Principle
+
+Every adversarial review fix MUST be reflected back into the repo's README.md **Scoring Methodology** section. This creates a virtuous cycle:
+
+```
+Adversarial Review → Fix validator.js/prompts.js → Update README.md → Better user understanding → Better documents → Fewer edge cases
+```
+
+### When to Update README.md
+
+After EVERY adversarial review that results in code changes:
+
+1. **New pattern added** → Add to "Adversarial Robustness" table
+2. **Scoring weight changed** → Update "Scoring Taxonomy" table
+3. **New detection logic** → Add to "Why These Weights?" section
+4. **Gaming vulnerability fixed** → Document in "Adversarial Robustness" table
+
+### README.md Sections to Keep Aligned
+
+Each repo's README.md has a **Scoring Methodology** section with:
+
+| Section | Must Match |
+|---------|------------|
+| **Scoring Taxonomy** table | `prompts.js` scoring rubric weights |
+| **Why These Weights?** | `validator.js` scoring functions and point allocations |
+| **Adversarial Robustness** table | Actual patterns in `validator.js` that resist gaming |
+| **Calibration Notes** | Key design decisions in `validator.js` |
+
+### Example: After pr-faq-assistant Fixes
+
+When we added mechanism detection, quote count penalty, and softball detection:
+
+**README.md updates needed:**
+- Add "Mechanism detection requires 'how' language" to Adversarial Robustness table
+- Add "Quote count penalty applies for >2 quotes" to Adversarial Robustness table
+- Add "Softball detection identifies positive-context risk questions" to Calibration Notes
+
+### Checklist for Every Adversarial Review
+
+```
+[ ] Verified Gemini findings against actual code
+[ ] Implemented fixes in validator.js/prompts.js
+[ ] Ran tests (npm test)
+[ ] Committed and pushed code changes
+[ ] **UPDATED README.md Scoring Methodology section**
+[ ] Committed and pushed README.md changes
+[ ] Checked sibling repos for same pattern
+[ ] Updated this ADVERSARIAL_REVIEW_PLAN.md
+```
+
+### Why This Matters
+
+1. **User Education** - Users who understand scoring write better documents
+2. **Transparency** - Scoring logic is visible, not a black box
+3. **Documentation Debt** - Undocumented scoring logic becomes tech debt
+4. **Compounding Value** - Each fix improves the entire ecosystem
+
+---
+
+## Iteration, Generalization, Compounding Value
+
+This adversarial review process is designed to **compound value** across all 9 Genesis tools:
+
+### Iteration
+- Each tool review teaches us new patterns
+- Gemini false positive rate (~25%) is now a known calibration factor
+- Review process improves with each iteration
+
+### Generalization
+- Format-specific patterns stay in their tool
+- Cross-cutting patterns propagate to all 9 tools
+- Sibling repo checks are MANDATORY for every fix
+
+### Compounding Value
+- README.md updates educate users → better documents
+- Better documents → fewer edge cases → less maintenance
+- Documented scoring logic → easier future reviews
+- Each fix makes the next fix easier
+
