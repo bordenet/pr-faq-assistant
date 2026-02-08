@@ -3,7 +3,7 @@
 **Created:** 2026-02-08
 **Updated:** 2026-02-08
 **Purpose:** Recovery document for Gemini-assisted adversarial review process
-**Status:** ✅ COMPLETE - pr-faq-assistant, business-justification-assistant, jd-assistant, one-pager | Next: TBD
+**Status:** ✅ COMPLETE - pr-faq-assistant, business-justification-assistant, jd-assistant, one-pager, acceptance-criteria-assistant | Next: TBD
 
 ---
 
@@ -28,6 +28,7 @@ We are systematically reviewing all 9 Genesis tools for **5-component alignment*
 | 2 | business-justification-assistant | ✅ COMPLETE | `Gemini_Response.md` |
 | 3 | jd-assistant | ✅ COMPLETE | `Gemini_Response.md` |
 | 4 | one-pager | ✅ COMPLETE | `Gemini_Response.md` |
+| 5 | acceptance-criteria-assistant | ✅ COMPLETE | `Gemini_Response.md` |
 
 ---
 
@@ -358,6 +359,54 @@ Added 5 new adversarial robustness patterns to README.md (commit `1d4316f`):
 
 ### Tests
 All 534 tests pass.
+
+---
+
+## acceptance-criteria-assistant Findings (2026-02-08)
+
+### Gemini Findings Verification
+
+| Finding | Gemini Claim | Verdict | Action |
+|---------|--------------|---------|--------|
+| A. Single-And Compound | `/\band\b.*\band\b|\bor\b/i` requires TWO "and"s | ✅ REAL | Fixed: `/\b(and|or)\b/i` |
+| B. Gherkin False Positives | `/\b(given|when|then)\s+/i` catches normal sentences | ✅ REAL | Fixed: line-start context |
+| C. User Story Bypass | Only catches single-word roles | ✅ REAL | Fixed: multi-word role support |
+| D. Metric Unit De-sync | Missing "calls", "connections", "records" | ✅ REAL | Added 12 new units |
+| E. Implementation Detail | No detection for tech stack keywords | ✅ REAL | Added implementationPattern |
+| F. Edge Case False Positives | "first", "last", "none" trigger bonus | ⚠️ PARTIAL | Tightened to compound phrases |
+
+### Fixes Implemented
+
+**validator.js changes (commit `fb8ff3c`):**
+1. Compound pattern: `/\b(and|or)\b/i` - catches ANY "and" or "or"
+2. Gherkin pattern: `/(?:^|\n)\s*(?:-\s*\[\s*[x ]?\s*\]\s*)?(given|when|then)\s+/im` - line-start only
+3. User story pattern: `/\bas\s+(?:a|an|the)\s+[\w\s]+?,?\s*i\s+want/i` - multi-word roles
+4. Metrics pattern: added calls, connections, records, retries, attempts, rows, entries, results, pages, clicks, taps, events
+5. Implementation pattern: NEW - 30+ tech stack keywords with -5 pts penalty
+6. Edge case pattern: tightened to compound phrases only
+
+### Sibling Repo Analysis
+
+| Pattern | Generalizable? | Sibling Action |
+|---------|----------------|----------------|
+| Compound criteria detection | ❌ No | AC-specific (splitting criteria) |
+| Implementation detail detection | ⚠️ Partial | one-pager/biz-just already have their own |
+| User story pattern | ❌ No | AC-specific anti-pattern |
+| Gherkin pattern | ❌ No | AC-specific anti-pattern |
+| Expanded metric units | ⚠️ Partial | Could apply to other tools with metrics |
+
+### README.md Updates
+
+Added 6 new adversarial robustness patterns to README.md (commit `30eb0e6`):
+- Single "and" compound detection
+- Multi-word user story role detection
+- Line-start Gherkin detection
+- Implementation detail detection (30+ tech keywords)
+- Tightened edge case detection
+- Expanded metric unit coverage
+
+### Tests
+All 488 tests pass.
 
 ---
 
