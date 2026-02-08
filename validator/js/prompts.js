@@ -216,7 +216,7 @@ export function generateCritiquePrompt(markdown, validationResult) {
     ? validationResult.issues.map(i => `- ${i}`).join('\n')
     : '- No specific issues detected';
 
-  return `You are a senior product manager reviewing a PR-FAQ document.
+  return `You are a senior product manager helping improve a PR-FAQ document.
 
 ## Current Score: ${validationResult.totalScore}/100
 
@@ -231,22 +231,41 @@ ${issuesList}
 ${markdown}
 \`\`\`
 
-## Your Task
+## YOUR TASK
 
-1. **CRITIQUE**: Provide a detailed critique focusing on:
-   - The weakest scoring dimensions
-   - Specific passages that need improvement (quote them)
-   - What's missing that would strengthen the document
-   - Concrete suggestions (not vague advice)
+Help the author improve this PR-FAQ by asking clarifying questions.
 
-2. **REVISED DOCUMENT**: After your critique, provide the complete revised PR-FAQ document in a markdown code block. Apply all your suggested improvements.
+## REQUIRED OUTPUT FORMAT
 
-Format your response as:
-- First: Your critique with specific feedback
-- Then: A section titled "## Revised PR-FAQ" containing the complete improved document in a markdown code block
+**Score Summary:** ${validationResult.totalScore}/100
 
----
-**IMPORTANT FOR THE USER**: After I provide the revised PR-FAQ, copy the markdown content from the code block, go back to the PR-FAQ Validator, select all text in the editor (Cmd+A or Ctrl+A), and paste to replace your document with the improved version.`;
+**Top 3 Issues:**
+1. [Most critical gap - be specific]
+2. [Second most critical gap]
+3. [Third most critical gap]
+
+**Questions to Improve Your PR-FAQ:**
+1. **[Question about missing/weak area]**
+   _Why this matters:_ [How answering this improves the score]
+
+2. **[Question about another gap]**
+   _Why this matters:_ [Score impact]
+
+3. **[Question about headline/FAQ/evidence]**
+   _Why this matters:_ [Score impact]
+
+(Provide 3-5 questions total, focused on the weakest dimensions)
+
+**Quick Wins (fix these now):**
+- [Specific fix that doesn't require user input]
+- [Another immediate improvement]
+
+<output_rules>
+- Start directly with "**Score Summary:**" (no preamble)
+- Do NOT include a revised PR-FAQ document
+- Only provide questions and quick wins
+- Focus questions on: headline mechanism, customer quotes, FAQ depth
+</output_rules>`;
 }
 
 /**
