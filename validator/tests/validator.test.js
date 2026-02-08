@@ -618,13 +618,16 @@ describe('detectFluffWords', () => {
   test('detects fluff words', () => {
     const content = 'This revolutionary game-changing solution is groundbreaking.';
     const result = detectFluffWords(content);
-    expect(result.length).toBeGreaterThan(0);
+    expect(result.found).toBe(true);
+    expect(result.count).toBeGreaterThan(0);
+    expect(result.words.length).toBeGreaterThan(0);
   });
 
   test('returns empty for clean content', () => {
     const content = 'The company launched a new product.';
     const result = detectFluffWords(content);
-    expect(result.length).toBe(0);
+    expect(result.found).toBe(false);
+    expect(result.count).toBe(0);
   });
 });
 

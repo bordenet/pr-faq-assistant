@@ -92,7 +92,12 @@ export function detectMetricsInText(text) {
     }
   }
 
-  return { metrics, types };
+  return {
+    found: metrics.length > 0,
+    count: metrics.length,
+    metrics,
+    types
+  };
 }
 
 /**
@@ -169,10 +174,10 @@ export function scoreCustomerEvidence(content) {
   let quotesWithMetrics = 0;
 
   for (const quote of quotes) {
-    const { metrics, types } = detectMetricsInText(quote);
-    const quoteScore = scoreQuote(metrics, types);
+    const detection = detectMetricsInText(quote);
+    const quoteScore = scoreQuote(detection.metrics, detection.types);
 
-    if (metrics.length > 0) {
+    if (detection.found) {
       quotesWithMetrics++;
     }
     totalQuoteScore += quoteScore;
@@ -994,7 +999,11 @@ export function detectFluffWords(content) {
 
   // Sort by position
   results.sort((a, b) => a.start - b.start);
-  return results;
+  return {
+    found: results.length > 0,
+    count: results.length,
+    words: results
+  };
 }
 
 /**
@@ -1432,6 +1441,19 @@ export function validatePRFAQ(markdown) {
  */
 export function validateDocument(text) {
   return validatePRFAQ(text);
+}
+
+/**
+ * Get letter grade from numeric score
+ * @param {number} score - Numeric score 0-100
+ * @returns {string} Letter grade
+ */
+export function getGrade(score) {
+  if (score >= 90) return 'A';
+  if (score >= 80) return 'B';
+  if (score >= 70) return 'C';
+  if (score >= 60) return 'D';
+  return 'F';
 }
 
 /**
