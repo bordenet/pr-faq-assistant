@@ -491,7 +491,7 @@ describe('analyzeHeadlineQuality', () => {
   test('analyzes good headline', () => {
     const result = analyzeHeadlineQuality('ACME Corp Launches New Product That Reduces Costs 40%');
     expect(result.score).toBeGreaterThanOrEqual(0);
-    expect(result.maxScore).toBe(10);
+    expect(result.maxScore).toBe(12); // 10 base + 2 for mechanism detection
   });
 
   test('scores weak headlines low', () => {

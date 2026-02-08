@@ -199,7 +199,17 @@ export function scoreCustomerEvidence(content) {
     }
   }
 
-  result.score = Math.min(baseScore + metricBonus + coverageBonus, 10);
+  // Quote count bonus/penalty: exactly 2 quotes is ideal (per phase1.md)
+  let quoteCountAdjustment = 0;
+  if (quotes.length === 2) {
+    quoteCountAdjustment = 1;  // Bonus for following the standard
+  } else if (quotes.length > 2) {
+    quoteCountAdjustment = -2;  // Penalty for "blog post territory" (3+ quotes)
+  } else if (quotes.length === 1) {
+    quoteCountAdjustment = 0;  // No penalty for 1 quote, but no bonus either
+  }
+
+  result.score = Math.min(Math.max(baseScore + metricBonus + coverageBonus + quoteCountAdjustment, 0), 10);
 
   // Add feedback
   if (quotesWithMetrics === 0) {
@@ -209,9 +219,11 @@ export function scoreCustomerEvidence(content) {
   }
 
   if (quotes.length > 2) {
-    result.issues.push('Consider reducing to 2 quotes: 1 Executive Vision + 1 Customer Relief');
+    result.issues.push('Too many quotes (3+) - reduce to exactly 2: 1 Executive Vision + 1 Customer Relief');
   } else if (quotes.length === 2) {
     result.strengths.push('Follows 2-quote standard (Executive Vision + Customer Relief)');
+  } else if (quotes.length === 1) {
+    result.issues.push('Add a second quote: need 1 Executive Vision + 1 Customer Relief');
   }
 
   if (result.score >= 8) {
@@ -224,14 +236,15 @@ export function scoreCustomerEvidence(content) {
 
 
 /**
- * Analyze headline quality (10 pts max)
+ * Analyze headline quality (12 pts max)
+ * Components: Length (3), Strong Verbs (2), Metrics (2), Mechanism (2), No Weak Language (2) = 11 base, 1 buffer
  * @param {string} title - The headline/title
  * @returns {{score: number, maxScore: number, issues: string[], strengths: string[]}}
  */
 export function analyzeHeadlineQuality(title) {
   const result = {
     score: 0,
-    maxScore: 10,
+    maxScore: 12,
     issues: [],
     strengths: [],
   };
@@ -273,10 +286,30 @@ export function analyzeHeadlineQuality(title) {
   const hasSpecifics = specificityPatterns.some(p => p.test(title));
 
   if (hasSpecifics) {
-    result.score += 3;
+    result.score += 2;
     result.strengths.push('Includes specific metrics or outcomes');
   } else {
     result.issues.push('Consider adding specific metrics to the headline');
+  }
+
+  // Mechanism detection (HOW it works, not just WHAT)
+  // Patterns: "using X", "via X", "through X", "by [method]", "with X", "leveraging X"
+  const mechanismPatterns = [
+    /\busing\s+\w+/i,
+    /\bvia\s+\w+/i,
+    /\bthrough\s+\w+/i,
+    /\bby\s+(?![\d])\w+/i,  // "by [word]" but not "by 50%" (that's a metric)
+    /\bwith\s+\w+/i,
+    /\bleveraging\s+\w+/i,
+    /\bpowered\s+by\s+\w+/i,
+  ];
+  const hasMechanism = mechanismPatterns.some(p => p.test(title));
+
+  if (hasMechanism) {
+    result.score += 2;
+    result.strengths.push('Includes mechanism (HOW it works)');
+  } else {
+    result.issues.push('Consider explaining HOW (mechanism) in headline, not just WHAT');
   }
 
   // Avoid weak language
@@ -1070,9 +1103,32 @@ export function parseFAQQuestions(faqContent) {
 }
 
 /**
+ * Detect if a question is a "softball" - contains hard keywords but in positive/dismissive context
+ * Examples: "Is there a risk this is too successful?", "What if we succeed too fast?"
+ * @param {string} text - Question + answer text
+ * @returns {boolean} True if this appears to be a softball question
+ */
+export function isSoftballQuestion(text) {
+  const textLower = text.toLowerCase();
+
+  // Softball patterns: hard keyword + positive/dismissive context within 30 chars
+  const softballPatterns = [
+    /\b(risk|fail|challenge|concern).{0,30}\b(success|easy|minimal|none|unlikely|low|small|minor|exciting|opportunity)/i,
+    /\b(success|easy|minimal|none|unlikely|low|small|minor).{0,30}\b(risk|fail|challenge|concern)/i,
+    /\bno\s+(real\s+)?(risk|concern|challenge)/i,
+    /\brisk.{0,20}(too\s+)?success/i,
+    /\b(one.?way|two.?way)\s+door\s+to\s+(success|growth|opportunity)/i,
+    /\beasy\s+to\s+(reverse|undo|pivot)/i,
+  ];
+
+  return softballPatterns.some(p => p.test(textLower));
+}
+
+/**
  * Check if FAQ contains mandatory hard questions
+ * Now includes softball detection to prevent gaming
  * @param {Array<{question: string, answer: string}>} questions - Parsed FAQ questions
- * @returns {{hasRisk: boolean, hasReversibility: boolean, hasOpportunityCost: boolean, hardQuestionCount: number}}
+ * @returns {{hasRisk: boolean, hasReversibility: boolean, hasOpportunityCost: boolean, hardQuestionCount: number, softballCount: number}}
  */
 export function checkHardQuestions(questions) {
   const result = {
@@ -1080,6 +1136,7 @@ export function checkHardQuestions(questions) {
     hasReversibility: false,
     hasOpportunityCost: false,
     hardQuestionCount: 0,
+    softballCount: 0,
   };
 
   const riskPatterns = [/risk/i, /fail/i, /wrong/i, /worst case/i, /challenge/i, /obstacle/i, /concern/i];
@@ -1088,6 +1145,12 @@ export function checkHardQuestions(questions) {
 
   for (const q of questions) {
     const text = q.question + ' ' + q.answer;
+
+    // Check for softball first - if it's a softball, don't count it as a hard question
+    if (isSoftballQuestion(text)) {
+      result.softballCount++;
+      continue;  // Skip counting this as a legitimate hard question
+    }
 
     if (riskPatterns.some(p => p.test(text))) {
       result.hasRisk = true;
@@ -1160,6 +1223,11 @@ export function scoreFAQQuality(markdown) {
 
   // Internal FAQ rigor - mandatory hard questions (15 pts max)
   result.hardQuestions = checkHardQuestions(internalQuestions);
+
+  // Report softball detection
+  if (result.hardQuestions.softballCount > 0) {
+    result.issues.push(`Detected ${result.hardQuestions.softballCount} "softball" question(s) - these don't count as hard questions`);
+  }
 
   if (result.hardQuestions.hardQuestionCount === 3) {
     result.score += 15;
