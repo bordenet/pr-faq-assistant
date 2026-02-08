@@ -2,7 +2,7 @@
 
 **Tool:** pr-faq-assistant  
 **Date:** 2026-02-08  
-**Status:** VERIFIED
+**Status:** AWAITING RESPONSE
 
 ---
 
@@ -19,62 +19,97 @@
 <!-- PASTE GEMINI RESPONSE BELOW THIS LINE -->
 
 
-This adversarial review identifies several "Silent Penalties" where a user can follow the instructions in `phase1.md` but fail the automated checks in `validator.js`. While the conceptual pillars are aligned, the **implementation logic** in the JavaScript patterns is too rigid for the generative flexibility of the LLM.
+
+This adversarial review identifies several **critical synchronization failures** where the JavaScript validator (`validator.js`) and the LLM evaluator (`prompts.js`) diverge. These gaps create "score traps" where a user can follow `phase1.md` instructions perfectly yet lose up to 28 points.
 
 ---
 
-## 1. Critical Failures (>10 Point Risks)
+## 1. CRITICAL FAILURES (15-30 Point Risks)
 
-### A. The "Full Investment" Ghost Option
+### A. The "Mechanism" Detection Gap (Risk: 2-5 pts)
 
-* **Instruction (`phase1.md`):** Requires "Option C: Full Investment".
-* **Pattern (`validator.js`):** `minimalInvestment: /\b(minimal|minimum|low.?cost|basic|mvp|phase.?1|incremental)\b/gi`
-* **Mismatch:** `validator.js` specifically looks for "minimal" investment keywords to award points for Pillar 3, but it has **no pattern** to verify the presence of a "Full Investment" or "Option C" recommendation. If a user labels Option C as "Recommended Approach" or "Strategic Transformation" (common in high-level business writing), the validator may fail to recognize it as a valid 3rd option.
-* **Impact:** **10 points** (Loss of "3+ alternatives" credit).
+* **Issue:** `phase1.md` and `prompts.js` explicitly allocate **2 pts** for including a "MECHANISM" in the headline (e.g., "Using Edge-Caching").
+* **Evidence:** `validator.js` (`analyzeHeadlineQuality`) only checks for Length, Strong Verbs, Specificity (metrics), and Banned Language. It has **zero logic** to detect a "mechanism" (the "how").
+* **Result:** The LLM will reward the mechanism, but the JS validator will treat it as "unscored noise," leading to a mismatch in the "Structure & Hook" dimension.
 
-### B. The ROI Formula Trap
+### B. Quote Count Collision (Risk: 5-8 pts)
 
-* **Instruction (`phase1.md`):** Specifies the formula: `(Benefit - Cost) / Cost × 100`.
-* **Pattern (`validator.js`):** `roiFormula: /(\d+\s*[-−–]\s*\d+)\s*[\/÷]\s*\d+.../gi`
-* **Mismatch:** The instruction includes **"× 100"**, but the regex `roiFormula` ends at the divisor `\d+`. If a user includes the "× 100" or uses the word "percent," the regex might fail to capture the full string as a "valid formula" depending on the engine's termination logic. Furthermore, if the user uses variables like `(Total Savings - Implementation) / Implementation`, the regex—which expects digits `(\d+)`—will return zero matches.
-* **Impact:** **10 points** (Zero credit for "ROI with formula").
+* **Issue:** `phase1.md` demands **"exactly 2 quotes."** `prompts.js` reinforces this with 3 pts.
+* **Evidence:** `validator.js` (`scoreCustomerEvidence`) provides a "Coverage bonus" for "multiple quotes." It does not have an upper-bound check or a "count == 2" requirement.
+* **Result:** A user who provides 4 quotes (violating the prompt) will be **rewarded** by the JS validator but **penalized** by the LLM.
 
-### C. Stakeholder Vocabulary "Silo"
+### C. The "Internal FAQ" Softball Loophole (Risk: 15-20 pts)
 
-* **Instruction (`phase1.md`):** Mentions "HR (equity/compliance)".
-* **Pattern (`validator.js`):** `stakeholderConcerns: /\b(finance|fp&a...hr|people.?team|people.?ops|legal...)\b/gi`
-* **Mismatch:** `phase1.md` uses the term **"Equity"** specifically in the context of HR. However, `validator.js` does not include "equity" in the `stakeholderConcerns` regex. If a user discusses "Equity and Inclusion" under the HR section without using the word "People Team," the validator may miss the HR concern entirely.
-* **Impact:** **7 points** (Partial loss of Execution Completeness).
+* **Issue:** `prompts.js` has a "Hard Cap" of 50/100 if questions are "softball."
+* **Evidence:** `validator.js` (`scoreFAQQuality`) triggers the 50-point cap based on **keyword presence** (risk, fail, door).
+* **Gaming:** A user can write: "Q: Is there a **risk** that this is too successful?" The validator detects the keyword "risk," gives full points, and bypasses the 50-point penalty. The LLM, seeing the "softball" nature, will trigger the cap. **Total score divergence: 30+ points.**
 
 ---
 
-## 2. Alignment Table
+## 2. ALIGNMENT TABLE
 
-| Component | phase1.md Says | prompts.js Says | validator.js Does | Aligned? |
+| Requirement (phase1.md) | prompts.js (LLM) | validator.js (JS) | Aligned? | Issue |
 | --- | --- | --- | --- | --- |
-| **Structure** | 11 Required Sections | Evaluates 14 points of structure | Regex checks for 4 main section types | **NO** |
-| **ROI** | `(B-C)/C × 100` | Explicit Formula (10 pts) | Looks for digits/slashes | **PARTIAL** |
-| **Payback** | Target: <12 months | 8 pts for <12 months | Detects `months?` + `\d+` | **YES** |
-| **Alternatives** | At least 3 options | 3 options (10 pts) | Counts keyword matches | **PARTIAL** |
-| **TCO** | 3-year view | 7 pts (3-year view) | `/\b(3.?year | three.?year)\b/` |
+| **Headline Mechanism** | Reward (2 pts) | **Missing** | ❌ No | JS can't see "How". |
+| **Headline Metric** | Reward (2 pts) | Reward (3 pts) | ⚠️ Partial | Weight mismatch (2 vs 3). |
+| **Dateline** | Reward (2 pts) | Reward (3 pts) | ⚠️ Partial | Scale mismatch. |
+| **Exactly 2 Quotes** | Reward (3 pts) | **Mismatch** | ❌ No | JS rewards "more is better". |
+| **Risk/Door/Opp Cost** | Reward (15 pts) | Reward (15 pts) | ✅ Yes | Keyword based (Gameable). |
+| **Banned Words** | Penalty (2-5 ea) | Penalty (Fixed) | ⚠️ Partial | LLM is harsher than JS. |
 
 ---
 
-## 3. Gaming Vulnerabilities
+## 3. GAMING VULNERABILITIES
 
-1. **Keyword Stuffing the "Do Nothing":** `validator.js` awards 10 pts for 2+ mentions of `do nothing`. A user can write: "We chose not to **do nothing** because **doing nothing** is bad," and receive full points for a "Quantified cost/risk of inaction" without actually providing any numbers.
-2. **The "Gartner" Anchor:** The `sources` pattern awards 10 points for mentioning "Gartner" or "Forrester." A user can write "We are not using Gartner data" and receive full credit for "Credible Sources."
-3. **Timeline Mimicry:** The `paybackTime` pattern simply looks for a number followed by "months." Writing "This project will take 24 months to start" might trigger the `paybackPeriod` credit if the word "payback" appears anywhere nearby.
+1. **Metric Spams**: Since `validator.js` uses `\d+%`, a user can put "0% risk" or "1% better" anywhere in the dateline or first paragraph to trigger the "measurable outcome" points without providing actual value.
+2. **The "About" Section Hack**: The 5 Ws logic (`analyzeFiveWs`) searches for "Company patterns." A user can score "WHO" points simply by having a standard "About [Company]" boilerplate at the bottom, even if the actual PR body never identifies the company.
+3. **Pseudo-Logic FAQs**: Mentioning the word "reversibility" or "one-way door" in a question like "Is this a one-way door to success?" satisfies the regex `doorType` but fails the strategic intent.
 
 ---
 
-## 4. Prioritized Fixes
+## 4. PRIORITIZED FIXES
 
-| Priority | Issue | Impact | Suggested Fix |
-| --- | --- | --- | --- |
-| **P1** | **ROI Formula Rigidity** | 10 pts | Update `roiFormula` to support variable names: `/\(.*[\w\s]+.*[-−–].*[\w\s]+.*\)\s*[\/÷]/gi` |
-| **P2** | **"Option C" Detection** | 10 pts | Add `fullInvestment: /\b(full |
-| **P3** | **Quantification Logic** | 12 pts | `scoreStrategicEvidence` should require metrics **within** the Problem Section, not just anywhere in the doc. |
-| **P4** | **HR/Equity Link** | 7 pts | Add `equity` and `inclusion` to the `stakeholderConcerns` regex. |
+### P0: Correct the FAQ Hard-Cap Logic (validator.js)
 
-**Next Step:** Would you like me to rewrite the `validator.js` regex suite to ensure the "Cost of Inaction" (Section 2.2) is specifically quantified using a proximity check?
+The current validator is too easily gamed by keyword presence.
+**Fix:** Implement a "Softball Detection" regex that looks for positive sentiment words near risk keywords.
+
+```javascript
+// Add to validator.js
+const SOFTBALL_PATTERN = /\b(risk|fail|challenge)\b.{0,20}\b(success|easy|minimal|none|exciting)\b/gi;
+if (text.match(SOFTBALL_PATTERN)) { internalRigorScore -= 5; }
+
+```
+
+### P1: Standardize Headline Weights
+
+Align `validator.js` scaling to match the 8-point total in `prompts.js`.
+**Fix:**
+
+```javascript
+// validator.js update
+export function analyzeHeadlineQuality(title) {
+  let score = 0;
+  if (hasMechanism(title)) score += 2; // NEW: check for "using", "via", "by"
+  if (hasMetric(title)) score += 2;
+  if (hasStrongVerb(title)) score += 2;
+  if (isCorrectLength(title)) score += 2;
+  return score;
+}
+
+```
+
+### P2: Strict Quote Counter
+
+Prevent the "Blog Post" trap where LLMs penalize high quote counts while JS rewards them.
+**Fix:**
+
+```javascript
+// validator.js update
+const quoteCount = extractQuotes(content).length;
+if (quoteCount === 2) { bonus = 3; } 
+else if (quoteCount > 2) { bonus = -2; } // Penalize 3+ quotes
+
+```
+
+**Would you like me to rewrite the `analyzeHeadlineQuality` function to include the "Mechanism" detection logic using structural NLP patterns?**
