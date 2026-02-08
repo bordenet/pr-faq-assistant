@@ -3,7 +3,7 @@
 **Created:** 2026-02-08
 **Updated:** 2026-02-08
 **Purpose:** Recovery document for Gemini-assisted adversarial review process
-**Status:** ✅ COMPLETE - pr-faq-assistant, business-justification-assistant, jd-assistant | Next: one-pager
+**Status:** ✅ COMPLETE - pr-faq-assistant, business-justification-assistant, jd-assistant, one-pager | Next: TBD
 
 ---
 
@@ -27,7 +27,7 @@ We are systematically reviewing all 9 Genesis tools for **5-component alignment*
 | 1 | pr-faq-assistant | ✅ COMPLETE | `Gemini_Response.md` |
 | 2 | business-justification-assistant | ✅ COMPLETE | `Gemini_Response.md` |
 | 3 | jd-assistant | ✅ COMPLETE | `Gemini_Response.md` |
-| 4 | one-pager | ⏳ Queued | TBD |
+| 4 | one-pager | ✅ COMPLETE | `Gemini_Response.md` |
 
 ---
 
@@ -311,6 +311,53 @@ Added 3 new adversarial robustness patterns to README.md (commit `0fc629f`)
 
 ### Tests
 All 482 tests pass.
+
+---
+
+## one-pager Findings (2026-02-08)
+
+### Gemini Findings Verification
+
+| Finding | Gemini Claim | Verdict | Action |
+|---------|--------------|---------|--------|
+| A. Missing Sections | REQUIRED_SECTIONS lacks Investment & Risks | ✅ REAL | Added 3 sections: Investment, Risks, Cost of Doing Nothing |
+| B. Bracket Trap | `[10%] → [20%]` not detected | ✅ REAL | Added `bracketNumberPatterns` regex |
+| C. Cost of Doing Nothing | Only keyword match, no section requirement | ✅ REAL | Added to REQUIRED_SECTIONS with weight 2 |
+| D. Word Count | No 450-word limit enforcement | ✅ REAL | Added penalty: 5 pts per 50 words over 450 (max 15) |
+| E. Scope Double-Entry | Only checks one of in-scope/out-of-scope | ⚠️ ALREADY HANDLED | Lines 538-544 already check separately |
+
+### Fixes Implemented
+
+**validator.js changes (commit `aa20d68`):**
+1. Added 3 new sections to REQUIRED_SECTIONS:
+   - `{ pattern: /^#+\s*(investment|effort|resource|cost|budget)/im, name: 'Investment/Resources', weight: 2 }`
+   - `{ pattern: /^#+\s*(risk|assumption|mitigation|dependency|dependencies)/im, name: 'Risks/Assumptions', weight: 1 }`
+   - `{ pattern: /^#+\s*(cost.of.doing.nothing|cost.of.inaction|why.now|urgency)/im, name: 'Cost of Doing Nothing', weight: 2 }`
+2. Added bracket-wrapped number detection in `detectBaselineTarget()`:
+   - `const bracketNumberPatterns = text.match(/\[\s*\d+[%$]?[^\]]*\]\s*[→\->]\s*\[\s*\d+[%$]?[^\]]*\]/g) || [];`
+3. Added word count enforcement:
+   - Counts words, deducts 5 pts per 50 words over 450 (max 15 pts)
+   - Returns `wordCount` object in validation results
+
+### Sibling Repo Analysis
+
+| Pattern | Generalizable? | Sibling Action |
+|---------|----------------|----------------|
+| Word count enforcement | ❌ No | 450-word limit is one-pager-specific |
+| REQUIRED_SECTIONS expansion | ⚠️ Partial | Other repos already have their own section requirements |
+| Bracket-wrapped metrics | ⚠️ Partial | Only applies to tools using `[Baseline] → [Target]` format |
+
+### README.md Updates
+
+Added 5 new adversarial robustness patterns to README.md (commit `1d4316f`):
+- Investment section enforcement
+- Risks section enforcement
+- Bracket-wrapped metric detection
+- Word count penalty
+- Cost of Doing Nothing header requirement
+
+### Tests
+All 534 tests pass.
 
 ---
 
