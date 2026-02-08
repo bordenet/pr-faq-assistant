@@ -3,7 +3,7 @@
 **Created:** 2026-02-08
 **Updated:** 2026-02-08
 **Purpose:** Recovery document for Gemini-assisted adversarial review process
-**Status:** ✅ COMPLETE - pr-faq-assistant, business-justification-assistant, jd-assistant, one-pager, acceptance-criteria-assistant, architecture-decision-record, power-statement-assistant | Next: product-requirements-assistant
+**Status:** ⏳ IN PROGRESS - product-requirements-assistant (awaiting Gemini response) | Next: strategic-proposal
 
 ---
 
@@ -31,7 +31,7 @@ We are systematically reviewing all 9 Genesis tools for **5-component alignment*
 | 5 | acceptance-criteria-assistant | ✅ COMPLETE | `Gemini_Response.md` |
 | 6 | architecture-decision-record | ✅ COMPLETE | `Gemini_Response.md` |
 | 7 | power-statement-assistant | ✅ COMPLETE | `Gemini_Response.md` |
-| 8 | product-requirements-assistant | ⏳ NEXT | - |
+| 8 | product-requirements-assistant | ⏳ IN PROGRESS | Awaiting Gemini response |
 | 9 | strategic-proposal | ⏳ QUEUED | - |
 
 ---
@@ -607,4 +607,90 @@ This adversarial review process is designed to **compound value** across all 9 G
 - Better documents → fewer edge cases → less maintenance
 - Documented scoring logic → easier future reviews
 - Each fix makes the next fix easier
+
+---
+
+## 8. product-requirements-assistant
+
+**Review Date:** 2026-02-08
+**Status:** ⏳ IN PROGRESS - Awaiting Gemini response
+**Commits:** (pending)
+**Tests:** (pending)
+
+### Pre-Review Context
+
+This is the most complex tool in the Genesis ecosystem with:
+- **5 scoring dimensions** (100 pts total): Document Structure (20), Requirements Clarity (25), User Focus (20), Technical Quality (15), Strategic Viability (20)
+- **14 required sections** with weighted patterns
+- **Extensive vague language detection** across 6 categories
+- **Strategic Viability patterns** including: Leading/Lagging indicators, Counter-metrics, Source of Truth, Kill Switch, Door Types, Alternatives Considered, Dissenting Opinions
+
+### Key Files for This Review
+
+| File | Purpose | Lines |
+|------|---------|-------|
+| `shared/prompts/phase1.md` | User-facing PRD generation prompt | 393 |
+| `shared/prompts/phase2.md` | Gemini review prompt | 191 |
+| `shared/prompts/phase3.md` | Synthesis prompt | 179 |
+| `validator/js/prompts.js` | LLM scoring prompt | 200 |
+| `validator/js/validator.js` | JavaScript pattern scorer | 1286 |
+| `docs/Scoring_Methods.md` | Scoring documentation | 146 |
+
+### Adversarial Review Prompt Sent
+
+The prompt includes all 5 components plus Scoring_Methods.md and asks Gemini to find:
+- Weight mismatches between components
+- Missing detection patterns
+- Terminology inconsistencies
+- Penalty amount divergence
+- Section weight divergence
+- Strategic Viability gaps
+
+### Gemini Response
+
+**Status:** ⏳ AWAITING - User will paste Gemini response below
+
+```
+(Paste Gemini response here when received)
+```
+
+### Verified Findings
+
+| Finding | Gemini Claim | Verdict | Action |
+|---------|--------------|---------|--------|
+| (pending) | (pending) | (pending) | (pending) |
+
+### Fixes Implemented
+
+(pending)
+
+### Sibling Repo Analysis
+
+(pending)
+
+### README.md Updates
+
+(pending)
+
+---
+
+## Recovery Instructions
+
+If VS Code crashes or context is lost:
+
+1. **Read this file** - Contains full state of adversarial review process
+2. **Check status** - Look at "Review Queue" table for current tool
+3. **For product-requirements-assistant:**
+   - If Gemini response is pasted above → Verify findings and implement fixes
+   - If Gemini response is NOT pasted → User needs to paste it
+4. **After product-requirements-assistant:**
+   - Move to strategic-proposal (tool #9)
+   - Follow same process
+
+### Key Context for New Session
+
+- **What we're doing:** Finding misalignments between 5 components (phase1.md, phase2.md, phase3.md, prompts.js, validator.js)
+- **Why:** If phase1.md tells users to do X but validator.js rewards Y, users get penalized for following instructions
+- **Gemini false positive rate:** ~25% - ALWAYS verify claims against actual code before implementing
+- **After fixes:** Update README.md Scoring Methodology section, check sibling repos for same pattern
 
