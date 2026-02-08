@@ -712,3 +712,110 @@ If VS Code crashes or context is lost:
 - **Gemini false positive rate:** ~25% - ALWAYS verify claims against actual code before implementing
 - **After fixes:** Update README.md Scoring Methodology section, check sibling repos for same pattern
 
+---
+
+## PM Feedback Learnings (2026-02-08)
+
+### Context
+
+A product manager used product-requirements-assistant and provided critical feedback. This revealed issues that Gemini adversarial review did NOT catch because they're about **user experience**, not **scoring alignment**.
+
+### What the PM Said
+
+1. **"The scoring model is weird...it is not getting questions back to me to help me make the score better"**
+   - User expected actionable questions to improve their PRD
+   - Critique prompt was outputting a rewritten PRD wrapped in meta-commentary
+   - Validator was parsing the critique wrapper as PRD content
+
+2. **"There is a weird thing in section 5.2 where it added some fake dealer quote"**
+   - Phase1.md asked for "fictional but realistic customer quote"
+   - LLM hallucinated a quote that wasn't provided by user
+
+3. **"Section 10 shows December 2025 start date that's incorrect"**
+   - Phase1.md didn't instruct LLM to use relative dates
+   - LLM invented specific calendar dates
+
+### Root Causes Identified
+
+| Issue | Root Cause | Component |
+|-------|------------|-----------|
+| Critique wrapper in output | `generateCritiquePrompt()` asks for "Revised PRD" | `prompts.js` |
+| No actionable questions | Prompt doesn't ask LLM to generate questions | `prompts.js` |
+| Fake dealer quote | Phase1.md asks for "fictional but realistic" | `phase1.md` |
+| Arbitrary timeline dates | No instruction to use relative dates | `phase1.md` |
+
+### Fixes Implemented (commit `8b34539`)
+
+1. **Critique prompt overhaul** - Now asks clarifying questions instead of outputting rewritten PRD
+2. **Customer quote policy** - No longer asks for fictional quotes; asks user for real quotes or marks TBD
+3. **Timeline policy** - Uses relative timeframes (Week 1-2, Month 1, T+30 days)
+4. **Phase 2/3 alignment** - Updated to match new quote policy
+
+### Key Insight: Gemini Misses UX Issues
+
+Gemini adversarial review focuses on **scoring alignment** (does validator.js match prompts.js?). It does NOT catch:
+
+- **Output format problems** - Critique wrapper confusing the validator
+- **Hallucination triggers** - Instructions that encourage LLM to fabricate content
+- **User expectation gaps** - What users expect vs what they get
+
+**Lesson:** Real user feedback is essential. Gemini review is necessary but not sufficient.
+
+---
+
+## Cross-Tool Audit: Critique Prompt Vulnerability (2026-02-08)
+
+### Finding: ALL 8 Other Tools Have Same Pattern
+
+Every Genesis tool's `generateCritiquePrompt()` asks for a "Revised [Document]" as part of the output:
+
+| Tool | Critique Prompt Output |
+|------|------------------------|
+| pr-faq-assistant | "2. **REVISED DOCUMENT**: ...provide the complete revised PR-FAQ" |
+| business-justification-assistant | "3. **Revised Business Justification** - A complete rewrite" |
+| jd-assistant | "3. **Revised Job Description** - A complete rewrite" |
+| one-pager | "3. **Revised One-Pager** - A complete rewrite" |
+| acceptance-criteria-assistant | "3. **Revised Document** - A complete rewrite" |
+| architecture-decision-record | "3. **Revised ADR** - A complete rewrite" |
+| power-statement-assistant | "3. **Rewritten Power Statement** - The improved version" |
+| strategic-proposal | "3. **Revised Proposal** - A complete rewrite" |
+
+### Why This Is a Problem
+
+1. **Critique wrapper** - LLM outputs "Executive Summary", "What works well", "What needs improvement" BEFORE the revised document
+2. **Validator confusion** - If user pastes the full critique output, validator parses meta-commentary as document content
+3. **No actionable questions** - Users don't get questions to help them improve; they get a rewritten document they didn't ask for
+
+### Recommended Fix Pattern
+
+Change `generateCritiquePrompt()` in all tools to:
+
+1. **Ask clarifying questions** instead of outputting a rewritten document
+2. **Provide "Quick Wins"** - fixes that don't require user input
+3. **Explicitly state** "Do NOT include a rewritten [document type]"
+
+### Priority
+
+| Tool | Priority | Reason |
+|------|----------|--------|
+| product-requirements-assistant | ✅ DONE | PM feedback, most complex tool |
+| one-pager | P1 | High usage, simple format |
+| pr-faq-assistant | P1 | High usage, complex format |
+| business-justification-assistant | P2 | Medium usage |
+| jd-assistant | P2 | Medium usage |
+| strategic-proposal | P2 | Medium usage |
+| acceptance-criteria-assistant | P3 | Lower usage |
+| architecture-decision-record | P3 | Lower usage |
+| power-statement-assistant | P3 | Lower usage |
+
+### Execution Plan
+
+For each tool (in priority order):
+
+1. Update `generateCritiquePrompt()` to ask questions instead of outputting rewritten document
+2. Run tests to verify no regressions
+3. Update README.md and docs/Scoring_Methods.md
+4. Commit and push
+
+**Estimated effort:** 15-20 minutes per tool
+
