@@ -25,44 +25,59 @@ A PR-FAQ is not a marketing document. It is a **logic test**:
 
 ## CRITICAL REQUIREMENTS
 
-### Structure & Hook (25 points)
+### Structure & Hook (20 points)
 
-**Headline (10 pts)** — MUST pair Customer Benefit with Mechanism:
-- Strong action verb (Launches, Announces, Unveils, Introduces)
-- 8-15 words (not shorter, not longer)
-- Format: "[Company] solves [Pain] by [Mechanism], resulting in [Metric]"
-- Company/product name clearly stated
+**Headline (8 pts)** — MUST pair Customer Benefit with Mechanism:
+- Strong action verb (Launches, Announces, Unveils, Introduces): 2 pts
+- 8-15 words (not shorter, not longer): 2 pts
+- Includes MECHANISM (how, not just what): 2 pts
+- Includes specific metric: 2 pts
 
 ✅ GOOD: "Acme Launches DataSync, Using Edge-Caching to Cut Data Migration Time by 75%"
 ❌ BAD: "Acme Announces Exciting New Data Solution" (no metric, no mechanism, fluff word)
 ❌ BAD: "DataSync Cuts Migration Time by 75%" (no mechanism — HOW?)
 
-**Dateline (5 pts)** — EXACT format required: `CITY, ST — Month Day, Year —`
-Example: `SEATTLE, WA — February 15, 2026 —`
+**Newsworthy Opening (8 pts)** — First paragraph MUST:
+- Opens with dateline (CITY, Date): 2 pts
+- First sentence includes measurable outcome: 2 pts
+- Describes customer pain with empathy, then relief: 2 pts
+- Avoids marketing fluff in hook: 2 pts
 
-**Opening Hook (10 pts)** — First paragraph MUST:
-- Answer WHO (company), WHAT (product/action), WHEN (date), WHERE (market), WHY (problem solved)
-- Include a measurable outcome in the first sentence
-- Describe the customer's "Before" state with empathy (the pain), then the "After" (the relief)
-- Avoid ALL marketing fluff
+**Price & Availability (4 pts)**:
+- Includes specific launch date: 2 pts
+- Includes pricing or availability info: 2 pts
 
-### Content Quality (35 points)
+### Content Quality (20 points)
 
-**5 Ws Coverage (15 pts)**:
-- WHO: Company clearly identified with context (size, industry)
-- WHAT: Product/action described with specifics (not "a solution")
-- WHEN: Specific availability date
-- WHERE: Target market/geography
-- WHY: Problem quantified (cost, time, pain)
+**5 Ws Coverage (10 pts)**:
+- WHO: Company clearly identified: 2 pts
+- WHAT: Product/action clearly described: 2 pts
+- WHEN: Timing/availability stated: 2 pts
+- WHERE: Market/geography mentioned: 2 pts
+- WHY: Customer benefit explained: 2 pts
 
-**Mechanism (10 pts)**: Explain HOW it works, not just what it does
+**Mechanism Clarity (5 pts)**: Explain HOW it works, not just what it does
+- Explains HOW the product works, not just WHAT it does: 3 pts
+- Specific technical or process change described: 2 pts
 - ❌ "Uses advanced AI to improve outcomes"
 - ✅ "Analyzes 50+ data points per transaction to flag anomalies within 200ms"
 
-**Credibility (10 pts)**: Include verifiable context
-- Beta customer count, pilot duration, third-party validation
+**Competitive Differentiation (5 pts)**:
+- Identifies the current alternative (what customers do today): 3 pts
+- Explains why current alternative is insufficient: 2 pts
 
-### Professional Tone (20 points)
+### Professional Quality (15 points)
+
+**Tone & Readability (8 pts)**:
+- Written for general audience, not engineers: 2 pts
+- Uses active voice: 2 pts
+- Avoids unnecessary jargon: 2 pts
+- Sentences are clear and concise: 2 pts
+
+**Fluff Avoidance (7 pts)**:
+- No "revolutionary", "game-changing", etc.: 3 pts
+- No "excited to announce": 2 pts
+- Professional, journalistic tone: 2 pts
 
 **BANNED WORDS — Using these costs you 2-5 points EACH:**
 - revolutionary, groundbreaking, cutting-edge, world-class, best-in-class
@@ -71,23 +86,18 @@ Example: `SEATTLE, WA — February 15, 2026 —`
 - game-changing, next-generation, state-of-the-art
 - "we believe", "we're proud", "we're excited"
 
-**REQUIRED INSTEAD:**
-- Specific numbers with context (not just "40%" but "40% reduction in processing time, from 4 hours to 2.4 hours")
-- Concrete mechanisms (how, not just what)
-- Third-party or customer attribution for claims
-
 ### Customer Evidence (10 points)
+
+**Quote Quality (10 pts)**:
+- Exactly 2 quotes (1 Executive Vision, 1 Customer Relief): 3 pts
+- Each quote contains specific metrics: 3 pts
+- Quotes attributed to named individuals with titles: 2 pts
+- Quotes sound like different people with different purposes: 2 pts
 
 **Include exactly TWO quotes** (not 3-4 — that's blog post territory):
 
 1. **The Visionary** — A {{COMPANY_NAME}} executive explaining why this matters for the long-term roadmap
 2. **The Relieved Customer** — A {{TARGET_CUSTOMER}} focusing on "Before vs. After" with specific metrics
-
-**Requirements for EACH quote:**
-1. Named person with title and company
-2. At least ONE quantitative metric (%, $, hours, ratio)
-3. Specific context (what they measured, over what period)
-4. NO emotional fluff (excited, love, thrilled, pleased)
 
 ✅ GOOD CUSTOMER QUOTE:
 > "Before DataSync, migrating data across our 12 regional offices took 6 hours and required a dedicated engineer. Now it's 90 minutes, automated. We've processed 2.3 million records with zero data loss." — Sarah Chen, VP of IT, Meridian Healthcare
@@ -98,9 +108,26 @@ Example: `SEATTLE, WA — February 15, 2026 —`
 ❌ BAD QUOTE:
 > "We're thrilled with DataSync. It's been a game-changer for our team." — John Smith, Manager, Tech Corp
 
-### FAQ Quality (10 points) — THE REAL "WORKING BACKWARDS" TEST
+### FAQ Quality (35 points) — THE "WORKING BACKWARDS" TEST
 
-The FAQs are where the idea gets stress-tested. They are NOT an afterthought.
+**CRITICAL: The FAQs are where the idea gets stress-tested. They are NOT an afterthought.**
+
+**External FAQ (10 pts)**:
+- 5-7 customer-facing questions present: 3 pts
+- Addresses pricing and availability: 2 pts
+- Addresses compatibility/migration: 2 pts
+- Includes "How is this different from [Alternative]?": 3 pts
+
+**Internal FAQ Presence (10 pts)**:
+- 5-7 stakeholder questions present: 3 pts
+- Addresses business model/unit economics: 3 pts
+- Addresses technical dependencies: 2 pts
+- Addresses competitive positioning: 2 pts
+
+**Internal FAQ Rigor (15 pts) — MANDATORY HARD QUESTIONS**:
+- Includes RISK question ("What is the most likely reason this fails?"): 5 pts
+- Includes REVERSIBILITY ("Is this a One-Way Door or Two-Way Door?"): 5 pts
+- Includes OPPORTUNITY COST ("What are we NOT doing if we build this?"): 5 pts
 
 ## INPUT DATA
 
@@ -113,6 +140,7 @@ The FAQs are where the idea gets stress-tested. They are NOT an afterthought.
 **Key Benefits**: {{BENEFITS}}
 **Metrics/Results**: {{METRICS}}
 **Price and Availability**: {{PRICE_AND_AVAILABILITY}} *(Launch date, pricing, regional availability)*
+**Release Date**: {{RELEASE_DATE}}
 **Executive Vision**: {{EXECUTIVE_VISION}} *(High-level "Why" from company perspective)*
 **Internal Risks**: {{INTERNAL_RISKS}} *(Biggest reason this might fail)*
 **Location**: {{LOCATION}}
