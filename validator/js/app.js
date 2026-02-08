@@ -395,10 +395,11 @@ function showAbout() {
       </p>
       <p class="text-gray-600 dark:text-gray-300 mb-4">
         <strong>Scoring Dimensions:</strong><br>
-        • Structure & Hook (30 pts)<br>
-        • Content Quality (35 pts)<br>
-        • Professional Quality (20 pts)<br>
-        • Customer Evidence (15 pts)
+        • Structure & Hook (20 pts)<br>
+        • Content Quality (20 pts)<br>
+        • Professional Quality (15 pts)<br>
+        • Customer Evidence (10 pts)<br>
+        • FAQ Quality (35 pts)
       </p>
       <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
         100% client-side. Your content never leaves your browser.
