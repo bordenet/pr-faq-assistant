@@ -691,6 +691,9 @@ export function showDocumentPreviewModal(markdown, title = 'Your Document is Rea
                     <button id="download-md-btn" class="px-5 py-2.5 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
                         📄 Download .md File
                     </button>
+                    <button id="download-docx-btn" class="px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
+                        📝 Download .docx
+                    </button>
                     <button id="close-modal-btn" class="px-5 py-2.5 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
                         Close
                     </button>
@@ -752,6 +755,44 @@ export function showDocumentPreviewModal(markdown, title = 'Your Document is Rea
     showToast('File downloaded!', 'success');
     if (onDownload) {
       onDownload();
+    }
+  });
+
+  // Download as .docx file (Word document)
+  modal.querySelector('#download-docx-btn').addEventListener('click', async () => {
+    const btn = modal.querySelector('#download-docx-btn');
+    const originalText = btn.textContent;
+    btn.textContent = '⏳ Converting...';
+    btn.disabled = true;
+
+    try {
+      // Dynamic import of markdown-docx from esm.sh CDN
+      const { default: markdownDocx, Packer } = await import('https://esm.sh/markdown-docx@1.5.1?bundle');
+
+      // Convert markdown to docx document
+      const doc = await markdownDocx(markdown);
+
+      // Generate blob for download
+      const blob = await Packer.toBlob(doc);
+
+      // Trigger download
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename.replace(/\.md$/i, '.docx');
+      a.click();
+      URL.revokeObjectURL(url);
+
+      showToast('Word document downloaded!', 'success');
+      if (onDownload) {
+        onDownload();
+      }
+    } catch (error) {
+      console.error('Failed to generate Word document:', error);
+      showToast('Failed to generate Word document. Try "Copy Formatted Text" instead.', 'error');
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
     }
   });
 
