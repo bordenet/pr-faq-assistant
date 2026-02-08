@@ -40,61 +40,17 @@ Write Amazon-style press releases and FAQs with AI. Three phases: draft, review,
 
 ## Scoring Methodology
 
-The validator scores PR/FAQs on a 100-point scale across five dimensions aligned with Amazon's "Working Backwards" methodology. This scoring system is specifically calibrated to counteract LLM over-scoring bias—LLMs consistently rate PR/FAQs 20-30 points higher than deserved.
+The validator scores PR/FAQs on a **100-point scale** across five dimensions aligned with Amazon's "Working Backwards" methodology:
 
-### Scoring Taxonomy
+| Dimension | Points |
+|-----------|--------|
+| Structure & Hook | 20 |
+| Content Quality | 20 |
+| Professional Quality | 15 |
+| Customer Evidence | 10 |
+| FAQ Quality | 35 |
 
-| Category | Weight | Rationale |
-|----------|--------|-----------|
-| **Structure & Hook** | 20 pts | Validates press release format with newsworthy headline |
-| **Content Quality** | 20 pts | Ensures 5 Ws coverage with mechanism clarity |
-| **Professional Quality** | 15 pts | Enforces tone, readability, and fluff avoidance |
-| **Evidence** | 10 pts | Validates customer quotes and supporting data |
-| **FAQ Quality** | 35 pts | Scores FAQ section structure and hard question coverage |
-
-### Why These Weights?
-
-**Structure & Hook (20 pts)** validates the press release format that makes PR/FAQs distinctive:
-- **Headline** (8 pts): Strong action verb + mechanism (how, not just what) + specific metric
-- **Newsworthy opening** (8 pts): Dateline format, measurable outcome in first sentence, customer pain/relief arc
-- **Price & availability** (4 pts): Specific launch date and pricing information
-
-**Content Quality (20 pts)** ensures the body covers essential journalism elements:
-- **5 Ws coverage** (10 pts): WHO (company), WHAT (product), WHEN (timing), WHERE (market), WHY (benefit)
-- **Mechanism clarity** (5 pts): Explains HOW the product works, not just WHAT it does
-- **Competitive differentiation** (5 pts): Identifies current alternative and why it's insufficient
-
-**Professional Quality (15 pts)** addresses tone and readability:
-- **Tone & readability** (8 pts): Written for general audience, active voice, minimal jargon
-- **Fluff avoidance** (7 pts): No "revolutionary," "game-changing," "cutting-edge" without substantiation
-
-**Evidence (10 pts)** validates supporting proof:
-- **Customer quotes** (10 pts): Exactly 2 quotes—Executive Vision quote and Customer Relief quote
-- **Quote collision penalty** (-2 pts): More than 2 quotes dilutes impact
-
-**FAQ Quality (35 pts)** receives the highest weight because the FAQ section is where PR/FAQs succeed or fail:
-- **FAQ section structure** (15 pts): Minimum 5 FAQs, properly formatted Q&A
-- **Hard question coverage** (20 pts): Must address pricing, timeline, competitors, risks
-
-### Adversarial Robustness
-
-The scoring system addresses common PR/FAQ manipulation strategies:
-
-| Gaming Attempt | Why It Fails |
-|----------------|--------------|
-| Headline without mechanism | Mechanism detection requires "how" language, not just "what" claims |
-| Adding 5+ customer quotes | Quote count penalty applies for >2 quotes |
-| Softball FAQ questions | Hard question detection identifies "What if this fails?" style questions |
-| Metric stuffing | Metric patterns must include context, not raw numbers |
-| Fluff-heavy language | Revolutionary/game-changing triggers explicit fluff penalties |
-
-### Calibration Notes
-
-The **LLM bias correction** is critical. When LLMs evaluate their own PR/FAQ output, they grade generously. The validator applies strict scoring where "almost" meeting criteria = 0 points for that item. This prevents the common failure mode of 80+ scores for mediocre PR/FAQs.
-
-The **2-quote standard** reflects Amazon's actual PR/FAQ template: one Executive Vision quote (company perspective) and one Customer Relief quote (user perspective). More quotes signal padding; fewer signals incomplete stakeholder representation.
-
-The **softball detection** algorithm identifies FAQ questions that avoid hard truths. Questions like "Why is this product so great?" score zero; questions like "What happens if adoption is slower than projected?" score full points.
+The scoring is calibrated to counteract LLM over-scoring bias. For complete methodology details including detection patterns, adversarial robustness, and calibration notes, see **[docs/Scoring_Methods.md](./docs/Scoring_Methods.md)**.
 
 ---
 
