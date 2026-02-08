@@ -3,7 +3,7 @@
 **Created:** 2026-02-08
 **Updated:** 2026-02-08
 **Purpose:** Recovery document for Gemini-assisted adversarial review process
-**Status:** ⏳ IN PROGRESS - product-requirements-assistant (awaiting Gemini response) | Next: strategic-proposal
+**Status:** ✅ COMPLETE - product-requirements-assistant | Next: strategic-proposal
 
 ---
 
@@ -31,8 +31,8 @@ We are systematically reviewing all 9 Genesis tools for **5-component alignment*
 | 5 | acceptance-criteria-assistant | ✅ COMPLETE | `Gemini_Response.md` |
 | 6 | architecture-decision-record | ✅ COMPLETE | `Gemini_Response.md` |
 | 7 | power-statement-assistant | ✅ COMPLETE | `Gemini_Response.md` |
-| 8 | product-requirements-assistant | ⏳ IN PROGRESS | Awaiting Gemini response |
-| 9 | strategic-proposal | ⏳ QUEUED | - |
+| 8 | product-requirements-assistant | ✅ COMPLETE | See ADVERSARIAL_REVIEW_PLAN.md |
+| 9 | strategic-proposal | ⏳ NEXT | - |
 
 ---
 
@@ -648,29 +648,47 @@ The prompt includes all 5 components plus Scoring_Methods.md and asks Gemini to 
 
 ### Gemini Response
 
-**Status:** ⏳ AWAITING - User will paste Gemini response below
+**Status:** ✅ RECEIVED - Round 2 adversarial review
 
-```
-(Paste Gemini response here when received)
-```
+Gemini identified 3 "verified" issues plus gaming exploits. Agent verified each against actual code.
 
 ### Verified Findings
 
 | Finding | Gemini Claim | Verdict | Action |
 |---------|--------------|---------|--------|
-| (pending) | (pending) | (pending) | (pending) |
+| 1. Kill Switch Temporal | No temporal check for decision points (days/months) | ⚠️ PARTIAL | Nice-to-have enhancement, not critical - skipped |
+| 2. Source of Truth Silo | Missing Salesforce/Looker/Tableau | ❌ **FALSE POSITIVE** | Line 139 ALREADY includes `salesforce\|looker\|tableau` |
+| 3. Dissenting Table | No table structure check | ⚠️ LOW PRIORITY | Edge case, hard to enforce without false positives - skipped |
+| **P0. Rewrite Prompt** | `generateRewritePrompt()` says "user story format" but phase1.md uses FR format | ✅ **REAL** | Fixed in commit `0353b91` |
+
+### Gaming Exploits Noted
+
+Gemini provided two gaming exploit examples:
+1. **Leading Indicator Hallucination** - "Measured via the system" passes regex but is meaningless
+2. **Door Type Emoji Spam** - Prepending 🚪🔄 to junk requirements passes detection
+
+**Status:** Not fixed - requires NLP/semantic analysis beyond regex capability. Documented as known limitation.
 
 ### Fixes Implemented
 
-(pending)
+**prompts.js changes (commit `0353b91`):**
+1. Changed "user story format" to "FR format" in `generateRewritePrompt()`
+2. Updated section list to match 14 required sections from phase1.md
+3. Added Kill Switch and Traceability Summary requirements
+4. Added Leading/Lagging, Counter-Metric, Source of Truth to metrics guidance
+5. Added success AND failure case requirement for acceptance criteria
 
 ### Sibling Repo Analysis
 
-(pending)
+| Pattern | Generalizable? | Sibling Action |
+|---------|----------------|----------------|
+| Rewrite prompt format alignment | ⚠️ Partial | Check other repos for similar rewrite prompt misalignment |
+
+**Checked:** Other repos don't have the same FR vs User Story format issue - this was PRD-specific.
 
 ### README.md Updates
 
-(pending)
+(pending - will update after completing review)
 
 ---
 
