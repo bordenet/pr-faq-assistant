@@ -3,7 +3,7 @@
 **Created:** 2026-02-08
 **Updated:** 2026-02-08
 **Purpose:** Recovery document for Gemini-assisted adversarial review process
-**Status:** ✅ COMPLETE - pr-faq-assistant, business-justification-assistant | Next: jd-assistant
+**Status:** ✅ COMPLETE - pr-faq-assistant, business-justification-assistant, jd-assistant | Next: one-pager
 
 ---
 
@@ -26,7 +26,7 @@ We are systematically reviewing all 9 Genesis tools for **5-component alignment*
 |---|------|--------|---------------|
 | 1 | pr-faq-assistant | ✅ COMPLETE | `Gemini_Response.md` |
 | 2 | business-justification-assistant | ✅ COMPLETE | `Gemini_Response.md` |
-| 3 | jd-assistant | ⏳ Queued | TBD |
+| 3 | jd-assistant | ✅ COMPLETE | `Gemini_Response.md` |
 | 4 | one-pager | ⏳ Queued | TBD |
 
 ---
@@ -250,6 +250,67 @@ Both patterns were **business-justification specific** and don't apply to siblin
 
 ### Tests
 All 456 tests pass.
+
+---
+
+## Gemini Findings Verification (jd-assistant)
+
+### Finding A: The "K" Notation Compensation Gap
+- **Gemini Claim:** Regex requires `$` sign, so "150,000 - 200,000 USD" would fail
+- **Verification:** ✅ **REAL ISSUE** - All patterns required `$` sign
+- **Impact:** -10 pts for valid salary ranges without `$`
+- **Fix:** Added non-$ currency patterns (USD, EUR, GBP, CAD, AUD, €, £)
+
+### Finding B: Missing Section Structure Validation
+- **Gemini Claim:** No logic to check for heading presence
+- **Verification:** ✅ **REAL but LOW PRIORITY** - Claude reliably follows phase1.md structure
+- **Action:** Skipped - not worth the complexity
+
+### Finding C: The "60-70%" Semantic Loophole
+- **Gemini Claim:** Regex `don't.*meet.*all` is too permissive
+- **Verification:** ✅ **REAL ISSUE** - "We don't meet all our goals" would pass
+- **Impact:** -5 pts can be avoided with unrelated text
+- **Fix:** Narrowed regex to require "qualifications" or "requirements" context
+
+### Finding D: Word List De-Sync (Pluralization)
+- **Gemini Claim:** "ninjas" and "rockstars" bypass detection
+- **Verification:** ⚠️ **PARTIAL** - True but low impact (users rarely pluralize)
+- **Action:** Skipped - low priority
+
+### Finding E: Red Flag Hyphenation Failure
+- **Gemini Claim:** "fast paced" (no hyphen) bypasses detection
+- **Verification:** ✅ **REAL ISSUE** - Regex only matched exact hyphenation
+- **Impact:** -5 pts can be avoided by removing hyphens
+- **Fix:** Added flexible `[-\\s]+` pattern for both EXTROVERT_BIAS and RED_FLAGS
+
+### Finding F: De-Duplication and "AI Slop"
+- **Gemini Claim:** Slop penalty is invisible to users
+- **Verification:** ⚠️ **PARTIAL** - True but slop is a bonus feature
+- **Action:** Skipped - low priority
+
+### Fixes Summary
+
+| Finding | Verdict | Fix Applied | Commit |
+|---------|---------|-----|--------|
+| A. K Notation Gap | ✅ REAL | Added non-$ currency patterns | `3d4baaa` |
+| B. Section Structure | ✅ REAL | Skipped - low priority | N/A |
+| C. 60-70% Loophole | ✅ REAL | Narrowed regex to require context | `3d4baaa` |
+| D. Pluralization | ⚠️ PARTIAL | Skipped - low impact | N/A |
+| E. Hyphenation | ✅ REAL | Added flexible hyphen/space matching | `3d4baaa` |
+| F. Slop Documentation | ⚠️ PARTIAL | Skipped - low priority | N/A |
+
+### Sibling Repo Analysis
+
+All three patterns were **JD-specific** and don't apply to sibling repos:
+- Hyphenated phrase detection → Only jd-assistant has inclusive language checking
+- Encouragement statement → Only jd-assistant has this JD-specific requirement
+- Compensation/salary detection → Only jd-assistant validates salary ranges
+
+### README.md Updated
+Added 3 new adversarial robustness patterns to README.md (commit `0fc629f`)
+
+### Tests
+All 482 tests pass.
 
 ---
 
