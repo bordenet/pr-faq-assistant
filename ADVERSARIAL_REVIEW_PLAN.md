@@ -3,7 +3,7 @@
 **Created:** 2026-02-08
 **Updated:** 2026-02-08
 **Purpose:** Recovery document for Gemini-assisted adversarial review process
-**Status:** ✅ COMPLETE - pr-faq-assistant | Next: business-justification-assistant
+**Status:** ✅ COMPLETE - pr-faq-assistant, business-justification-assistant | Next: jd-assistant
 
 ---
 
@@ -24,8 +24,8 @@ We are systematically reviewing all 9 Genesis tools for **5-component alignment*
 
 | # | Tool | Status | Findings File |
 |---|------|--------|---------------|
-| 1 | pr-faq-assistant | 🔄 IN PROGRESS | `Gemini_Response.md` |
-| 2 | business-justification-assistant | ⏳ Queued | TBD |
+| 1 | pr-faq-assistant | ✅ COMPLETE | `Gemini_Response.md` |
+| 2 | business-justification-assistant | ✅ COMPLETE | `Gemini_Response.md` |
 | 3 | jd-assistant | ⏳ Queued | TBD |
 | 4 | one-pager | ⏳ Queued | TBD |
 
@@ -205,6 +205,51 @@ All three patterns were **PR-FAQ specific** and don't apply to sibling repos:
 
 ### Tests
 All 517 tests pass.
+
+---
+
+## Gemini Findings Verification (business-justification-assistant)
+
+### Finding A: "Full Investment" Ghost Option
+- **Gemini Claim:** validator.js has no pattern for "Full Investment" or "Option C"
+- **Verification:** ⚠️ **PARTIAL** - `alternatives` pattern includes `option.?[abc123]` (matches "Option C") but not "Full Investment" or "Strategic Transformation"
+- **Impact:** 10 pts - documents using business-friendly labels like "Strategic Transformation" wouldn't get full credit
+- **Fix:** Added `fullInvestment` pattern to OPTIONS_PATTERNS
+
+### Finding B: ROI Formula Trap
+- **Gemini Claim:** regex expects digits, not variable names like "(Total Savings - Implementation)"
+- **Verification:** ⚠️ **PARTIAL** - Already has `\(.*benefit.*[-−–].*cost.*\)` but doesn't handle all variations
+- **Impact:** 10 pts - users using descriptive variable names in formulas wouldn't get credit
+- **Fix:** Expanded `roiFormula` regex to support variable names: `\([^)]+[-−–][^)]+\)\s*[\/÷]\s*\S+`
+
+### Finding C: Stakeholder Vocabulary "Silo"
+- **Gemini Claim:** "equity" not in stakeholderConcerns regex
+- **Verification:** ❌ **FALSE POSITIVE** - Line 70 already includes `equity` in the regex
+- **Evidence:** `stakeholderConcerns: /\b(finance|fp&a|...equity|liability...)\b/gi`
+- **Fix:** N/A - already covered
+
+### Gaming Vulnerabilities (Confirmed but Low Priority)
+- **Do-nothing keyword stuffing** - 2+ mentions = 10 pts without quantification check
+- **Gartner anchor** - mentioning source name without using data gets credit
+- **Timeline mimicry** - number + "months" anywhere triggers payback credit
+- **Status:** Not fixed - requires NLP/proximity checks beyond regex capability
+
+### Fixes Summary
+
+| Finding | Verdict | Fix Applied | Commit |
+|---------|---------|-----|--------|
+| A. Full Investment Ghost Option | ⚠️ PARTIAL | Added `fullInvestment` pattern to OPTIONS_PATTERNS | `124312d` |
+| B. ROI Formula Trap | ⚠️ PARTIAL | Expanded `roiFormula` regex for variable names | `124312d` |
+| C. Stakeholder/Equity | ❌ FALSE POSITIVE | N/A - already in regex | N/A |
+
+### Sibling Repo Analysis
+
+Both patterns were **business-justification specific** and don't apply to sibling repos:
+- ROI formula detection → only BJ Assistant requires explicit ROI calculations
+- 3-option investment pattern (do-nothing, minimal, full) → standard business justification format only
+
+### Tests
+All 456 tests pass.
 
 ---
 
