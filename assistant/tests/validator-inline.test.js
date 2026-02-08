@@ -9,7 +9,10 @@ import {
   validateDocument,
   validatePRFAQ,
   getScoreColor,
-  getScoreLabel
+  getScoreLabel,
+  // Detection functions
+  detectMetricsInText,
+  detectFluffWords
 } from '../../validator/js/validator.js';
 
 // ============================================================================
@@ -97,6 +100,36 @@ A productivity tool.
     test('should return Incomplete for scores < 30', () => {
       expect(getScoreLabel(0)).toBe('Incomplete');
       expect(getScoreLabel(29)).toBe('Incomplete');
+    });
+  });
+});
+
+// ============================================================================
+// Detection Functions Tests
+// ============================================================================
+
+describe('Detection Functions', () => {
+  describe('detectMetricsInText', () => {
+    test('should detect metrics in text', () => {
+      const result = detectMetricsInText('Achieved 50% growth and $1M revenue.');
+      expect(result).toBeDefined();
+    });
+
+    test('should handle text without metrics', () => {
+      const result = detectMetricsInText('This is a simple statement.');
+      expect(result).toBeDefined();
+    });
+  });
+
+  describe('detectFluffWords', () => {
+    test('should detect fluff words', () => {
+      const result = detectFluffWords('This is a revolutionary, game-changing solution.');
+      expect(result).toBeDefined();
+    });
+
+    test('should handle clean text', () => {
+      const result = detectFluffWords('This product helps users save time.');
+      expect(result).toBeDefined();
     });
   });
 });
