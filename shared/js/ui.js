@@ -578,7 +578,7 @@ export async function copyToClipboardAsync(textPromise) {
       throw new Error('execCommand copy returned false');
     }
   } catch (err) {
-    throw new Error('Failed to copy to clipboard: ' + (err?.message || 'unknown error'));
+    throw new Error('Failed to copy to clipboard: ' + (err?.message || 'unknown error'), { cause: err });
   } finally {
     if (document.body.contains(textarea)) {
       document.body.removeChild(textarea);
