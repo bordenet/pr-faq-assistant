@@ -149,6 +149,58 @@ describe('Smoke Test - App Initialization', () => {
     });
   });
 
+  /**
+   * API Contract Tests - Verify validateDocument returns structure project-view.js expects
+   *
+   * This catches the bug where validator returns different property names than project-view.js expects.
+   * Result: "Cannot read properties of undefined (reading 'issues')" at runtime
+   */
+  describe('API Contract - validateDocument returns structure project-view.js expects', () => {
+    let result;
+
+    beforeAll(async () => {
+      const validator = await import('../../validator/js/validator.js');
+      result = validator.validateDocument('# PR/FAQ\n\n## Press Release\nAnnouncing our new product.');
+    });
+
+    test('returns totalScore property (number)', () => {
+      expect(result.totalScore).toBeDefined();
+      expect(typeof result.totalScore).toBe('number');
+    });
+
+    test('returns content category breakdown with issues array', () => {
+      expect(result.content).toBeDefined();
+      expect(result.content).toHaveProperty('score');
+      expect(result.content).toHaveProperty('maxScore');
+      expect(result.content).toHaveProperty('issues');
+      expect(Array.isArray(result.content.issues)).toBe(true);
+    });
+
+    test('returns evidence category breakdown with issues array', () => {
+      expect(result.evidence).toBeDefined();
+      expect(result.evidence).toHaveProperty('score');
+      expect(result.evidence).toHaveProperty('maxScore');
+      expect(result.evidence).toHaveProperty('issues');
+      expect(Array.isArray(result.evidence.issues)).toBe(true);
+    });
+
+    test('returns professional category breakdown with issues array', () => {
+      expect(result.professional).toBeDefined();
+      expect(result.professional).toHaveProperty('score');
+      expect(result.professional).toHaveProperty('maxScore');
+      expect(result.professional).toHaveProperty('issues');
+      expect(Array.isArray(result.professional.issues)).toBe(true);
+    });
+
+    test('returns structure category breakdown with issues array', () => {
+      expect(result.structure).toBeDefined();
+      expect(result.structure).toHaveProperty('score');
+      expect(result.structure).toHaveProperty('maxScore');
+      expect(result.structure).toHaveProperty('issues');
+      expect(Array.isArray(result.structure.issues)).toBe(true);
+    });
+  });
+
   describe('Export Consistency - diff-view.js exports match project-view.js imports', () => {
     test('diff-view.js exports computeWordDiff', async () => {
       const diffView = await import('../../shared/js/diff-view.js');
