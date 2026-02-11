@@ -9,7 +9,8 @@ import {
   generatePhase1Prompt,
   generatePhase2Prompt,
   generatePhase3Prompt,
-  getPhaseMetadata
+  getPhaseMetadata,
+  replaceTemplateVars
 } from '../../shared/js/prompts.js';
 import { readFileSync } from 'fs';
 import { join } from 'path';
@@ -195,5 +196,36 @@ describe('getPhaseMetadata', () => {
   it('should return undefined for invalid phase', () => {
     const meta = getPhaseMetadata(99);
     expect(meta).toBeUndefined();
+  });
+});
+
+describe('replaceTemplateVars - Placeholder Safety Check', () => {
+  test('should replace known variables', () => {
+    const template = 'Hello {{NAME}}, welcome to {{PROJECT}}';
+    const vars = { NAME: 'World', PROJECT: 'PR-FAQ' };
+
+    const result = replaceTemplateVars(template, vars);
+
+    expect(result).toBe('Hello World, welcome to PR-FAQ');
+  });
+
+  test('should remove unsubstituted UPPER_CASE placeholders', () => {
+    const template = 'Hello {{NAME}}, your {{UNKNOWN_FIELD}} is ready';
+    const vars = { NAME: 'World' };
+
+    const result = replaceTemplateVars(template, vars);
+
+    expect(result).toBe('Hello World, your  is ready');
+    expect(result).not.toContain('{{UNKNOWN_FIELD}}');
+  });
+
+  test('should handle phase output placeholders when not provided', () => {
+    const template = '{{PHASE1_OUTPUT}} and {{PHASE2_OUTPUT}}';
+    const vars = { PHASE1_OUTPUT: 'Draft content here' };
+
+    const result = replaceTemplateVars(template, vars);
+
+    expect(result).toContain('Draft content here');
+    expect(result).not.toContain('{{PHASE2_OUTPUT}}');
   });
 });
