@@ -127,13 +127,13 @@ describe('Projects Module', () => {
       const project = await createProject({ productName: 'Initial Title' });
       const phase3Output = `# PRESS RELEASE
 
-**CallBox Launches CARI Appointment Scheduler, Reducing Dealership No-Show Rates by 62%**
+**Acme Corp Launches Smart Appointment Scheduler, Reducing Customer No-Show Rates by 62%**
 
-SEATTLE, WA — February 15, 2026 — CallBox today announced CARI Appointment Scheduler...`;
+SEATTLE, WA — February 15, 2026 — Acme Corp today announced Smart Appointment Scheduler...`;
 
       const updated = await savePhaseOutput(project.id, 3, phase3Output);
 
-      expect(updated.title).toBe('CallBox Launches CARI Appointment Scheduler, Reducing Dealership No-Show Rates by 62%');
+      expect(updated.title).toBe('Acme Corp Launches Smart Appointment Scheduler, Reducing Customer No-Show Rates by 62%');
       expect(updated.phase3_output).toBe(phase3Output);
     });
 
