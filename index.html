@@ -51,6 +51,19 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📰</text></svg>">
 </head>
 <body class="bg-gray-50 dark:bg-gray-900">
+    <!-- DocForge Coming Soon Banner -->
+    <div id="docforge-banner" class="bg-gray-800 dark:bg-gray-950 text-gray-200 text-center py-2 px-4 text-sm border-b-2 border-blue-500">
+        <div class="max-w-7xl mx-auto flex items-center justify-center gap-2 flex-wrap">
+            <span class="text-blue-400">→</span>
+            <span>
+                <strong class="text-white">Coming Soon:</strong> All tools in one place at
+                <a href="https://bordenet.github.io/docforge-ai/" class="text-blue-400 underline font-medium hover:text-blue-300" target="_blank" rel="noopener">DocForge</a>
+                — improved testing &amp; consistency.
+            </span>
+            <button id="close-docforge-banner" class="ml-2 text-gray-400 hover:text-white text-lg leading-none" aria-label="Close banner">✕</button>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -216,5 +229,22 @@
     <script type="module" src="shared/js/workflow.js"></script>
     <script type="module" src="shared/js/prompts.js"></script>
     <script type="module" src="shared/js/app.js"></script>
+
+    <!-- DocForge banner dismiss handler -->
+    <script>
+        (function() {
+            const banner = document.getElementById('docforge-banner');
+            const closeBtn = document.getElementById('close-docforge-banner');
+            if (banner && closeBtn) {
+                if (localStorage.getItem('docforge-banner-dismissed')) {
+                    banner.style.display = 'none';
+                }
+                closeBtn.addEventListener('click', function() {
+                    banner.style.display = 'none';
+                    localStorage.setItem('docforge-banner-dismissed', 'true');
+                });
+            }
+        })();
+    </script>
 </body>
 </html>
