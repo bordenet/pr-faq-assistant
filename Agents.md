@@ -7,7 +7,7 @@
 > 2. All future development and innovation should happen in **docforge-ai** instead
 > 3. This repo is in maintenance-only mode (critical bug fixes only)
 >
-> **DocForge AI Repository**: `genesis-tools/docforge-ai`
+> **DocForge AI Repository**: `https://github.com/bordenet/docforge-ai`
 > **DocForge AI URL**: https://bordenet.github.io/docforge-ai/
 
 ---
