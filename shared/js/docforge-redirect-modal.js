@@ -45,7 +45,7 @@
   function detectContext() {
     const path = window.location.pathname;
     const host = window.location.hostname;
-    
+
     // Map genesis repo names to DocForge plugin types
     const typeMap = {
       'one-pager': 'one-pager',
@@ -91,7 +91,7 @@
   function showModal() {
     const { docType, appType } = detectContext();
     const redirectUrl = buildRedirectUrl();
-    
+
     // Human-readable document type name
     const typeNames = {
       'one-pager': 'One-Pager',
@@ -148,7 +148,17 @@
    * Initialize - show modal if not dismissed today
    */
   function init() {
-    if (!wasDismissedToday()) {
+    // Force show if URL has ?docforge-modal=show
+    const forceShow = window.location.search.includes('docforge-modal=show');
+
+    console.log('[DocForge Modal] Checking...', {
+      dismissed: localStorage.getItem(STORAGE_KEY),
+      today: getToday(),
+      wasDismissedToday: wasDismissedToday(),
+      forceShow: forceShow
+    });
+
+    if (forceShow || !wasDismissedToday()) {
       // Slight delay to ensure page is rendered
       setTimeout(showModal, 500);
     }
@@ -161,4 +171,3 @@
     init();
   }
 })();
-
