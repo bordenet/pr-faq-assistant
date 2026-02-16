@@ -35,7 +35,7 @@
   "author": "Matt J Bordenet",
   "license": "MIT",
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
+    "@eslint/js": "^10.0.1",
     "@jest/globals": "^30.2.0",
     "@playwright/test": "^1.58.2",
     "eslint": "^9.39.2",
