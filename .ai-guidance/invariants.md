@@ -2,6 +2,17 @@
 
 > **Load this file at the START of every conversation.**
 
+## 🗄️ Archival Status
+
+> ⚠️ **This repository is slated for archival on February 27, 2026.**
+>
+> - The genesis framework has been archived
+> - All tools have been migrated to [docforge-ai](https://github.com/bordenet/docforge-ai)
+> - **No new features or dependency updates** — only critical bug fixes until archival
+> - ~~Dependency alignment policy~~ — **NO LONGER APPLICABLE** (genesis archived)
+
+---
+
 ## Recursive Self-Management Protocol
 
 After editing ANY guidance file (`AGENTS.md` or `.ai-guidance/*.md`):
