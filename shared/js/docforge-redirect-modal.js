@@ -1,39 +1,35 @@
 /**
  * DocForge Redirect Modal
- * Shows a dismissable modal inviting users to try DocForge AI.
- * Only shows once per day using localStorage.
+ * Shows a dismissable deprecation notice for legacy genesis tools.
+ * Shows once every 3 hours using localStorage timestamp.
  */
 (function() {
   'use strict';
 
-  const STORAGE_KEY = 'docforge_redirect_dismissed';
+  const STORAGE_KEY = 'docforge_redirect_dismissed_timestamp';
   const DOCFORGE_BASE = 'https://bordenet.github.io/docforge-ai';
+  const HOURS_BETWEEN_SHOWS = 3;
 
   /**
-   * Get today's date as YYYY-MM-DD string
+   * Check if modal was dismissed within the last 3 hours
    */
-  function getToday() {
-    return new Date().toISOString().split('T')[0];
-  }
-
-  /**
-   * Check if modal was already dismissed today
-   */
-  function wasDismissedToday() {
+  function wasRecentlyDismissed() {
     try {
-      const dismissed = localStorage.getItem(STORAGE_KEY);
-      return dismissed === getToday();
+      const dismissedAt = localStorage.getItem(STORAGE_KEY);
+      if (!dismissedAt) return false;
+      const hoursElapsed = (Date.now() - parseInt(dismissedAt, 10)) / (1000 * 60 * 60);
+      return hoursElapsed < HOURS_BETWEEN_SHOWS;
     } catch (e) {
       return false;
     }
   }
 
   /**
-   * Mark modal as dismissed for today
+   * Mark modal as dismissed with current timestamp
    */
   function markDismissed() {
     try {
-      localStorage.setItem(STORAGE_KEY, getToday());
+      localStorage.setItem(STORAGE_KEY, String(Date.now()));
     } catch (e) {
       // Ignore storage errors
     }
@@ -55,7 +51,8 @@
       'power-statement-assistant': 'power-statement',
       'pr-faq-assistant': 'pr-faq',
       'jd-assistant': 'jd',
-      'acceptance-criteria-assistant': 'acceptance-criteria'
+      'acceptance-criteria-assistant': 'acceptance-criteria',
+      'business-justification-assistant': 'business-justification'
     };
 
     let docType = 'one-pager'; // default
@@ -101,7 +98,8 @@
       'power-statement': 'Power Statement',
       'pr-faq': 'PR-FAQ',
       'jd': 'Job Description',
-      'acceptance-criteria': 'Acceptance Criteria'
+      'acceptance-criteria': 'Acceptance Criteria',
+      'business-justification': 'Business Justification'
     };
     const typeName = typeNames[docType] || docType;
 
@@ -112,13 +110,16 @@
       <div style="position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;">
         <div style="background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);border-radius:1rem;max-width:28rem;width:100%;padding:2rem;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);border:1px solid #334155;">
           <div style="text-align:center;margin-bottom:1.5rem;">
-            <span style="font-size:3rem;">🚀</span>
+            <span style="font-size:3rem;">⚠️</span>
           </div>
           <h2 style="color:#f8fafc;font-size:1.5rem;font-weight:700;text-align:center;margin:0 0 1rem 0;">
-            Try DocForge AI
+            Deprecation Notice
           </h2>
+          <p style="color:#fbbf24;text-align:center;margin:0 0 1rem 0;line-height:1.6;font-weight:600;">
+            This tool will be disabled on Monday, February 24, 2026.
+          </p>
           <p style="color:#94a3b8;text-align:center;margin:0 0 1.5rem 0;line-height:1.6;">
-            This tool has been upgraded! DocForge AI combines all 9 document types in one place with an improved workflow.
+            DocForge AI consolidates all 9 document assistants. Export your projects and migrate before the deadline.
           </p>
           <p style="color:#cbd5e1;text-align:center;margin:0 0 1.5rem 0;font-size:0.875rem;">
             Continue to <strong>${typeName} ${appType === 'validator' ? 'Validator' : 'Assistant'}</strong> in DocForge:
@@ -145,20 +146,19 @@
   }
 
   /**
-   * Initialize - show modal if not dismissed today
+   * Initialize - show modal if not recently dismissed (within 3 hours)
    */
   function init() {
     // Force show if URL has ?docforge-modal=show
     const forceShow = window.location.search.includes('docforge-modal=show');
 
     console.log('[DocForge Modal] Checking...', {
-      dismissed: localStorage.getItem(STORAGE_KEY),
-      today: getToday(),
-      wasDismissedToday: wasDismissedToday(),
+      dismissedTimestamp: localStorage.getItem(STORAGE_KEY),
+      wasRecentlyDismissed: wasRecentlyDismissed(),
       forceShow: forceShow
     });
 
-    if (forceShow || !wasDismissedToday()) {
+    if (forceShow || !wasRecentlyDismissed()) {
       // Slight delay to ensure page is rendered
       setTimeout(showModal, 500);
     }
