@@ -8,7 +8,7 @@
 
   const STORAGE_KEY = 'docforge_redirect_dismissed_timestamp';
   const DOCFORGE_BASE = 'https://bordenet.github.io/docforge-ai';
-  const HOURS_BETWEEN_SHOWS = 3;
+  const HOURS_BETWEEN_SHOWS = 5 / 60; // 5 minutes - deadline day enforcement
 
   /**
    * Check if modal was dismissed within the last 3 hours
@@ -116,7 +116,7 @@
             Deprecation Notice
           </h2>
           <p style="color:#fbbf24;text-align:center;margin:0 0 1rem 0;line-height:1.6;font-weight:600;">
-            This tool will be disabled on Monday, February 24, 2026.
+            This tool will be disabled at midnight tonight (PST).
           </p>
           <p style="color:#94a3b8;text-align:center;margin:0 0 1.5rem 0;line-height:1.6;">
             DocForge AI consolidates all 9 document assistants. Export your projects and migrate before the deadline.
