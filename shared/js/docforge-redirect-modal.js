@@ -83,7 +83,7 @@
   }
 
   /**
-   * Create and show the modal
+   * Create and show the modal with auto-redirect countdown
    */
   function showModal() {
     const { docType, appType } = detectContext();
@@ -124,12 +124,15 @@
           <p style="color:#cbd5e1;text-align:center;margin:0 0 1.5rem 0;font-size:0.875rem;">
             Continue to <strong>${typeName} ${appType === 'validator' ? 'Validator' : 'Assistant'}</strong> in DocForge:
           </p>
+          <p id="docforge-countdown" style="color:#f97316;text-align:center;margin:0 0 1rem 0;font-size:1rem;font-weight:600;">
+            Redirecting in 3...
+          </p>
           <div style="display:flex;flex-direction:column;gap:0.75rem;">
             <a href="${redirectUrl}" style="display:block;background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%);color:white;text-align:center;padding:0.875rem 1.5rem;border-radius:0.5rem;font-weight:600;text-decoration:none;transition:transform 0.15s,box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 20px -5px rgba(59,130,246,0.4)';" onmouseout="this.style.transform='';this.style.boxShadow='';">
               Open DocForge AI →
             </a>
             <button id="docforge-modal-dismiss" style="background:transparent;color:#64748b;padding:0.75rem;border:none;cursor:pointer;font-size:0.875rem;transition:color 0.15s;" onmouseover="this.style.color='#94a3b8';" onmouseout="this.style.color='#64748b';">
-              Stay here for now
+              Stay here for now (cancels redirect)
             </button>
           </div>
         </div>
@@ -138,8 +141,50 @@
 
     document.body.appendChild(modal);
 
-    // Handle dismiss
+    // Auto-redirect countdown
+    let countdown = 3;
+    const countdownEl = document.getElementById('docforge-countdown');
+    let redirectTimeoutId = null;
+    let countdownIntervalId = null;
+
+    /**
+     * Update countdown display
+     */
+    function updateCountdown() {
+      countdown--;
+      if (countdown > 0) {
+        countdownEl.textContent = `Redirecting in ${countdown}...`;
+      } else {
+        countdownEl.textContent = 'Redirecting now...';
+      }
+    }
+
+    /**
+     * Cancel auto-redirect
+     */
+    function cancelRedirect() {
+      if (redirectTimeoutId) {
+        clearTimeout(redirectTimeoutId);
+        redirectTimeoutId = null;
+      }
+      if (countdownIntervalId) {
+        clearInterval(countdownIntervalId);
+        countdownIntervalId = null;
+      }
+    }
+
+    // Start countdown interval (update every second)
+    countdownIntervalId = setInterval(updateCountdown, 1000);
+
+    // Set redirect timeout (3 seconds)
+    redirectTimeoutId = setTimeout(function() {
+      cancelRedirect();
+      window.location.href = redirectUrl;
+    }, 3000);
+
+    // Handle dismiss - cancel redirect and close modal
     document.getElementById('docforge-modal-dismiss').addEventListener('click', function() {
+      cancelRedirect();
       markDismissed();
       modal.remove();
     });
