@@ -1,12 +1,14 @@
 # PR/FAQ Assistant
 
-> ⚠️ **Deprecation Notice**: This repository is deprecated in favor of [DocForge AI](https://github.com/bordenet/docforge-ai), which consolidates all genesis-derived assistants into a single project. This repo will be archived on **March 1, 2026**.
+> 🗄️ **ARCHIVED**: This repository has been archived. All pages now **redirect to [DocForge AI](https://bordenet.github.io/docforge-ai/)**, which consolidates all genesis-derived assistants into a single unified platform.
+>
+> **New location**: https://bordenet.github.io/docforge-ai/
 
 Write Amazon-style press releases and FAQs with AI. Three phases: draft, review, refine.
 
 [![Star this repo](https://img.shields.io/github/stars/bordenet/pr-faq-assistant?style=social)](https://github.com/bordenet/pr-faq-assistant)
 
-**Try it**: [Assistant](https://bordenet.github.io/pr-faq-assistant/) · [Validator](https://bordenet.github.io/pr-faq-assistant/validator/)
+**⚠️ Redirects to DocForge AI**: [Assistant](https://bordenet.github.io/pr-faq-assistant/) · [Validator](https://bordenet.github.io/pr-faq-assistant/validator/)
 
 > **What is a PR/FAQ?** A PR/FAQ (Press Release / Frequently Asked Questions) is Amazon's "Working Backwards" document format. You write a future press release announcing the finished product, then answer anticipated customer and stakeholder questions. This forces clarity on customer benefit before building. See [The PR-FAQ](https://github.com/bordenet/Engineering_Culture/blob/main/SDLC/The_PR-FAQ.md) for background, or watch [this explainer video](https://www.youtube.com/watch?v=T1HZM6ybORk) for a walkthrough of the process.
 
